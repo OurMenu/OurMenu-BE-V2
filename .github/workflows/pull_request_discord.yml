@@ -1,0 +1,72 @@
+name: PR request Discord Message
+
+on:
+  pull_request:
+    branches:
+      - 'develop'
+    types:
+      - opened
+      - reopened
+      - synchronize
+jobs:
+
+  send_discord_message:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: 상황에 맞는 메세지를 결정한다.
+        run: |
+          if [ "${{ github.event.action }}" == "opened" ]; then
+              echo "PR_ACTION_MESSAGE=:blush: PR 생성되었습니다" >> $GITHUB_ENV
+          elif [ "${{ github.event.action }}" == "reopened" ]; then
+              echo "PR_ACTION_MESSAGE=:blush: PR 재생성 되었습니다" >> $GITHUB_ENV
+          elif [ "${{ github.event.action }}" == "synchronize" ]; then
+              echo "PR_ACTION_MESSAGE=:blush: 기존 PR에 commit 이 추가되었습니다" >> $GITHUB_ENV
+          fi
+      - name: 작업자와 리뷰어를 결정한다.
+        run: |
+          if [ "${{ github.actor }}" == "david-parkk" ]; then
+              echo "DISCORD_OWNER_ID=<@568069533214965760>" >> $GITHUB_ENV
+              echo "DISCORD_REVIEWER_ID=<@373383545873235970>" >> $GITHUB_ENV
+          else
+              echo "DISCORD_OWNER_ID=<@373383545873235970>" >> $GITHUB_ENV
+              echo "DISCORD_REVIEWER_ID=<@568069533214965760>" >> $GITHUB_ENV
+          fi
+      - name: Actions for Discord
+        uses: Ilshidur/action-discord@master
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          DISCORD_USERNAME: 개발진스
+          DISCORD_AVATAR: "https://github.com/user-attachments/assets/f45fe697-18cb-4f8a-8ea6-156582e42ad4"
+          DISCORD_EMBEDS: '
+          [
+            { 
+              "url": "${{github.event.pull_request.html_url}}",
+              "title": "${{ env.PR_ACTION_MESSAGE }}",
+               
+              "fields": [
+                {
+                  "name": "작업자",
+                  "value": "${{env.DISCORD_OWNER_ID}}\n\u200B\n\u200B\n",
+                  "inline": true
+                },
+                {
+                  "name": "리뷰어",
+                  "value": "${{env.DISCORD_REVIEWER_ID}}\n",
+                  "inline": true
+                },
+                {
+                  "name": "내용",
+                  "value": "[${{ github.event.pull_request.title }}](${{ github.event.pull_request.html_url }})"
+                  
+                }
+              ] 
+            }
+          ]'
+
+      - name: 다양한 변수를 확인해본다.
+        run: |
+          echo ${{github.event.pull_request.user.login}}
+          echo ${{github.event.pull_request.user.id}}
+
+
