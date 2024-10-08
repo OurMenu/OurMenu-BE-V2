@@ -18,12 +18,10 @@ jobs:
     steps:
       - name: 작업자와 리뷰어를 결정한다.
         run: |
-          if [ "${{ github.actor }}" == "david-parkk" ]; then
-              echo "DISCORD_OWNER_ID=<@568069533214965760>" >> $GITHUB_ENV
-              echo "DISCORD_REVIEWER_ID=<@373383545873235970>" >> $GITHUB_ENV
+          if [ "${{ github.event.pull_request.user.login }}" == "david-parkk" ]; then
+              echo "PR_OWNER=<@568069533214965760>" >> $GITHUB_ENV
           else
-              echo "DISCORD_OWNER_ID=<@373383545873235970>" >> $GITHUB_ENV
-              echo "DISCORD_REVIEWER_ID=<@568069533214965760>" >> $GITHUB_ENV
+              echo "PR_OWNER=<@373383545873235970>" >> $GITHUB_ENV
           fi
       - name: 리뷰 요청 Discord 메세지를 보낸다
         uses: Ilshidur/action-discord@master
@@ -35,23 +33,19 @@ jobs:
           [
             { 
               "url": "${{github.event.pull_request.html_url}}",
-              "title": ":musical_note: 리뷰 코멘트가 생성되었습니다. 확인해주세요",
+              "title": ":musical_note: 리뷰 코멘트가 생성되었습니다.",
   
               "fields": [
                 
+                
                 {
-                  "name": "리뷰어",
-                  "value": "${{env.DISCORD_REVIEWER_ID}}\n",
+                  "name": "PR 주인",
+                  "value": "${{env.PR_OWNER}}",
                   "inline": true
                 },
                 {
-                  "name": " ",
-                  "value": "${{env.DISCORD_OWNER_ID}}\n\u200B\n\u200B\n",
-                  "inline": true
-                },
-                {
-                  "name": "내용",
-                  "value": "[${{ github.event.pull_request.title }}](${{ github.event.pull_request.html_url }})"
+                  "name": "코멘트 내용",
+                  "value": "${{ github.event.comment.body }}"
   
                 }
               ] 
