@@ -37,7 +37,7 @@ jobs:
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
           DISCORD_USERNAME: 개발진스
-          DISCORD_AVATAR: "https://github.com/user-attachments/assets/f45fe697-18cb-4f8a-8ea6-156582e42ad4"
+          DISCORD_AVATAR: "https://github.com/user-attachments/assets/1ff8e3ad-40c1-4a99-85cf-367376ed5d93"
           DISCORD_EMBEDS: '
           [
             { 
