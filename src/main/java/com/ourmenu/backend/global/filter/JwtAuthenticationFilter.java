@@ -7,31 +7,45 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
+@Slf4j
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
-
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
-            throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        String accessToken = jwtTokenProvider.getHeaderToken(request, "Access");
+        String refreshToken = jwtTokenProvider.getHeaderToken(request, "Refresh");
 
-        // 헤더에서 JWT 토큰을 가져옴
-        String token = jwtTokenProvider.resolveToken(request);
+        if(accessToken != null) {
+            if(jwtTokenProvider.tokenValidation(accessToken)){
+                setAuthentication(jwtTokenProvider.getEmailFromToken(accessToken));
+            }
+            else if (refreshToken != null) {
+                boolean isRefreshToken = jwtTokenProvider.refreshTokenValidation(refreshToken);
+                if (isRefreshToken) {
+                    String loginId = jwtTokenProvider.getEmailFromToken(refreshToken);
+                    String newAccessToken = jwtTokenProvider.createToken(loginId, "Access");
 
-        // 토큰 유효성 검사 후 인증 객체 생성
-        if (token != null && jwtTokenProvider.validateToken(token)) {
-            Authentication auth = jwtTokenProvider.getAuthentication(token);
-            SecurityContextHolder.getContext().setAuthentication(auth);
+                    jwtTokenProvider.setHeaderAccessToken(response, newAccessToken);
+                    setAuthentication(jwtTokenProvider.getEmailFromToken(newAccessToken));
+                }
+            }
         }
 
-        chain.doFilter(request, response); // 다음 필터로 진행
+        filterChain.doFilter(request,response);
+    }
+
+    public void setAuthentication(String email) {
+        Authentication authentication = jwtTokenProvider.createAuthentication(email);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 
 }
