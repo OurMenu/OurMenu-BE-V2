@@ -1,9 +1,9 @@
 package com.ourmenu.backend.global.util;
 
 import com.ourmenu.backend.domain.user.application.CustomUserDetailsService;
-import com.ourmenu.backend.domain.user.dao.RedisRepository;
+import com.ourmenu.backend.domain.user.dao.RefreshTokenRepository;
 import com.ourmenu.backend.domain.user.domain.RefreshToken;
-import com.ourmenu.backend.domain.user.dto.SignUpResponse;
+import com.ourmenu.backend.domain.user.dto.SignInResponse;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -19,6 +19,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Base64;
 import java.util.Date;
 import java.util.Optional;
@@ -35,13 +37,13 @@ public class JwtTokenProvider {
     private Key key;
     private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
 
-    private static final long ACCESS_TIME =  60 * 1000L;
-    private static final long REFRESH_TIME =  2 * 60 * 1000L;
+    private static final long ACCESS_TIME =  60 * 60 * 1000L;   // 1시간
+    private static final long REFRESH_TIME =  30 * 24 * 60 * 60 * 1000L;    // 30일
     public static final String ACCESS_TOKEN = "Access_Token";
     public static final String REFRESH_TOKEN = "Refresh_Token";
 
     private final CustomUserDetailsService customUserDetailsService;
-    private final RedisRepository redisRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     @PostConstruct
     public void init() {
@@ -54,16 +56,24 @@ public class JwtTokenProvider {
     }
 
     // 토큰 생성
-    public SignUpResponse createAllToken(String email) {
+    public SignInResponse createAllToken(String email) {
         Date now = new Date();
 
         String accessToken = createToken(email, "Access");
-        long accessTokenExpiredAt = now.getTime() + ACCESS_TIME;
 
         String refreshToken = createToken(email, "Refresh");
-        long refreshTokenExpiredAt = now.getTime() + REFRESH_TIME;
+//        long refreshTokenExpiredAt = now.getTime() + REFRESH_TIME;
 
-        return new SignUpResponse("Bearer", accessToken, refreshToken, accessTokenExpiredAt, refreshTokenExpiredAt);
+        Instant refreshTokenExpiredAt = Instant.now().plus(30, ChronoUnit.DAYS);
+
+        SignInResponse tokenDto = SignInResponse.builder()
+                .grantType("Bearer ")
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .refreshTokenExpiredAt(refreshTokenExpiredAt)
+                .build();
+
+        return tokenDto;
     }
 
     public String createToken(String email, String type) {
@@ -93,7 +103,7 @@ public class JwtTokenProvider {
 
     public Boolean refreshTokenValidation(String token) {
         if(!tokenValidation(token)) return false;
-        Optional<RefreshToken> refreshToken = redisRepository.findByEmail(getEmailFromToken(token));
+        Optional<RefreshToken> refreshToken = refreshTokenRepository.findByEmail(getEmailFromToken(token));
         return refreshToken.isPresent() && token.equals(refreshToken.get().getRefreshToken());
     }
 
