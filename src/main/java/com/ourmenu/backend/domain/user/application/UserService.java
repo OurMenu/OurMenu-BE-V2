@@ -1,12 +1,12 @@
 package com.ourmenu.backend.domain.user.application;
 
 import com.ourmenu.backend.domain.user.dao.RefreshTokenRepository;
-import com.ourmenu.backend.domain.user.dao.UserMealTimeRepository;
+//import com.ourmenu.backend.domain.user.dao.UserMealTimeRepository;
 import com.ourmenu.backend.domain.user.dao.UserRepository;
 import com.ourmenu.backend.domain.user.domain.RefreshToken;
 import com.ourmenu.backend.domain.user.domain.SignInType;
 import com.ourmenu.backend.domain.user.domain.User;
-import com.ourmenu.backend.domain.user.domain.UserMealTime;
+//import com.ourmenu.backend.domain.user.domain.UserMealTime;
 import com.ourmenu.backend.domain.user.dto.SignInRequest;
 import com.ourmenu.backend.domain.user.dto.SignInResponse;
 import com.ourmenu.backend.domain.user.dto.SignUpRequest;
@@ -23,7 +23,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final RefreshTokenRepository refreshTokenRepository;
-    private final UserMealTimeRepository userMealTimeRepository;
+//    private final UserMealTimeRepository userMealTimeRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
 
@@ -46,16 +46,17 @@ public class UserService {
                 .email(signUpRequest.getEmail())
                 .password(encodedPassword)
                 .signInType(SignInType.valueOf(signUpRequest.getSignInType()))
+                .mealTime(signUpRequest.getMealTime())
                 .build();
 
         User savedUser = userRepository.save(user);
 
-        UserMealTime userMealTime = UserMealTime.builder()
-                .mealTime(signUpRequest.getMealTime())
-                .id(savedUser.getId())
-                .build();
+//        UserMealTime userMealTime = UserMealTime.builder()
+//                .mealTime(signUpRequest.getMealTime())
+//                .id(savedUser.getId())
+//                .build();
 
-        userMealTimeRepository.save(userMealTime);
+//        userMealTimeRepository.save(userMealTime);
 
 //        SignUpResponse response = jwtTokenProvider.createAllToken(user.getEmail());
 
