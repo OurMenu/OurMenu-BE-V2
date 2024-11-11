@@ -5,6 +5,7 @@ import com.ourmenu.backend.domain.user.dto.SignInRequest;
 import com.ourmenu.backend.domain.user.dto.SignInResponse;
 import com.ourmenu.backend.domain.user.dto.SignUpRequest;
 import com.ourmenu.backend.global.util.JwtTokenProvider;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,9 +25,9 @@ public class UserController {
     }
 
     @PostMapping("/signin")
-    private ResponseEntity<?> signUp(@RequestBody SignInRequest request){
-        SignInResponse response = userService.signIn(request);
-        return ResponseEntity.ok(response);
+    private ResponseEntity<?> signUp(@RequestBody SignInRequest request, HttpServletResponse response){
+        SignInResponse signInResponse = userService.signIn(request, response);
+        return ResponseEntity.ok(signInResponse);
     }
 
 }

@@ -11,6 +11,7 @@ import com.ourmenu.backend.domain.user.dto.SignInRequest;
 import com.ourmenu.backend.domain.user.dto.SignInResponse;
 import com.ourmenu.backend.domain.user.dto.SignUpRequest;
 import com.ourmenu.backend.global.util.JwtTokenProvider;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -23,7 +24,6 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final RefreshTokenRepository refreshTokenRepository;
-//    private final UserMealTimeRepository userMealTimeRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
 
@@ -51,20 +51,10 @@ public class UserService {
 
         User savedUser = userRepository.save(user);
 
-//        UserMealTime userMealTime = UserMealTime.builder()
-//                .mealTime(signUpRequest.getMealTime())
-//                .id(savedUser.getId())
-//                .build();
-
-//        userMealTimeRepository.save(userMealTime);
-
-//        SignUpResponse response = jwtTokenProvider.createAllToken(user.getEmail());
-
-//        return response;
         return "OK";
     }
 
-    public SignInResponse signIn(SignInRequest signInRequest) {
+    public SignInResponse signIn(SignInRequest signInRequest, HttpServletResponse response) {
 
         User user = userRepository.findByEmail(signInRequest.getEmail()).orElseThrow(
                 () -> new RuntimeException("Not found Account")
@@ -85,6 +75,13 @@ public class UserService {
             refreshTokenRepository.save(newToken);
         }
 
+        setHeader(response, tokenDto);
+
         return tokenDto;
+    }
+
+    private void setHeader(HttpServletResponse response, SignInResponse tokenDto) {
+        response.addHeader(JwtTokenProvider.ACCESS_TOKEN, tokenDto.getAccessToken());
+        response.addHeader(JwtTokenProvider.REFRESH_TOKEN, tokenDto.getRefreshToken());
     }
 }
