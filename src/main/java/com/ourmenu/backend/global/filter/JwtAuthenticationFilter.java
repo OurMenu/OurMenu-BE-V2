@@ -19,6 +19,7 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String accessToken = jwtTokenProvider.getHeaderToken(request, "Access");
@@ -31,8 +32,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             else if (refreshToken != null) {
                 boolean isRefreshToken = jwtTokenProvider.refreshTokenValidation(refreshToken);
                 if (isRefreshToken) {
-                    String loginId = jwtTokenProvider.getEmailFromToken(refreshToken);
-                    String newAccessToken = jwtTokenProvider.createToken(loginId, "Access");
+                    String email = jwtTokenProvider.getEmailFromToken(refreshToken);
+                    String newAccessToken = jwtTokenProvider.createToken(email, "Access");
 
                     jwtTokenProvider.setHeaderAccessToken(response, newAccessToken);
                     setAuthentication(jwtTokenProvider.getEmailFromToken(newAccessToken));
