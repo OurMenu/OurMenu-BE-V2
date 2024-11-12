@@ -62,7 +62,6 @@ public class JwtTokenProvider {
         String accessToken = createToken(email, "Access");
 
         String refreshToken = createToken(email, "Refresh");
-//        long refreshTokenExpiredAt = now.getTime() + REFRESH_TIME;
 
         Instant refreshTokenExpiredAt = Instant.now().plus(30, ChronoUnit.DAYS);
 

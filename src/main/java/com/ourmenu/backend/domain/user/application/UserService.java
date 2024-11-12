@@ -1,12 +1,10 @@
 package com.ourmenu.backend.domain.user.application;
 
 import com.ourmenu.backend.domain.user.dao.RefreshTokenRepository;
-//import com.ourmenu.backend.domain.user.dao.UserMealTimeRepository;
 import com.ourmenu.backend.domain.user.dao.UserRepository;
 import com.ourmenu.backend.domain.user.domain.RefreshToken;
 import com.ourmenu.backend.domain.user.domain.SignInType;
 import com.ourmenu.backend.domain.user.domain.User;
-//import com.ourmenu.backend.domain.user.domain.UserMealTime;
 import com.ourmenu.backend.domain.user.dto.SignInRequest;
 import com.ourmenu.backend.domain.user.dto.SignInResponse;
 import com.ourmenu.backend.domain.user.dto.SignUpRequest;
