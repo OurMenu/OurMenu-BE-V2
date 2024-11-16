@@ -1,13 +1,15 @@
 package com.ourmenu.backend.global.exception;
 
-public class ErrorResponse {
+import lombok.Builder;
 
-    private String errorCode;
+@Builder
+public record ErrorResponse(int status, String code, String message) {
 
-    private String errorMessage;
-
-    public ErrorResponse(String errorCode, String errorMessage) {
-        this.errorCode = errorCode;
-        this.errorMessage = errorMessage;
+    public static ErrorResponse of(ErrorCode errorCode) {
+        return ErrorResponse.builder()
+                .status(errorCode.getHttpStatus().value())
+                .code(errorCode.getCode())
+                .message(errorCode.getMessage())
+                .build();
     }
 }
