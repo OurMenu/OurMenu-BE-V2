@@ -1,12 +1,10 @@
 package com.ourmenu.backend.domain.user.application;
 
 import com.ourmenu.backend.domain.user.dao.RefreshTokenRepository;
-//import com.ourmenu.backend.domain.user.dao.UserMealTimeRepository;
 import com.ourmenu.backend.domain.user.dao.UserRepository;
 import com.ourmenu.backend.domain.user.domain.RefreshToken;
 import com.ourmenu.backend.domain.user.domain.SignInType;
 import com.ourmenu.backend.domain.user.domain.User;
-//import com.ourmenu.backend.domain.user.domain.UserMealTime;
 import com.ourmenu.backend.domain.user.dto.SignInRequest;
 import com.ourmenu.backend.domain.user.dto.SignInResponse;
 import com.ourmenu.backend.domain.user.dto.SignUpRequest;
@@ -29,9 +27,9 @@ public class UserService {
 
 
     /**
-     *  회원가입 할 경우 User와 해당 userMealTime을 저장 및 Response 방환
-     * @param signUpRequest
-     * @return signUpResponse
+     * 이메일 중복 검사, 비밀번호 암호화 및 User 객체를 생성 후 DB에 저장
+     * @param signUpRequest User의 Email, Password, SignInType, MealTime 정보를 가진 Request
+     * @return 회원가입 완료
      */
     public String signUp(SignUpRequest signUpRequest) {
 
@@ -39,7 +37,6 @@ public class UserService {
             throw new RuntimeException("같은 이메일이 존재합니다");
         }
 
-        // 패스워드 암호화
         String encodedPassword = passwordEncoder.encode(signUpRequest.getPassword());
 
         User user = User.builder()
@@ -54,6 +51,12 @@ public class UserService {
         return "OK";
     }
 
+    /**
+     * 로그인 로직 및 로그인 성공시 RefreshToken 갱신 후 JWT 정보 반환
+     * @param signInRequest User의 Email, Password, SignInType정보를 가진 Request
+     * @param response HTTP Response
+     * @return Token 정보
+     */
     public SignInResponse signIn(SignInRequest signInRequest, HttpServletResponse response) {
 
         User user = userRepository.findByEmail(signInRequest.getEmail()).orElseThrow(
@@ -80,6 +83,11 @@ public class UserService {
         return tokenDto;
     }
 
+    /**
+     * Response Header에 AccessToken 값과 RefreshToken 값을 설정
+     * @param response HTTP Response
+     * @param tokenDto JWT Token 정보
+     */
     private void setHeader(HttpServletResponse response, SignInResponse tokenDto) {
         response.addHeader(JwtTokenProvider.ACCESS_TOKEN, tokenDto.getAccessToken());
         response.addHeader(JwtTokenProvider.REFRESH_TOKEN, tokenDto.getRefreshToken());

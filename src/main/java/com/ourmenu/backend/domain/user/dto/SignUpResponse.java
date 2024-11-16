@@ -1,10 +1,8 @@
 package com.ourmenu.backend.domain.user.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
-import java.time.Instant;
 
 @Data
 @Builder
