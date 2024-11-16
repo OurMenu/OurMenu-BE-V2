@@ -1,0 +1,60 @@
+name: review and sent Discord message
+
+on:
+  pull_request_review:
+    branches:
+      - 'develop'
+    types: [ submitted ]  # 리뷰가 제출될 때
+  pull_request_review_comment:
+    branches:
+      - 'develop'
+    types: [ created ]  # 리뷰 코멘트가 생성될 때
+
+
+jobs:
+  send_discord_message:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.review.state != 'approved' }}
+    steps:
+      - name: 작업자와 리뷰어를 결정한다.
+        run: |
+          if [ "${{ github.event.pull_request.user.login }}" == "david-parkk" ]; then
+              echo "PR_OWNER=<@568069533214965760>" >> $GITHUB_ENV
+          else
+              echo "PR_OWNER=<@373383545873235970>" >> $GITHUB_ENV
+          fi
+      - name: 리뷰 요청 Discord 메세지를 보낸다
+        uses: Ilshidur/action-discord@master
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          DISCORD_USERNAME: 개발진스
+          DISCORD_AVATAR: "https://github.com/user-attachments/assets/1ff8e3ad-40c1-4a99-85cf-367376ed5d93"
+          DISCORD_EMBEDS: '
+          [
+            { 
+              "url": "${{github.event.pull_request.html_url}}",
+              "title": ":musical_note: 리뷰 코멘트가 생성되었습니다.",
+  
+              "fields": [
+                
+                
+                {
+                  "name": "PR 주인",
+                  "value": "${{env.PR_OWNER}}",
+                  "inline": true
+                },
+                {
+                  "name": "코멘트 내용",
+                  "value": "${{ github.event.comment.body }}"
+  
+                }
+              ] 
+            }
+          ]'
+
+      - name: 리뷰와 코멘트 처리
+        run: |
+          echo "리뷰가 제출되었습니다!"
+          echo "리뷰의 상태는: ${{ github.event.review.state }}"
+          echo "리뷰어: ${{ github.event.review.user.login }}"
+          echo "리뷰 코멘트 내용: ${{ github.event.comment.body }}"

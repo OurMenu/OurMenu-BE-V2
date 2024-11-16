@@ -1,0 +1,22 @@
+name: '이슈 생성'
+description: 'Jira와 연동할 이슈를 생성합니다'
+labels: [ feat ]
+title: '이슈 이름을 작성해주세요'
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: '✅ 작업내용'
+      description: '작업할 내용에 대해 작성하세요'
+      value: 'ex) API를 개발한다'
+    validations:
+      required: true
+
+  - type: input
+    id: branch
+    attributes:
+      label: '🌳 브랜치명'
+      description: '생성할 브랜치를 작성하세요'
+    validations:
+      required: true
+
