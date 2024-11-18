@@ -1,5 +1,6 @@
-package com.ourmenu.backend.domain.store.domain;
+package com.ourmenu.backend.domain.search.domain;
 
+import com.ourmenu.backend.domain.store.domain.Store;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
