@@ -31,5 +31,6 @@ public class Folder {
 
     private String icon;
 
+    @NotNull
     private int index;
 }
