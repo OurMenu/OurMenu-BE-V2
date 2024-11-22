@@ -29,7 +29,7 @@ public class UserNonOwnedSearchHistory {
     private String title;
 
     @NotNull
-    private LocalDateTime search_at;
+    private LocalDateTime searchAt;
 
     @NotNull
     private Long userId;
