@@ -38,11 +38,11 @@ public class EmailService {
     public EmailResponse sendCodeToEmail(EmailRequest request) {
         String email = request.getEmail();
         String title = "아워메뉴 이메일 인증 번호";
-        String confirmCode = generateRandomCode(CONFIRM_CODE_LENGTH);
+        String generatedRandomCode = generateRandomCode(CONFIRM_CODE_LENGTH);
 
         String content = "<html>"
                 + "<body>"
-                + "<h1>아워메뉴 인증 코드: " + confirmCode + "</h1>"
+                + "<h1>아워메뉴 인증 코드: " + generatedRandomCode + "</h1>"
                 + "</body>"
                 + "</html>";
 
@@ -54,7 +54,7 @@ public class EmailService {
         }
 
         EmailResponse response = EmailResponse.builder()
-                .code(confirmCode)
+                .code(generatedRandomCode)
                 .build();
 
         return response;
