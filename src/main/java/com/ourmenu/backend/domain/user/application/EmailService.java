@@ -1,7 +1,10 @@
 package com.ourmenu.backend.domain.user.application;
 
+import com.ourmenu.backend.domain.user.dao.ConfirmCodeRepository;
+import com.ourmenu.backend.domain.user.domain.ConfirmCode;
 import com.ourmenu.backend.domain.user.dto.EmailRequest;
 import com.ourmenu.backend.domain.user.dto.EmailResponse;
+import com.ourmenu.backend.domain.user.dto.VerifyEmailRequest;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +22,7 @@ public class EmailService {
 
     private final JavaMailSender emailSender;
     private final int CONFIRM_CODE_LENGTH = 6;
+    private final ConfirmCodeRepository confirmCodeRepository;
 
     public void sendEmail(String toEmail, String title, String content) throws MessagingException {
         MimeMessage message = emailSender.createMimeMessage();
@@ -53,6 +57,9 @@ public class EmailService {
             throw new RuntimeException("Unable to send email in sendCodeToEmail", e); // 원인 예외를 포함시키기
         }
 
+        ConfirmCode confirmCode = ConfirmCode.of(email, generatedRandomCode);
+        confirmCodeRepository.save(confirmCode);
+
         EmailResponse response = EmailResponse.builder()
                 .code(generatedRandomCode)
                 .build();
@@ -72,6 +79,24 @@ public class EmailService {
         }
 
         return confirmCode.toString();
+    }
+
+    public String verifyConfirmCode(VerifyEmailRequest request){
+        String email = request.getEmail();
+        String inputConfirmCode = request.getConfirmCode();
+
+        log.error("{},{}", email, inputConfirmCode);
+
+        ConfirmCode confirmCode = confirmCodeRepository.findConfirmCodeByEmail(email)
+                .orElseThrow(() -> new RuntimeException("ConfirmCode not found"));
+
+        // 확인 코드 검증
+        if (!confirmCode.getConfirmCode().equals(inputConfirmCode)) {
+            throw new IllegalArgumentException("Confirmation code does not match.");
+        }
+
+        // 검증 성공 시 처리 (예: "Success" 메시지 반환)
+        return "OK";
     }
 
 }

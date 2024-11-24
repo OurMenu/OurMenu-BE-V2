@@ -47,4 +47,10 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
+    @PostMapping("/emails/confirm-code")
+    private ResponseEntity<?> verifyEmail(@RequestBody VerifyEmailRequest request){
+        String response = emailService.verifyConfirmCode(request);
+        return ResponseEntity.ok(response);
+    }
+
 }
