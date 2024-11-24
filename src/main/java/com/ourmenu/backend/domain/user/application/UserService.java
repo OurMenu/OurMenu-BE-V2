@@ -69,7 +69,7 @@ public class UserService {
 
         SignInResponse tokenDto = jwtTokenProvider.createAllToken(signInRequest.getEmail());
 
-        Optional<RefreshToken> refreshToken = refreshTokenRepository.findByEmail(signInRequest.getEmail());
+        Optional<RefreshToken> refreshToken = refreshTokenRepository.findRefreshTokenByEmail(signInRequest.getEmail());
 
         if(refreshToken.isPresent()) {
             refreshTokenRepository.save(refreshToken.get().updateToken(tokenDto.getRefreshToken()));

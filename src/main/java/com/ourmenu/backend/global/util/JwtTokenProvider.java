@@ -133,7 +133,7 @@ public class JwtTokenProvider {
      */
     public Boolean refreshTokenValidation(String token) {
         if(!tokenValidation(token)) return false;
-        Optional<RefreshToken> refreshToken = refreshTokenRepository.findByEmail(getEmailFromToken(token));
+        Optional<RefreshToken> refreshToken = refreshTokenRepository.findRefreshTokenByEmail(getEmailFromToken(token));
         return refreshToken.isPresent() && token.equals(refreshToken.get().getRefreshToken());
     }
 
