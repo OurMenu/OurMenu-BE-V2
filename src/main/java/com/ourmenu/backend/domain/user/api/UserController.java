@@ -1,9 +1,8 @@
 package com.ourmenu.backend.domain.user.api;
 
+import com.ourmenu.backend.domain.user.application.EmailService;
 import com.ourmenu.backend.domain.user.application.UserService;
-import com.ourmenu.backend.domain.user.dto.SignInRequest;
-import com.ourmenu.backend.domain.user.dto.SignInResponse;
-import com.ourmenu.backend.domain.user.dto.SignUpRequest;
+import com.ourmenu.backend.domain.user.dto.*;
 import com.ourmenu.backend.global.util.JwtTokenProvider;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +16,7 @@ public class UserController {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final UserService userService;
+    private final EmailService emailService;
 
     /**
      * @apiNote 회원가입 API
@@ -39,6 +39,12 @@ public class UserController {
     private ResponseEntity<?> signIn(@RequestBody SignInRequest request, HttpServletResponse response){
         SignInResponse signInResponse = userService.signIn(request, response);
         return ResponseEntity.ok(signInResponse);
+    }
+
+    @PostMapping("/emails")
+    private ResponseEntity<?> sendConfirmCode(@RequestBody EmailRequest reqeust){
+        EmailResponse response = emailService.sendCodeToEmail(reqeust);
+        return ResponseEntity.ok(response);
     }
 
 }
