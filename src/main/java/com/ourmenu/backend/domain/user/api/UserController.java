@@ -42,8 +42,8 @@ public class UserController {
     }
 
     @PostMapping("/emails")
-    private ResponseEntity<?> sendConfirmCode(@RequestBody EmailRequest reqeust){
-        EmailResponse response = emailService.sendCodeToEmail(reqeust);
+    private ResponseEntity<?> sendConfirmCode(@RequestBody EmailRequest request){
+        EmailResponse response = emailService.sendCodeToEmail(request);
         return ResponseEntity.ok(response);
     }
 
