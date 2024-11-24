@@ -36,7 +36,7 @@ public class UserController {
      * @return
      */
     @PostMapping("/signin")
-    private ResponseEntity<?> signUp(@RequestBody SignInRequest request, HttpServletResponse response){
+    private ResponseEntity<?> signIn(@RequestBody SignInRequest request, HttpServletResponse response){
         SignInResponse signInResponse = userService.signIn(request, response);
         return ResponseEntity.ok(signInResponse);
     }
