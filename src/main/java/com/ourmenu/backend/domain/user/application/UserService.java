@@ -46,6 +46,17 @@ public class UserService {
 
         User savedUser = userRepository.save(user);
 
+        List<MealTime> mealTimes = new ArrayList<>();
+        for (String mealTime : signUpRequest.getMealTime()) {
+            MealTime newMealTime = MealTime.builder()
+                    .userId(savedUser.getId())
+                    .mealTime(mealTime)
+                    .build();
+            mealTimes.add(newMealTime);
+        }
+        mealTimeRepository.saveAll(mealTimes);
+
+
         return "OK";
     }
 
