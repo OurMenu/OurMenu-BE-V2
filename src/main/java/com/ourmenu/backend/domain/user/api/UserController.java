@@ -3,6 +3,8 @@ package com.ourmenu.backend.domain.user.api;
 import com.ourmenu.backend.domain.user.application.EmailService;
 import com.ourmenu.backend.domain.user.application.UserService;
 import com.ourmenu.backend.domain.user.dto.*;
+import com.ourmenu.backend.global.response.ApiResponse;
+import com.ourmenu.backend.global.response.util.ApiUtil;
 import com.ourmenu.backend.global.util.JwtTokenProvider;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -24,9 +26,9 @@ public class UserController {
      * @return
      */
     @PostMapping("/signup")
-    private ResponseEntity<?> signUp(@RequestBody SignUpRequest signUpRequest){
+    private ApiResponse<String> signUp(@RequestBody SignUpRequest signUpRequest){
         String response = userService.signUp(signUpRequest);
-        return ResponseEntity.ok(response);
+        return ApiUtil.success(response);
     }
 
     /**
@@ -36,21 +38,21 @@ public class UserController {
      * @return
      */
     @PostMapping("/signin")
-    private ResponseEntity<?> signIn(@RequestBody SignInRequest request, HttpServletResponse response){
+    private ApiResponse<SignInResponse> signIn(@RequestBody SignInRequest request, HttpServletResponse response){
         SignInResponse signInResponse = userService.signIn(request, response);
-        return ResponseEntity.ok(signInResponse);
+        return ApiUtil.success(signInResponse);
     }
 
     @PostMapping("/emails")
-    private ResponseEntity<?> sendConfirmCode(@RequestBody EmailRequest request){
+    private ApiResponse<EmailResponse> sendConfirmCode(@RequestBody EmailRequest request){
         EmailResponse response = emailService.sendCodeToEmail(request);
-        return ResponseEntity.ok(response);
+        return ApiUtil.success(response);
     }
 
     @PostMapping("/emails/confirm-code")
-    private ResponseEntity<?> verifyEmail(@RequestBody VerifyEmailRequest request){
+    private ApiResponse<String> verifyEmail(@RequestBody VerifyEmailRequest request){
         String response = emailService.verifyConfirmCode(request);
-        return ResponseEntity.ok(response);
+        return ApiUtil.success(response);
     }
 
 }
