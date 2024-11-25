@@ -1,11 +1,9 @@
 package com.ourmenu.backend.domain.user.application;
 
+import com.ourmenu.backend.domain.user.dao.MealTimeRepository;
 import com.ourmenu.backend.domain.user.dao.RefreshTokenRepository;
 import com.ourmenu.backend.domain.user.dao.UserRepository;
-import com.ourmenu.backend.domain.user.domain.CustomUserDetails;
-import com.ourmenu.backend.domain.user.domain.RefreshToken;
-import com.ourmenu.backend.domain.user.domain.SignInType;
-import com.ourmenu.backend.domain.user.domain.User;
+import com.ourmenu.backend.domain.user.domain.*;
 import com.ourmenu.backend.domain.user.dto.*;
 import com.ourmenu.backend.global.util.JwtTokenProvider;
 import jakarta.servlet.http.HttpServletResponse;
@@ -13,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -23,6 +23,7 @@ public class UserService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
+    private final MealTimeRepository mealTimeRepository;
 
 
     /**
@@ -118,4 +119,21 @@ public class UserService {
         return "OK";
     }
 
+    public String changeMealTime(MealTimeRequest request, CustomUserDetails userDetails) {
+        mealTimeRepository.deleteAllByUserId(userDetails.getId());
+
+        ArrayList<String> newMealTimes = request.mealTime();
+
+        ArrayList<MealTime> updatedMealTimes = new ArrayList<>();
+        for (String mealTime : newMealTimes) {
+            MealTime newMealTime = MealTime.builder()
+                    .userId(userDetails.getId())
+                    .mealTime(mealTime)
+                    .build();
+            updatedMealTimes.add(newMealTime);
+        }
+
+        mealTimeRepository.saveAll(updatedMealTimes);
+        return "OK";
+    }
 }

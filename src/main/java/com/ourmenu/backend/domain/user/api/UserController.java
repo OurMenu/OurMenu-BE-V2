@@ -62,4 +62,10 @@ public class UserController {
         return ApiUtil.success(response);
     }
 
+    @PatchMapping("/meal-time")
+    private ApiResponse<String> changeMealTime(@RequestBody MealTimeRequest request, @AuthenticationPrincipal CustomUserDetails userDetails){
+        String response = userService.changeMealTime(request, userDetails);
+        return ApiUtil.success(response);
+    }
+
 }
