@@ -2,13 +2,14 @@ package com.ourmenu.backend.domain.user.api;
 
 import com.ourmenu.backend.domain.user.application.EmailService;
 import com.ourmenu.backend.domain.user.application.UserService;
+import com.ourmenu.backend.domain.user.domain.CustomUserDetails;
 import com.ourmenu.backend.domain.user.dto.*;
 import com.ourmenu.backend.global.response.ApiResponse;
 import com.ourmenu.backend.global.response.util.ApiUtil;
 import com.ourmenu.backend.global.util.JwtTokenProvider;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -52,6 +53,12 @@ public class UserController {
     @PostMapping("/emails/confirm-code")
     private ApiResponse<String> verifyEmail(@RequestBody VerifyEmailRequest request){
         String response = emailService.verifyConfirmCode(request);
+        return ApiUtil.success(response);
+    }
+
+    @PatchMapping("/password")
+    private ApiResponse<String> changePassword(@RequestBody PasswordRequest request, @AuthenticationPrincipal CustomUserDetails userDetails){
+        String response = userService.changePassword(request, userDetails);
         return ApiUtil.success(response);
     }
 

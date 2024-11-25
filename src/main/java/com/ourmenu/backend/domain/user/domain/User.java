@@ -6,8 +6,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Entity
 @Builder
 @Getter
@@ -25,4 +23,7 @@ public class User{
 
     private SignInType signInType;
 
+    public void changePassword(String newPassword){
+        this.password = newPassword;
+    }
 }

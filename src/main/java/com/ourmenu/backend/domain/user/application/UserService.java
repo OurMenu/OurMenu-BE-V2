@@ -2,12 +2,11 @@ package com.ourmenu.backend.domain.user.application;
 
 import com.ourmenu.backend.domain.user.dao.RefreshTokenRepository;
 import com.ourmenu.backend.domain.user.dao.UserRepository;
+import com.ourmenu.backend.domain.user.domain.CustomUserDetails;
 import com.ourmenu.backend.domain.user.domain.RefreshToken;
 import com.ourmenu.backend.domain.user.domain.SignInType;
 import com.ourmenu.backend.domain.user.domain.User;
-import com.ourmenu.backend.domain.user.dto.SignInRequest;
-import com.ourmenu.backend.domain.user.dto.SignInResponse;
-import com.ourmenu.backend.domain.user.dto.SignUpRequest;
+import com.ourmenu.backend.domain.user.dto.*;
 import com.ourmenu.backend.global.util.JwtTokenProvider;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -43,7 +42,6 @@ public class UserService {
                 .email(signUpRequest.getEmail())
                 .password(encodedPassword)
                 .signInType(SignInType.valueOf(signUpRequest.getSignInType()))
-                .mealTime(signUpRequest.getMealTime())
                 .build();
 
         User savedUser = userRepository.save(user);
@@ -92,4 +90,21 @@ public class UserService {
         response.addHeader(JwtTokenProvider.ACCESS_TOKEN, tokenDto.getAccessToken());
         response.addHeader(JwtTokenProvider.REFRESH_TOKEN, tokenDto.getRefreshToken());
     }
+
+    public String changePassword(PasswordRequest request, CustomUserDetails userDetails) {
+        String rawPassword = request.password();
+        String encodedPassword = userDetails.getPassword();
+
+        if (!passwordEncoder.matches(rawPassword, encodedPassword)) {
+            throw new RuntimeException("비밀번호가 일치하지 않습니다.");
+        }
+
+        User user = userRepository.findById(userDetails.getId())
+                .orElseThrow(() -> new RuntimeException("유저가 존재하지 않습니다"));
+        String newPassword = passwordEncoder.encode(request.newPassword());
+        user.changePassword(newPassword);
+        userRepository.save(user);
+        return "OK";
+    }
+
 }
