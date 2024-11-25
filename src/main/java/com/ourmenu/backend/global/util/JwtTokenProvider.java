@@ -100,10 +100,13 @@ public class JwtTokenProvider {
 
         Date date = new Date();
 
+        Claims claims = Jwts.claims();
+        claims.put("email", email);
+
         long time = type.equals("Access") ? ACCESS_TIME : REFRESH_TIME;
 
         return Jwts.builder()
-                .setSubject(email)
+                .setClaims(claims)
                 .setExpiration(new Date(date.getTime() + time))
                 .setIssuedAt(date)
                 .signWith(key, signatureAlgorithm)
