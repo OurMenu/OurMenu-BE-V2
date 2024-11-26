@@ -5,6 +5,9 @@ import com.ourmenu.backend.domain.user.dao.RefreshTokenRepository;
 import com.ourmenu.backend.domain.user.dao.UserRepository;
 import com.ourmenu.backend.domain.user.domain.*;
 import com.ourmenu.backend.domain.user.dto.*;
+import com.ourmenu.backend.domain.user.exception.DuplicateEmailException;
+import com.ourmenu.backend.domain.user.exception.PasswordNotMatchException;
+import com.ourmenu.backend.domain.user.exception.UserNotFoundException;
 import com.ourmenu.backend.global.util.JwtTokenProvider;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -36,7 +40,7 @@ public class UserService {
     public String signUp(SignUpRequest signUpRequest) {
 
         if(userRepository.findByEmail(signUpRequest.getEmail()).isPresent()){
-            throw new RuntimeException("같은 이메일이 존재합니다");
+            throw new DuplicateEmailException();
         }
 
         String encodedPassword = passwordEncoder.encode(signUpRequest.getPassword());
@@ -59,7 +63,6 @@ public class UserService {
         }
         mealTimeRepository.saveAll(mealTimes);
 
-
         return "OK";
     }
 
@@ -72,11 +75,11 @@ public class UserService {
     public SignInResponse signIn(SignInRequest signInRequest, HttpServletResponse response) {
 
         User user = userRepository.findByEmail(signInRequest.getEmail()).orElseThrow(
-                () -> new RuntimeException("Not found Account")
+                UserNotFoundException::new
         );
 
         if(!passwordEncoder.matches(signInRequest.getPassword(), user.getPassword())) {
-            throw new RuntimeException("Not matches Password");
+            throw new PasswordNotMatchException();
         }
 
         SignInResponse tokenDto = jwtTokenProvider.createAllToken(signInRequest.getEmail());
@@ -110,11 +113,12 @@ public class UserService {
         String encodedPassword = userDetails.getPassword();
 
         if (!passwordEncoder.matches(rawPassword, encodedPassword)) {
-            throw new RuntimeException("비밀번호가 일치하지 않습니다.");
+            throw new PasswordNotMatchException();
         }
 
         User user = userRepository.findById(userDetails.getId())
-                .orElseThrow(() -> new RuntimeException("유저가 존재하지 않습니다"));
+                .orElseThrow(UserNotFoundException::new);
+
         String newPassword = passwordEncoder.encode(request.newPassword());
         user.changePassword(newPassword);
         userRepository.save(user);
