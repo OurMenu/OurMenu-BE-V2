@@ -14,12 +14,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "user_non_owned_search_history")
+@Table(name = "user_owned_search_history")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
 @Getter
-public class UserNonOwnedSearchHistory {
+public class NotOwnedMenuSearch {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
