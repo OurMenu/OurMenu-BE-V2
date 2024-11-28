@@ -29,13 +29,13 @@ public class EmailService {
         MimeMessageHelper helper = new MimeMessageHelper(message, true);
         helper.setTo(toEmail);
         helper.setSubject(title);
-        helper.setText(content, true); // true를 설정해서 HTML을 사용 가능하게 함
-        helper.setReplyTo("ourmenuv2@gmail.com"); // 회신 불가능한 주소 설정
+        helper.setText(content, true);
+        helper.setReplyTo("ourmenuv2@gmail.com");
         try {
             emailSender.send(message);
         } catch (RuntimeException e) {
-            e.printStackTrace(); // 또는 로거를 사용하여 상세한 예외 정보 로깅
-            throw new RuntimeException("Unable to send email in sendEmail", e); // 원인 예외를 포함시키기
+            e.printStackTrace();
+            throw new RuntimeException("Unable to send email in sendEmail", e);
         }
     }
 
@@ -53,8 +53,8 @@ public class EmailService {
         try {
             sendEmail(email, title, content);
         } catch (RuntimeException | MessagingException e) {
-            e.printStackTrace(); // 또는 로거를 사용하여 상세한 예외 정보 로깅
-            throw new RuntimeException("Unable to send email in sendCodeToEmail", e); // 원인 예외를 포함시키기
+            e.printStackTrace();
+            throw new RuntimeException("Unable to send email in sendCodeToEmail", e);
         }
 
         ConfirmCode confirmCode = ConfirmCode.of(email, generatedRandomCode);
@@ -68,7 +68,6 @@ public class EmailService {
     }
 
     public String generateRandomCode(int length) {
-        // 숫자 + 대문자
         String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         StringBuilder confirmCode = new StringBuilder();
         ThreadLocalRandom random = ThreadLocalRandom.current();
@@ -90,12 +89,10 @@ public class EmailService {
         ConfirmCode confirmCode = confirmCodeRepository.findConfirmCodeByEmail(email)
                 .orElseThrow(() -> new RuntimeException("ConfirmCode not found"));
 
-        // 확인 코드 검증
         if (!confirmCode.getConfirmCode().equals(inputConfirmCode)) {
             throw new IllegalArgumentException("Confirmation code does not match.");
         }
 
-        // 검증 성공 시 처리 (예: "Success" 메시지 반환)
         return "OK";
     }
 
