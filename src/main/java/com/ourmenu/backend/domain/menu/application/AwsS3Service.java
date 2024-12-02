@@ -23,7 +23,7 @@ public class AwsS3Service {
     @Value("${spring.cloud.aws.credentials.bucket}")
     private String bucketName;
 
-    public CompletableFuture<PutObjectResponse> uploadLocalFileAsync(MultipartFile multipartFile) {
+    public CompletableFuture<String> uploadLocalFileAsync(MultipartFile multipartFile) {
 
         try {
             String name = FileUtil.buildFileName(multipartFile.getOriginalFilename());
@@ -35,11 +35,10 @@ public class AwsS3Service {
 
             CompletableFuture<PutObjectResponse> response = s3AsyncClient.putObject(objectRequest, asyncRequestBody);
 
-            return response.whenComplete((resp, ex) -> {
-                if (ex != null) {
-                    throw new RuntimeException("이미지 업로드중 문제가 발생하였습니다", ex);
-                }
-            });
+            return response.thenApply(resp -> name)
+                    .exceptionally(ex -> {
+                        throw new RuntimeException("이미지 업로드중 문제가 발생하였습니다", ex);
+                    });
         } catch (IOException e) {
             e.printStackTrace();
         }
