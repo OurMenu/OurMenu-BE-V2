@@ -1,5 +1,6 @@
 package com.ourmenu.backend.domain.menu.domain;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -32,5 +33,9 @@ public class MenuFolder {
     private String icon;
 
     @NotNull
+    @Column(name = "custom_index")
     private int index;
+
+    @NotNull
+    private Long userId;
 }
