@@ -145,4 +145,11 @@ public class UserService {
         mealTimeRepository.saveAll(updatedMealTimes);
         return "OK";
     }
+
+    public UserDto getUserInfo(CustomUserDetails userDetails) {
+        User user = userRepository.findById(userDetails.getId())
+                .orElseThrow(() -> new UserNotFoundException());
+
+        return UserDto.of(user);
+    }
 }

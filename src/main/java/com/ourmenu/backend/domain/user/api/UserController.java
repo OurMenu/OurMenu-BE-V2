@@ -52,4 +52,10 @@ public class UserController {
         return ApiUtil.success(response);
     }
 
+    @GetMapping("")
+    private ApiResponse<UserDto> getUserInfo(@AuthenticationPrincipal CustomUserDetails userDetails){
+        UserDto response = userService.getUserInfo(userDetails);
+        return ApiUtil.success(response);
+    }
+
 }
