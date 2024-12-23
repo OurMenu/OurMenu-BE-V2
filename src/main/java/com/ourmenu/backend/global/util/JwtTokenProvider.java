@@ -14,6 +14,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -40,7 +41,7 @@ public class JwtTokenProvider {
 
     private static final long ACCESS_TIME =  60 * 60 * 1000L;   // 1시간
     private static final long REFRESH_TIME =  30 * 24 * 60 * 60 * 1000L;    // 30일
-    public static final String ACCESS_TOKEN = "Access_Token";
+    public static final String ACCESS_TOKEN = "Authorization";
     public static final String REFRESH_TOKEN = "Refresh_Token";
 
     private final CustomUserDetailsService customUserDetailsService;
@@ -63,8 +64,25 @@ public class JwtTokenProvider {
      * @param type Token의 종류
      * @return AccessToken값 혹은 RefreshToken값
      */
+//    public String getHeaderToken(HttpServletRequest request, String type) {
+//        if (type.equals(HttpHeaders.AUTHORIZATION))
+//            return request.getHeader(HttpHeaders.AUTHORIZATION);
+//
+//        return request.getHeader(REFRESH_TOKEN);
+//    }
+
     public String getHeaderToken(HttpServletRequest request, String type) {
-        return type.equals("Access") ? request.getHeader(ACCESS_TOKEN) :request.getHeader(REFRESH_TOKEN);
+        String token;
+        if (HttpHeaders.AUTHORIZATION.equals(type)) {
+            token = request.getHeader(HttpHeaders.AUTHORIZATION);
+        } else {
+            token = request.getHeader(REFRESH_TOKEN);
+        }
+
+        if (token != null && token.startsWith("Bearer ")) {
+            return token.substring(7);  // "Bearer " 제거
+        }
+        return token;
     }
 
     /**
@@ -82,7 +100,7 @@ public class JwtTokenProvider {
         Instant refreshTokenExpiredAt = Instant.now().plus(30, ChronoUnit.DAYS);
 
         SignInResponse tokenDto = SignInResponse.builder()
-                .grantType("Bearer ")
+                .grantType("Bearer")
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .refreshTokenExpiredAt(refreshTokenExpiredAt)
@@ -112,7 +130,6 @@ public class JwtTokenProvider {
                 .setIssuedAt(date)
                 .signWith(key, signatureAlgorithm)
                 .compact();
-
     }
 
     /**
@@ -166,7 +183,7 @@ public class JwtTokenProvider {
      * @param accessToken AccessToken값
      */
     public void setHeaderAccessToken(HttpServletResponse response, String accessToken) {
-        response.setHeader("Access_Token", accessToken);
+        response.setHeader(HttpHeaders.AUTHORIZATION, accessToken);
     }
 
     /**
@@ -175,6 +192,6 @@ public class JwtTokenProvider {
      * @param refreshToken RefreshToken값
      */
     public void setHeaderRefreshToken(HttpServletResponse response, String refreshToken) {
-        response.setHeader("Refresh_Token", refreshToken);
+        response.setHeader(REFRESH_TOKEN, refreshToken);
     }
 }
