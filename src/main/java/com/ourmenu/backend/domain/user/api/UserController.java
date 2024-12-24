@@ -59,4 +59,8 @@ public class UserController {
         return ApiUtil.success(response);
     }
 
+    @PostMapping("/sign-out")
+    private ApiResponse<String> signOut(){
+        return ApiUtil.success("OK");
+    }
 }
