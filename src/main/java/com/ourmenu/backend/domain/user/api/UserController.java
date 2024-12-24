@@ -2,7 +2,13 @@ package com.ourmenu.backend.domain.user.api;
 
 import com.ourmenu.backend.domain.user.application.UserService;
 import com.ourmenu.backend.domain.user.domain.CustomUserDetails;
-import com.ourmenu.backend.domain.user.dto.*;
+import com.ourmenu.backend.domain.user.dto.response.ReissueToken;
+import com.ourmenu.backend.domain.user.dto.response.TokenDto;
+import com.ourmenu.backend.domain.user.dto.response.UserDto;
+import com.ourmenu.backend.domain.user.dto.request.MealTimeRequest;
+import com.ourmenu.backend.domain.user.dto.request.PasswordRequest;
+import com.ourmenu.backend.domain.user.dto.request.SignInRequest;
+import com.ourmenu.backend.domain.user.dto.request.SignUpRequest;
 import com.ourmenu.backend.global.response.ApiResponse;
 import com.ourmenu.backend.global.response.util.ApiUtil;
 import jakarta.servlet.http.HttpServletResponse;
@@ -54,7 +60,7 @@ public class UserController {
     }
 
     @GetMapping("")
-    private ApiResponse<UserDto> getUserInfo(@Valid @AuthenticationPrincipal CustomUserDetails userDetails){
+    private ApiResponse<UserDto> getUserInfo(@AuthenticationPrincipal CustomUserDetails userDetails){
         UserDto response = userService.getUserInfo(userDetails);
         return ApiUtil.success(response);
     }

@@ -1,9 +1,9 @@
 package com.ourmenu.backend.domain.user.api;
 
 import com.ourmenu.backend.domain.user.application.EmailService;
-import com.ourmenu.backend.domain.user.dto.EmailRequest;
-import com.ourmenu.backend.domain.user.dto.EmailResponse;
-import com.ourmenu.backend.domain.user.dto.VerifyEmailRequest;
+import com.ourmenu.backend.domain.user.dto.request.EmailRequest;
+import com.ourmenu.backend.domain.user.dto.response.EmailResponse;
+import com.ourmenu.backend.domain.user.dto.request.VerifyEmailRequest;
 import com.ourmenu.backend.global.response.ApiResponse;
 import com.ourmenu.backend.global.response.util.ApiUtil;
 import jakarta.validation.Valid;

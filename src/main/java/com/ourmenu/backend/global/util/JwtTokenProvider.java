@@ -3,7 +3,7 @@ package com.ourmenu.backend.global.util;
 import com.ourmenu.backend.domain.user.application.CustomUserDetailsService;
 import com.ourmenu.backend.domain.user.dao.RefreshTokenRepository;
 import com.ourmenu.backend.domain.user.domain.RefreshToken;
-import com.ourmenu.backend.domain.user.dto.SignInResponse;
+import com.ourmenu.backend.domain.user.dto.response.TokenDto;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -90,7 +90,7 @@ public class JwtTokenProvider {
      * @param email User의 Email
      * @return JWT 정보를 DTO로 반환
      */
-    public SignInResponse createAllToken(String email) {
+    public TokenDto createAllToken(String email) {
         Date now = new Date();
 
         String accessToken = createToken(email, "Access");
@@ -99,7 +99,7 @@ public class JwtTokenProvider {
 
         Instant refreshTokenExpiredAt = Instant.now().plus(30, ChronoUnit.DAYS);
 
-        SignInResponse tokenDto = SignInResponse.builder()
+        TokenDto tokenDto = TokenDto.builder()
                 .grantType("Bearer")
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)

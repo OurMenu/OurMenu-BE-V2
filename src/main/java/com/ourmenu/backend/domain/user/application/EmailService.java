@@ -2,9 +2,9 @@ package com.ourmenu.backend.domain.user.application;
 
 import com.ourmenu.backend.domain.user.dao.ConfirmCodeRepository;
 import com.ourmenu.backend.domain.user.domain.ConfirmCode;
-import com.ourmenu.backend.domain.user.dto.EmailRequest;
-import com.ourmenu.backend.domain.user.dto.EmailResponse;
-import com.ourmenu.backend.domain.user.dto.VerifyEmailRequest;
+import com.ourmenu.backend.domain.user.dto.request.EmailRequest;
+import com.ourmenu.backend.domain.user.dto.response.EmailResponse;
+import com.ourmenu.backend.domain.user.dto.request.VerifyEmailRequest;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;

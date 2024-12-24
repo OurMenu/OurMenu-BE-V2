@@ -4,7 +4,12 @@ import com.ourmenu.backend.domain.user.dao.MealTimeRepository;
 import com.ourmenu.backend.domain.user.dao.RefreshTokenRepository;
 import com.ourmenu.backend.domain.user.dao.UserRepository;
 import com.ourmenu.backend.domain.user.domain.*;
-import com.ourmenu.backend.domain.user.dto.*;
+import com.ourmenu.backend.domain.user.dto.request.MealTimeRequest;
+import com.ourmenu.backend.domain.user.dto.request.PasswordRequest;
+import com.ourmenu.backend.domain.user.dto.request.SignInRequest;
+import com.ourmenu.backend.domain.user.dto.request.SignUpRequest;
+import com.ourmenu.backend.domain.user.dto.response.TokenDto;
+import com.ourmenu.backend.domain.user.dto.response.UserDto;
 import com.ourmenu.backend.domain.user.exception.DuplicateEmailException;
 import com.ourmenu.backend.domain.user.exception.PasswordNotMatchException;
 import com.ourmenu.backend.domain.user.exception.UserNotFoundException;
@@ -72,7 +77,7 @@ public class UserService {
      * @param response HTTP Response
      * @return Token 정보
      */
-    public SignInResponse signIn(SignInRequest signInRequest, HttpServletResponse response) {
+    public TokenDto signIn(SignInRequest signInRequest, HttpServletResponse response) {
 
         User user = userRepository.findByEmail(signInRequest.getEmail()).orElseThrow(
                 UserNotFoundException::new
@@ -82,7 +87,7 @@ public class UserService {
             throw new PasswordNotMatchException();
         }
 
-        SignInResponse tokenDto = jwtTokenProvider.createAllToken(signInRequest.getEmail());
+        TokenDto tokenDto = jwtTokenProvider.createAllToken(signInRequest.getEmail());
 
         Optional<RefreshToken> refreshToken = refreshTokenRepository.findRefreshTokenByEmail(signInRequest.getEmail());
 
@@ -103,7 +108,7 @@ public class UserService {
      * @param response HTTP Response
      * @param tokenDto JWT Token 정보
      */
-    private void setHeader(HttpServletResponse response, SignInResponse tokenDto) {
+    private void setHeader(HttpServletResponse response, TokenDto tokenDto) {
         response.addHeader(JwtTokenProvider.ACCESS_TOKEN, tokenDto.getAccessToken());
         response.addHeader(JwtTokenProvider.REFRESH_TOKEN, tokenDto.getRefreshToken());
     }

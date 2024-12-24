@@ -1,4 +1,4 @@
-package com.ourmenu.backend.domain.user.dto;
+package com.ourmenu.backend.domain.user.dto.request;
 
 
 import jakarta.validation.constraints.NotBlank;
