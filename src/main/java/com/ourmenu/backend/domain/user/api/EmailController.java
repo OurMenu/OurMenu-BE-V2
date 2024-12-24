@@ -15,18 +15,18 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/users")
+@RequestMapping("/api/emails")
 public class EmailController {
 
     private final EmailService emailService;
 
-    @PostMapping("/emails")
+    @PostMapping("")
     private ApiResponse<EmailResponse> sendConfirmCode(@Valid @RequestBody EmailRequest request){
         EmailResponse response = emailService.sendCodeToEmail(request);
         return ApiUtil.success(response);
     }
 
-    @PostMapping("/emails/confirm-code")
+    @PostMapping("/confirm-code")
     private ApiResponse<String> verifyEmail(@Valid @RequestBody VerifyEmailRequest request){
         String response = emailService.verifyConfirmCode(request);
         return ApiUtil.success(response);
