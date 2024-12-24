@@ -1,5 +1,7 @@
 package com.ourmenu.backend.domain.user.dto;
 
 
-public record PasswordRequest(String password, String newPassword) {
+import jakarta.validation.constraints.NotBlank;
+
+public record PasswordRequest(@NotBlank String password,@NotBlank String newPassword) {
 }
