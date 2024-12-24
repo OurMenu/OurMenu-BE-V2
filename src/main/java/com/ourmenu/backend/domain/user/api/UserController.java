@@ -23,7 +23,7 @@ public class UserController {
      * @param signUpRequest
      * @return
      */
-    @PostMapping("/signup")
+    @PostMapping("/sign-up")
     private ApiResponse<String> signUp(@Valid @RequestBody SignUpRequest signUpRequest){
         String response = userService.signUp(signUpRequest);
         return ApiUtil.success(response);
@@ -35,10 +35,10 @@ public class UserController {
      * @param response
      * @return
      */
-    @PostMapping("/signin")
-    private ApiResponse<SignInResponse> signIn(@Valid @RequestBody SignInRequest request, HttpServletResponse response){
-        SignInResponse signInResponse = userService.signIn(request, response);
-        return ApiUtil.success(signInResponse);
+    @PostMapping("/sign-in")
+    private ApiResponse<TokenDto> signIn(@Valid @RequestBody SignInRequest request, HttpServletResponse response){
+        TokenDto tokenDto = userService.signIn(request, response);
+        return ApiUtil.success(tokenDto);
     }
 
     @PatchMapping("/password")
