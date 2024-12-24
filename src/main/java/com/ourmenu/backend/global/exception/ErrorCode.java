@@ -15,7 +15,8 @@ public enum ErrorCode {
     // 유저
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "U404", "해당 유저가 존재하지 않습니다."),
     PASSWORD_NOT_MATCH(HttpStatus.UNAUTHORIZED, "U401", "비밀번호가 일치하지 않습니다."),
-    DUPLICATE_EMAIL(HttpStatus.CONFLICT, "U409", "이미 존재하는 이메일입니다.");
+    DUPLICATE_EMAIL(HttpStatus.CONFLICT, "U409", "이미 존재하는 이메일입니다."),
+    NOT_MATCH_TOKEN(HttpStatus.UNAUTHORIZED, "U401", "유저의 토큰값과 일치하지 않습니다.");
 
     private final HttpStatus httpStatus;
 

@@ -64,13 +64,6 @@ public class JwtTokenProvider {
      * @param type Token의 종류
      * @return AccessToken값 혹은 RefreshToken값
      */
-//    public String getHeaderToken(HttpServletRequest request, String type) {
-//        if (type.equals(HttpHeaders.AUTHORIZATION))
-//            return request.getHeader(HttpHeaders.AUTHORIZATION);
-//
-//        return request.getHeader(REFRESH_TOKEN);
-//    }
-
     public String getHeaderToken(HttpServletRequest request, String type) {
         String token;
         if (HttpHeaders.AUTHORIZATION.equals(type)) {
@@ -153,7 +146,10 @@ public class JwtTokenProvider {
      * @return RefreshToken 유효 여부 (True, False)
      */
     public Boolean refreshTokenValidation(String token) {
-        if(!tokenValidation(token)) return false;
+        if(!tokenValidation(token)) {
+            return false;
+        }
+
         Optional<RefreshToken> refreshToken = refreshTokenRepository.findRefreshTokenByEmail(getEmailFromToken(token));
         return refreshToken.isPresent() && token.equals(refreshToken.get().getRefreshToken());
     }
@@ -194,4 +190,24 @@ public class JwtTokenProvider {
     public void setHeaderRefreshToken(HttpServletResponse response, String refreshToken) {
         response.setHeader(REFRESH_TOKEN, refreshToken);
     }
+
+    /**
+     * 토큰의 만료 시간을 반환하는 메서드
+     * @param token JWT 토큰 값
+     * @return 만료 시간 (Date)
+     */
+    public Date getExpiredAt(String token) {
+        try {
+            return Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody()
+                    .getExpiration(); // Claims에서 만료 시간 추출
+        } catch (Exception e) {
+            log.error("Failed to get expiration time from token: {}", e.getMessage());
+            throw new IllegalArgumentException("Invalid token", e);
+        }
+    }
+
 }

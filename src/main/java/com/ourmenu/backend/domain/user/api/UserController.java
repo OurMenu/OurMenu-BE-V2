@@ -69,4 +69,10 @@ public class UserController {
     private ApiResponse<String> signOut(){
         return ApiUtil.success("OK");
     }
+
+    @PostMapping("/reissue-token")
+    private ApiResponse<TokenDto> reissueToken(@Valid @RequestBody ReissueToken reissueToken) {
+        TokenDto response = userService.reissueToken(reissueToken);
+        return ApiUtil.success(response);
+    }
 }

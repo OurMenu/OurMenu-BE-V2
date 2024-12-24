@@ -8,9 +8,11 @@ import com.ourmenu.backend.domain.user.dto.request.MealTimeRequest;
 import com.ourmenu.backend.domain.user.dto.request.PasswordRequest;
 import com.ourmenu.backend.domain.user.dto.request.SignInRequest;
 import com.ourmenu.backend.domain.user.dto.request.SignUpRequest;
+import com.ourmenu.backend.domain.user.dto.response.ReissueToken;
 import com.ourmenu.backend.domain.user.dto.response.TokenDto;
 import com.ourmenu.backend.domain.user.dto.response.UserDto;
 import com.ourmenu.backend.domain.user.exception.DuplicateEmailException;
+import com.ourmenu.backend.domain.user.exception.NotMatchTokenException;
 import com.ourmenu.backend.domain.user.exception.PasswordNotMatchException;
 import com.ourmenu.backend.domain.user.exception.UserNotFoundException;
 import com.ourmenu.backend.global.util.JwtTokenProvider;
@@ -157,4 +159,34 @@ public class UserService {
 
         return UserDto.of(user);
     }
+
+    public TokenDto reissueToken(ReissueToken reissueToken) {
+        String refreshToken = reissueToken.getRefreshToken();
+        String email = jwtTokenProvider.getEmailFromToken(refreshToken);
+
+        if (!jwtTokenProvider.tokenValidation(refreshToken)) {
+            throw new RuntimeException();
+        }
+
+        RefreshToken storedToken = refreshTokenRepository.findRefreshTokenByEmail(email)
+                .orElseThrow(() -> new NotMatchTokenException());
+
+
+        String newAccessToken = jwtTokenProvider.createToken(email, "Access");
+        String newRefreshToken = reissueToken.getRefreshToken();
+
+        if (jwtTokenProvider.tokenValidation(refreshToken)) {
+            newRefreshToken = jwtTokenProvider.createToken(email, "Refresh");
+            storedToken.updateToken(newRefreshToken);
+            refreshTokenRepository.save(storedToken);
+        }
+
+        return TokenDto.builder()
+                .grantType("Bearer")
+                .accessToken(newAccessToken)
+                .refreshToken(newRefreshToken)
+                .refreshTokenExpiredAt(jwtTokenProvider.getExpiredAt(newRefreshToken).toInstant())
+                .build();
+    }
+
 }
