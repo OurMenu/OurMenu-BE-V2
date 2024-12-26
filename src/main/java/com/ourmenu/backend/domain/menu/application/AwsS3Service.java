@@ -46,7 +46,7 @@ public class AwsS3Service {
                     .join();
 
         } catch (IOException e) {
-            throw new RuntimeException("메뉴 폴더 이미지 저장 중 문제가 발생하였습니다");
+            throw new RuntimeException("메뉴판 이미지 저장 중 문제가 발생하였습니다");
         }
     }
 

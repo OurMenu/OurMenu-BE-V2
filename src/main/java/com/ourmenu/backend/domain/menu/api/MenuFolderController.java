@@ -11,6 +11,8 @@ import com.ourmenu.backend.global.response.util.ApiUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -36,6 +38,13 @@ public class MenuFolderController {
                 .build();
         SaveMenuFolderResponse response = menuFolderService.saveMenuFolder(menuFolderDto);
         return ApiUtil.success(response);
+    }
+
+    @DeleteMapping("/{menuFolderId}")
+    public ApiResponse<Void> deleteMenuFolder(@PathVariable("menuFolderId") Long menuFolderId,
+                                              @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        menuFolderService.deleteMenuFolder(userDetails.getUser(), menuFolderId);
+        return ApiUtil.successOnly();
     }
 
 }

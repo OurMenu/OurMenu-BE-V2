@@ -4,6 +4,7 @@ import com.ourmenu.backend.domain.menu.dao.MenuFolderRepository;
 import com.ourmenu.backend.domain.menu.domain.MenuFolder;
 import com.ourmenu.backend.domain.menu.dto.MenuFolderDto;
 import com.ourmenu.backend.domain.menu.dto.SaveMenuFolderResponse;
+import com.ourmenu.backend.domain.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,8 +36,9 @@ public class MenuFolderService {
     }
 
     @Transactional
-    public void deleteMenuFolder() {
-
+    public void deleteMenuFolder(User user, Long menuFolderId) {
+        MenuFolder menuFolder = findOneByOwn(user, menuFolderId);
+        menuFolderRepository.delete(menuFolder);
     }
 
     /**
@@ -56,6 +58,20 @@ public class MenuFolderService {
                 .build();
 
         return menuFolderRepository.save(menuFolder);
+    }
+
+    public MenuFolder findOneByOwn(User user, Long menuFolderId) {
+        MenuFolder menuFolder = findOne(menuFolderId);
+        Long userId = menuFolder.getUserId();
+        if (!userId.equals(user.getId())) {
+            throw new RuntimeException("소유하고 있는 메뉴판이 아닙니다");
+        }
+        return menuFolder;
+    }
+
+    private MenuFolder findOne(Long menuFolderId) {
+        return menuFolderRepository.findById(menuFolderId)
+                .orElseThrow(() -> new RuntimeException("찾을 수 없는 메뉴판입니다"));
     }
 
 }
