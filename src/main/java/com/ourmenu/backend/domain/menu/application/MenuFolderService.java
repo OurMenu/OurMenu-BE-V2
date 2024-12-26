@@ -4,10 +4,13 @@ import com.ourmenu.backend.domain.menu.dao.MenuFolderRepository;
 import com.ourmenu.backend.domain.menu.domain.MenuFolder;
 import com.ourmenu.backend.domain.menu.dto.MenuFolderDto;
 import com.ourmenu.backend.domain.menu.dto.SaveMenuFolderResponse;
+import com.ourmenu.backend.domain.menu.dto.UpdateMenuFolderRequest;
+import com.ourmenu.backend.domain.menu.dto.UpdateMenuFolderResponse;
 import com.ourmenu.backend.domain.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -29,7 +32,7 @@ public class MenuFolderService {
         SaveMenuFolderResponse saveMenuFolderResponse = SaveMenuFolderResponse.builder()
                 .menuFolderId(menuFolder.getId())
                 .menuFolderTitle(menuFolder.getTitle())
-                .menuFolderUrl(menuFolderImgUrl)
+                .menuFolderUrl(menuFolder.getImgUrl())
                 .menuFolderIcon(menuFolder.getIcon())
                 .build();
         return saveMenuFolderResponse;
@@ -40,6 +43,34 @@ public class MenuFolderService {
         MenuFolder menuFolder = findOneByOwn(user, menuFolderId);
         menuFolderRepository.delete(menuFolder);
     }
+
+    @Transactional
+    public UpdateMenuFolderResponse updateMenuFolder(User user, Long menuFolderId, MenuFolderDto menuFolderDto){
+
+
+        MenuFolder menuFolder = findOneByOwn(user, menuFolderId);
+
+        if(menuFolderDto.getMenuFolderImg()!=null){
+            String imgUrl = awsS3Service.uploadLocalFileAsync(menuFolderDto.getMenuFolderImg());
+            menuFolder.update(menuFolderDto,imgUrl);
+            UpdateMenuFolderResponse updateMenuFolderResponse=UpdateMenuFolderResponse.builder()
+                    .menuFolderId(menuFolder.getId())
+                    .menuFolderTitle(menuFolder.getTitle())
+                    .menuFolderUrl(menuFolder.getImgUrl())
+                    .menuFolderIcon(menuFolder.getIcon())
+                    .build();
+            return updateMenuFolderResponse;
+        }
+        menuFolder.update(menuFolderDto,null);
+        UpdateMenuFolderResponse updateMenuFolderResponse=UpdateMenuFolderResponse.builder()
+                .menuFolderId(menuFolder.getId())
+                .menuFolderTitle(menuFolder.getTitle())
+                .menuFolderUrl(menuFolder.getImgUrl())
+                .menuFolderIcon(menuFolder.getIcon())
+                .build();
+        return updateMenuFolderResponse;
+    }
+
 
     /**
      * 메뉴폴더 저장

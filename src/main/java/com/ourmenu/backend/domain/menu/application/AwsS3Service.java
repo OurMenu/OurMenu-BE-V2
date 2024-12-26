@@ -50,7 +50,7 @@ public class AwsS3Service {
         }
     }
 
-    public String getS3Url(String fileName) {
+    private String getS3Url(String fileName) {
         S3Utilities s3Utilities = s3AsyncClient.utilities();
         return s3Utilities.getUrl(GetUrlRequest.builder()
                 .bucket(bucketName)
