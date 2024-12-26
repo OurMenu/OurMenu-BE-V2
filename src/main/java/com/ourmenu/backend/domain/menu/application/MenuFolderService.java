@@ -26,12 +26,17 @@ public class MenuFolderService {
         String menuFolderImgUrl = awsS3Service.uploadLocalFileAsync(menuFolderDto.getMenuFolderImg());
         MenuFolder menuFolder = saveMenuFolder(menuFolderDto, menuFolderImgUrl);
         SaveMenuFolderResponse saveMenuFolderResponse = SaveMenuFolderResponse.builder()
+                .menuFolderId(menuFolder.getId())
                 .menuFolderTitle(menuFolder.getTitle())
                 .menuFolderUrl(menuFolderImgUrl)
                 .menuFolderIcon(menuFolder.getIcon())
-                .userId(menuFolderDto.getUserId())
                 .build();
         return saveMenuFolderResponse;
+    }
+
+    @Transactional
+    public void deleteMenuFolder() {
+
     }
 
     /**
