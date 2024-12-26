@@ -1,6 +1,8 @@
 package com.ourmenu.backend.global.config;
 
+import com.ourmenu.backend.domain.user.dao.RefreshTokenRepository;
 import com.ourmenu.backend.global.filter.JwtAuthenticationFilter;
+import com.ourmenu.backend.global.filter.SignOutFilter;
 import com.ourmenu.backend.global.util.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -22,6 +24,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -35,6 +38,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/users").permitAll()
                         .anyRequest().permitAll()) // 테스트 용도로 우선 모든 경로 허용
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new SignOutFilter(jwtTokenProvider, refreshTokenRepository), JwtAuthenticationFilter.class)
                 .build();
     }
 

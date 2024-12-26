@@ -1,17 +1,15 @@
-package com.ourmenu.backend.domain.user.dto;
+package com.ourmenu.backend.domain.user.dto.response;
 
 import lombok.Builder;
 import lombok.Data;
 
+import java.time.Instant;
 
 @Data
 @Builder
-public class SignUpResponse {
-
+public class TokenDto {
     private String grantType;
     private String accessToken;
     private String refreshToken;
-    private Long accessTokenExpiredAt;
-
-    private Long refreshTokenExpiredAt;
+    private Instant refreshTokenExpiredAt;
 }

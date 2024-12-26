@@ -42,9 +42,12 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     testImplementation 'org.springframework.security:spring-security-test'
 
-    //Redis
-    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-    implementation 'org.springframework.session:spring-session-data-redis'
+	//Redis
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+	implementation 'org.springframework.session:spring-session-data-redis'
+
+	//Mail
+	implementation 'org.springframework.boot:spring-boot-starter-mail'
 
     //Validator
     implementation 'org.springframework.boot:spring-boot-starter-validation'

@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -22,8 +23,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String accessToken = jwtTokenProvider.getHeaderToken(request, "Access");
-        String refreshToken = jwtTokenProvider.getHeaderToken(request, "Refresh");
+        String accessToken = jwtTokenProvider.getHeaderToken(request, HttpHeaders.AUTHORIZATION);
+        String refreshToken = jwtTokenProvider.getHeaderToken(request, "Refresh_token");
 
         if(accessToken != null) {
             if(jwtTokenProvider.tokenValidation(accessToken)){
