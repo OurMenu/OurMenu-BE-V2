@@ -23,10 +23,12 @@ public class MenuFolderService {
      */
     @Transactional
     public SaveMenuFolderResponse saveMenu(MenuFolderDto menuFolderDto) {
-        String fileName = awsS3Service.uploadLocalFileAsync(menuFolderDto.getMenuFolderImg()).join();
-        MenuFolder menuFolder = saveMenuFolder(menuFolderDto, fileName);
+        String imgUrl = awsS3Service.uploadLocalFileAsync(menuFolderDto.getMenuFolderImg());
+
+        MenuFolder menuFolder = saveMenuFolder(menuFolderDto, imgUrl);
         SaveMenuFolderResponse build = SaveMenuFolderResponse.builder()
                 .menuFolderTitle(menuFolder.getTitle())
+                .menuFolderUrl(imgUrl)
                 .menuFolderIcon(menuFolder.getIcon())
                 .userId(menuFolderDto.getUserId())
                 .build();

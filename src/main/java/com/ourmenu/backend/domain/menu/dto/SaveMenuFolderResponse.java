@@ -11,6 +11,7 @@ import lombok.Getter;
 @Getter
 public class SaveMenuFolderResponse {
     private String menuFolderTitle;
+    private String menuFolderUrl;
     private String menuFolderIcon;
     private List<Long> menuIds;
     private Long userId;

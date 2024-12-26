@@ -2,7 +2,6 @@ package com.ourmenu.backend.domain.menu.application;
 
 import com.ourmenu.backend.domain.menu.util.FileUtil;
 import java.io.IOException;
-import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,8 +9,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.async.AsyncRequestBody;
 import software.amazon.awssdk.services.s3.S3AsyncClient;
+import software.amazon.awssdk.services.s3.S3Utilities;
+import software.amazon.awssdk.services.s3.model.GetUrlRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
-import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -23,7 +23,13 @@ public class AwsS3Service {
     @Value("${spring.cloud.aws.credentials.bucket}")
     private String bucketName;
 
-    public CompletableFuture<String> uploadLocalFileAsync(MultipartFile multipartFile) {
+    /**
+     * 파일 업로드
+     *
+     * @param multipartFile
+     * @return 파일 url
+     */
+    public String uploadLocalFileAsync(MultipartFile multipartFile) {
 
         try {
             String name = FileUtil.buildFileName(multipartFile.getOriginalFilename());
@@ -32,16 +38,23 @@ public class AwsS3Service {
                     .key(name)
                     .build();
             AsyncRequestBody asyncRequestBody = AsyncRequestBody.fromBytes(multipartFile.getBytes());
-
-            CompletableFuture<PutObjectResponse> response = s3AsyncClient.putObject(objectRequest, asyncRequestBody);
-
-            return response.thenApply(resp -> name)
+            return s3AsyncClient.putObject(objectRequest, asyncRequestBody)
+                    .thenApply(resp -> getS3Url(name))
                     .exceptionally(ex -> {
                         throw new RuntimeException("이미지 업로드중 문제가 발생하였습니다", ex);
-                    });
+                    })
+                    .join();
+
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException("메뉴 폴더 이미지 저장 중 문제가 발생하였습니다");
         }
-        return null;
+    }
+
+    public String getS3Url(String fileName) {
+        S3Utilities s3Utilities = s3AsyncClient.utilities();
+        return s3Utilities.getUrl(GetUrlRequest.builder()
+                .bucket(bucketName)
+                .key(fileName)
+                .build()).toExternalForm();
     }
 }
