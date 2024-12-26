@@ -1,5 +1,6 @@
 package com.ourmenu.backend.domain.menu.dto;
 
+import com.ourmenu.backend.domain.menu.domain.MenuFolder;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -16,4 +17,13 @@ public class SaveMenuFolderResponse {
     private String menuFolderUrl;
     private String menuFolderIcon;
     private List<Long> menuIds;
+
+    public static SaveMenuFolderResponse from(MenuFolder menuFolder){
+        return SaveMenuFolderResponse.builder()
+                .menuFolderId(menuFolder.getId())
+                .menuFolderTitle(menuFolder.getTitle())
+                .menuFolderUrl(menuFolder.getImgUrl())
+                .menuFolderIcon(menuFolder.getIcon())
+                .build();
+    }
 }

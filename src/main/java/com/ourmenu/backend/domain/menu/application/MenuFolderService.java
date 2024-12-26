@@ -29,13 +29,7 @@ public class MenuFolderService {
     public SaveMenuFolderResponse saveMenuFolder(MenuFolderDto menuFolderDto) {
         String menuFolderImgUrl = awsS3Service.uploadLocalFileAsync(menuFolderDto.getMenuFolderImg());
         MenuFolder menuFolder = saveMenuFolder(menuFolderDto, menuFolderImgUrl);
-        SaveMenuFolderResponse saveMenuFolderResponse = SaveMenuFolderResponse.builder()
-                .menuFolderId(menuFolder.getId())
-                .menuFolderTitle(menuFolder.getTitle())
-                .menuFolderUrl(menuFolder.getImgUrl())
-                .menuFolderIcon(menuFolder.getIcon())
-                .build();
-        return saveMenuFolderResponse;
+        return SaveMenuFolderResponse.from(menuFolder);
     }
 
     @Transactional
@@ -53,22 +47,10 @@ public class MenuFolderService {
         if(menuFolderDto.getMenuFolderImg()!=null){
             String imgUrl = awsS3Service.uploadLocalFileAsync(menuFolderDto.getMenuFolderImg());
             menuFolder.update(menuFolderDto,imgUrl);
-            UpdateMenuFolderResponse updateMenuFolderResponse=UpdateMenuFolderResponse.builder()
-                    .menuFolderId(menuFolder.getId())
-                    .menuFolderTitle(menuFolder.getTitle())
-                    .menuFolderUrl(menuFolder.getImgUrl())
-                    .menuFolderIcon(menuFolder.getIcon())
-                    .build();
-            return updateMenuFolderResponse;
+            return UpdateMenuFolderResponse.from(menuFolder);
         }
         menuFolder.update(menuFolderDto,null);
-        UpdateMenuFolderResponse updateMenuFolderResponse=UpdateMenuFolderResponse.builder()
-                .menuFolderId(menuFolder.getId())
-                .menuFolderTitle(menuFolder.getTitle())
-                .menuFolderUrl(menuFolder.getImgUrl())
-                .menuFolderIcon(menuFolder.getIcon())
-                .build();
-        return updateMenuFolderResponse;
+        return UpdateMenuFolderResponse.from(menuFolder);
     }
 
 
