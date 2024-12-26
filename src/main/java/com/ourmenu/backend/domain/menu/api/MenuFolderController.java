@@ -34,7 +34,8 @@ public class MenuFolderController {
                 .saveMenuFolderRequest(request)
                 .user(userDetails.getUser())
                 .build();
-        SaveMenuFolderResponse response = menuFolderService.saveMenu(menuFolderDto);
+        SaveMenuFolderResponse response = menuFolderService.saveMenuFolder(menuFolderDto);
         return ApiUtil.success(response);
     }
+
 }

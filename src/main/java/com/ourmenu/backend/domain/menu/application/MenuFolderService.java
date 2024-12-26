@@ -22,17 +22,16 @@ public class MenuFolderService {
      * @return 메뉴 폴더 저장 API response
      */
     @Transactional
-    public SaveMenuFolderResponse saveMenu(MenuFolderDto menuFolderDto) {
-        String imgUrl = awsS3Service.uploadLocalFileAsync(menuFolderDto.getMenuFolderImg());
-
-        MenuFolder menuFolder = saveMenuFolder(menuFolderDto, imgUrl);
-        SaveMenuFolderResponse build = SaveMenuFolderResponse.builder()
+    public SaveMenuFolderResponse saveMenuFolder(MenuFolderDto menuFolderDto) {
+        String menuFolderImgUrl = awsS3Service.uploadLocalFileAsync(menuFolderDto.getMenuFolderImg());
+        MenuFolder menuFolder = saveMenuFolder(menuFolderDto, menuFolderImgUrl);
+        SaveMenuFolderResponse saveMenuFolderResponse = SaveMenuFolderResponse.builder()
                 .menuFolderTitle(menuFolder.getTitle())
-                .menuFolderUrl(imgUrl)
+                .menuFolderUrl(menuFolderImgUrl)
                 .menuFolderIcon(menuFolder.getIcon())
                 .userId(menuFolderDto.getUserId())
                 .build();
-        return build;
+        return saveMenuFolderResponse;
     }
 
     /**
