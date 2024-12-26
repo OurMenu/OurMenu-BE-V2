@@ -1,11 +1,10 @@
 package com.ourmenu.backend.domain.user.domain;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.redis.core.RedisHash;
+import org.springframework.data.redis.core.index.Indexed;
 
 @Getter
 @NoArgsConstructor
@@ -13,11 +12,11 @@ import org.springframework.data.redis.core.RedisHash;
 public class RefreshToken {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String id;
 
     private String refreshToken;
 
+    @Indexed
     private String email;
 
     public RefreshToken(String token, String email) {

@@ -1,21 +1,33 @@
 package com.ourmenu.backend.domain.user.application;
 
+import com.ourmenu.backend.domain.user.dao.MealTimeRepository;
 import com.ourmenu.backend.domain.user.dao.RefreshTokenRepository;
 import com.ourmenu.backend.domain.user.dao.UserRepository;
-import com.ourmenu.backend.domain.user.domain.RefreshToken;
-import com.ourmenu.backend.domain.user.domain.SignInType;
-import com.ourmenu.backend.domain.user.domain.User;
-import com.ourmenu.backend.domain.user.dto.SignInRequest;
-import com.ourmenu.backend.domain.user.dto.SignInResponse;
-import com.ourmenu.backend.domain.user.dto.SignUpRequest;
+import com.ourmenu.backend.domain.user.domain.*;
+import com.ourmenu.backend.domain.user.dto.request.MealTimeRequest;
+import com.ourmenu.backend.domain.user.dto.request.PasswordRequest;
+import com.ourmenu.backend.domain.user.dto.request.SignInRequest;
+import com.ourmenu.backend.domain.user.dto.request.SignUpRequest;
+import com.ourmenu.backend.domain.user.dto.response.ReissueToken;
+import com.ourmenu.backend.domain.user.dto.response.TokenDto;
+import com.ourmenu.backend.domain.user.dto.response.UserDto;
+import com.ourmenu.backend.domain.user.exception.DuplicateEmailException;
+import com.ourmenu.backend.domain.user.exception.NotMatchTokenException;
+import com.ourmenu.backend.domain.user.exception.PasswordNotMatchException;
+import com.ourmenu.backend.domain.user.exception.UserNotFoundException;
 import com.ourmenu.backend.global.util.JwtTokenProvider;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -24,6 +36,7 @@ public class UserService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
+    private final MealTimeRepository mealTimeRepository;
 
 
     /**
@@ -34,7 +47,7 @@ public class UserService {
     public String signUp(SignUpRequest signUpRequest) {
 
         if(userRepository.findByEmail(signUpRequest.getEmail()).isPresent()){
-            throw new RuntimeException("같은 이메일이 존재합니다");
+            throw new DuplicateEmailException();
         }
 
         String encodedPassword = passwordEncoder.encode(signUpRequest.getPassword());
@@ -43,10 +56,19 @@ public class UserService {
                 .email(signUpRequest.getEmail())
                 .password(encodedPassword)
                 .signInType(SignInType.valueOf(signUpRequest.getSignInType()))
-                .mealTime(signUpRequest.getMealTime())
                 .build();
 
         User savedUser = userRepository.save(user);
+
+        List<MealTime> mealTimes = new ArrayList<>();
+        for (String mealTime : signUpRequest.getMealTime()) {
+            MealTime newMealTime = MealTime.builder()
+                    .userId(savedUser.getId())
+                    .mealTime(mealTime)
+                    .build();
+            mealTimes.add(newMealTime);
+        }
+        mealTimeRepository.saveAll(mealTimes);
 
         return "OK";
     }
@@ -57,19 +79,19 @@ public class UserService {
      * @param response HTTP Response
      * @return Token 정보
      */
-    public SignInResponse signIn(SignInRequest signInRequest, HttpServletResponse response) {
+    public TokenDto signIn(SignInRequest signInRequest, HttpServletResponse response) {
 
         User user = userRepository.findByEmail(signInRequest.getEmail()).orElseThrow(
-                () -> new RuntimeException("Not found Account")
+                UserNotFoundException::new
         );
 
         if(!passwordEncoder.matches(signInRequest.getPassword(), user.getPassword())) {
-            throw new RuntimeException("Not matches Password");
+            throw new PasswordNotMatchException();
         }
 
-        SignInResponse tokenDto = jwtTokenProvider.createAllToken(signInRequest.getEmail());
+        TokenDto tokenDto = jwtTokenProvider.createAllToken(signInRequest.getEmail());
 
-        Optional<RefreshToken> refreshToken = refreshTokenRepository.findByEmail(signInRequest.getEmail());
+        Optional<RefreshToken> refreshToken = refreshTokenRepository.findRefreshTokenByEmail(signInRequest.getEmail());
 
         if(refreshToken.isPresent()) {
             refreshTokenRepository.save(refreshToken.get().updateToken(tokenDto.getRefreshToken()));
@@ -88,8 +110,83 @@ public class UserService {
      * @param response HTTP Response
      * @param tokenDto JWT Token 정보
      */
-    private void setHeader(HttpServletResponse response, SignInResponse tokenDto) {
+    private void setHeader(HttpServletResponse response, TokenDto tokenDto) {
         response.addHeader(JwtTokenProvider.ACCESS_TOKEN, tokenDto.getAccessToken());
         response.addHeader(JwtTokenProvider.REFRESH_TOKEN, tokenDto.getRefreshToken());
     }
+
+    public String changePassword(PasswordRequest request, CustomUserDetails userDetails) {
+        String rawPassword = request.password();
+        String encodedPassword = userDetails.getPassword();
+
+        if (!passwordEncoder.matches(rawPassword, encodedPassword)) {
+            throw new PasswordNotMatchException();
+        }
+
+        User user = userRepository.findById(userDetails.getId())
+                .orElseThrow(UserNotFoundException::new);
+
+        String newPassword = passwordEncoder.encode(request.newPassword());
+        user.changePassword(newPassword);
+        userRepository.save(user);
+        return "OK";
+    }
+
+    @Transactional
+    public String changeMealTime(MealTimeRequest request, CustomUserDetails userDetails) {
+        log.debug("{}", userDetails.getId());
+
+        mealTimeRepository.deleteAllByUserId(userDetails.getId());
+
+        ArrayList<String> newMealTimes = request.mealTime();
+
+        ArrayList<MealTime> updatedMealTimes = new ArrayList<>();
+        for (String mealTime : newMealTimes) {
+            MealTime newMealTime = MealTime.builder()
+                    .userId(userDetails.getId())
+                    .mealTime(mealTime)
+                    .build();
+            updatedMealTimes.add(newMealTime);
+        }
+
+        mealTimeRepository.saveAll(updatedMealTimes);
+        return "OK";
+    }
+
+    public UserDto getUserInfo(CustomUserDetails userDetails) {
+        User user = userRepository.findById(userDetails.getId())
+                .orElseThrow(() -> new UserNotFoundException());
+
+        return UserDto.of(user);
+    }
+
+    public TokenDto reissueToken(ReissueToken reissueToken) {
+        String refreshToken = reissueToken.getRefreshToken();
+        String email = jwtTokenProvider.getEmailFromToken(refreshToken);
+
+        if (!jwtTokenProvider.tokenValidation(refreshToken)) {
+            throw new RuntimeException();
+        }
+
+        RefreshToken storedToken = refreshTokenRepository.findRefreshTokenByEmail(email)
+                .orElseThrow(() -> new NotMatchTokenException());
+
+
+        String newAccessToken = jwtTokenProvider.createToken(email, "Access");
+        String newRefreshToken = reissueToken.getRefreshToken();
+
+        if (jwtTokenProvider.tokenValidation(refreshToken)) {
+            newRefreshToken = jwtTokenProvider.createToken(email, "Refresh");
+            storedToken.updateToken(newRefreshToken);
+            refreshTokenRepository.save(storedToken);
+        }
+
+        return TokenDto.builder()
+                .grantType("Bearer")
+                .accessToken(newAccessToken)
+                .refreshToken(newRefreshToken)
+                .refreshTokenExpiredAt(jwtTokenProvider.getExpiredAt(newRefreshToken).toInstant())
+                .build();
+    }
+
 }

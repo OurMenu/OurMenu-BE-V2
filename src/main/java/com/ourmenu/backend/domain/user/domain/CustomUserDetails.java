@@ -1,6 +1,7 @@
 package com.ourmenu.backend.domain.user.domain;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -8,10 +9,13 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.Collections;
 
-@Data
-public class UserDetailsImpl implements UserDetails {
+@Getter
+@RequiredArgsConstructor
+public class CustomUserDetails implements UserDetails {
 
-    private User user;
+    private final Long id;
+    private final String email;
+    private final String password;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -20,11 +24,11 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public String getPassword() {
-        return user.getPassword();
+        return password;
     }
 
     @Override
     public String getUsername() {
-        return user.getEmail();
+        return email;
     }
 }
