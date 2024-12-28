@@ -4,6 +4,7 @@ import com.ourmenu.backend.domain.menu.application.MenuFolderService;
 import com.ourmenu.backend.domain.menu.dto.MenuFolderDto;
 import com.ourmenu.backend.domain.menu.dto.SaveMenuFolderRequest;
 import com.ourmenu.backend.domain.menu.dto.SaveMenuFolderResponse;
+import com.ourmenu.backend.domain.menu.dto.UpdateMenuFolderIndexRequest;
 import com.ourmenu.backend.domain.menu.dto.UpdateMenuFolderRequest;
 import com.ourmenu.backend.domain.menu.dto.UpdateMenuFolderResponse;
 import com.ourmenu.backend.domain.user.domain.CustomUserDetails;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
@@ -45,6 +47,15 @@ public class MenuFolderController {
         MenuFolderDto menuFolderDto = MenuFolderDto.of(request, menuFolderImg, userDetails.getId());
         UpdateMenuFolderResponse updateMenuFolderResponse = menuFolderService.updateMenuFolder(userDetails.getId(),
                 menuFolderId, menuFolderDto);
+        return ApiUtil.success(updateMenuFolderResponse);
+    }
+
+    @PatchMapping("/{menuFolderId}/index")
+    public ApiResponse<UpdateMenuFolderResponse> updateMenuFolderIndex(@PathVariable("menuFolderId") Long menuFolderId,
+                                                                       @RequestBody UpdateMenuFolderIndexRequest request,
+                                                                       @AuthenticationPrincipal CustomUserDetails userDetails) {
+        UpdateMenuFolderResponse updateMenuFolderResponse = menuFolderService.updateMenuFolderIndex(userDetails.getId(),
+                menuFolderId, request.getIndex());
         return ApiUtil.success(updateMenuFolderResponse);
     }
 

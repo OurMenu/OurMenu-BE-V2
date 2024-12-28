@@ -42,18 +42,22 @@ public class MenuFolder {
 
     public void update(MenuFolderDto menuFolderDto, String imgUrl) {
         String title = menuFolderDto.getMenuFolderTitle();
-        if(title!=null){
-            this.title=title;
+        if (title != null) {
+            this.title = title;
         }
 
         String icon = menuFolderDto.getMenuFolderIcon();
-        if(icon!=null){
-            this.icon=icon;
+        if (icon != null) {
+            this.icon = icon;
         }
 
-        if(imgUrl!=null){
-            this.imgUrl=imgUrl;
+        if (imgUrl != null) {
+            this.imgUrl = imgUrl;
         }
+    }
+
+    public void updateIndex(int index) {
+        this.index = index;
     }
 
 }

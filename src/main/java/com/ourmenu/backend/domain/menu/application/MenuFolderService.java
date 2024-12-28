@@ -49,6 +49,29 @@ public class MenuFolderService {
         return UpdateMenuFolderResponse.from(menuFolder);
     }
 
+    /**
+     * 메뉴판 인덱스 수정
+     *
+     * @param userId
+     * @param menuFolderId
+     * @param index
+     */
+    @Transactional
+    public UpdateMenuFolderResponse updateMenuFolderIndex(Long userId, Long menuFolderId, int index) {
+        MenuFolder findMenuFolder = findOneByOwn(userId, menuFolderId);
+        int preIndex = findMenuFolder.getIndex();
+
+        if (index > preIndex) {//index를 높이는 경우(앞에 놓는 경우)
+            menuFolderRepository.decrementIndexes(userId, preIndex + 1, index);
+        }
+        if (index < preIndex) {//index를 낮추는 경우(뒤에 놓는 경우)
+            menuFolderRepository.incrementIndexes(userId, index, preIndex - 1);
+        }
+
+        findMenuFolder.updateIndex(index);
+        return UpdateMenuFolderResponse.from(findMenuFolder);
+    }
+
 
     /**
      * 메뉴폴더 저장
@@ -69,7 +92,7 @@ public class MenuFolderService {
         return menuFolderRepository.save(menuFolder);
     }
 
-    public MenuFolder findOneByOwn(Long userId, Long menuFolderId) {
+    private MenuFolder findOneByOwn(Long userId, Long menuFolderId) {
         MenuFolder menuFolder = findOne(menuFolderId);
         Long findUserId = menuFolder.getUserId();
         if (!userId.equals(findUserId)) {
@@ -82,5 +105,4 @@ public class MenuFolderService {
         return menuFolderRepository.findById(menuFolderId)
                 .orElseThrow(() -> new RuntimeException("찾을 수 없는 메뉴판입니다"));
     }
-
 }
