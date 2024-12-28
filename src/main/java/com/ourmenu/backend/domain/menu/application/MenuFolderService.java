@@ -41,7 +41,6 @@ public class MenuFolderService {
     public UpdateMenuFolderResponse updateMenuFolder(Long userId, Long menuFolderId, MenuFolderDto menuFolderDto) {
 
         MenuFolder menuFolder = findOneByOwn(userId, menuFolderId);
-
         if (menuFolderDto.getMenuFolderImg() != null) {
             String imgUrl = awsS3Service.uploadLocalFileAsync(menuFolderDto.getMenuFolderImg());
             menuFolder.update(menuFolderDto, imgUrl);
@@ -61,6 +60,12 @@ public class MenuFolderService {
     @Transactional
     public UpdateMenuFolderResponse updateMenuFolderIndex(Long userId, Long menuFolderId, int index) {
         MenuFolder findMenuFolder = findOneByOwn(userId, menuFolderId);
+        int maxIndex = menuFolderRepository.findMaxIndex();
+
+        if (maxIndex < index) {
+            throw new RuntimeException("현재 메뉴판이 가지고 있는 최대 인덱스 보다 높습니다");
+        }
+
         int preIndex = findMenuFolder.getIndex();
 
         if (index > preIndex) {//index를 높이는 경우(앞에 놓는 경우)
