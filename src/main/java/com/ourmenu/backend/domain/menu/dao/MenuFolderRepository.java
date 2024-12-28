@@ -14,6 +14,8 @@ public interface MenuFolderRepository extends JpaRepository<MenuFolder, Long> {
 
     List<MenuFolder> findAllByUserId(Long userId);
 
+    List<MenuFolder> findAllByUserIdOrderByIndexDesc(Long userId);
+
     @Query("SELECT m FROM MenuFolder m WHERE m.userId = :userId AND m.index BETWEEN :start AND :end")
     List<MenuFolder> findByUserIdAndIndexRange(@Param("userId") Long userId, @Param("start") int start,
                                                @Param("end") int end);

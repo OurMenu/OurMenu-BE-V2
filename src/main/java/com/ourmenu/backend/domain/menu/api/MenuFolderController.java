@@ -1,6 +1,7 @@
 package com.ourmenu.backend.domain.menu.api;
 
 import com.ourmenu.backend.domain.menu.application.MenuFolderService;
+import com.ourmenu.backend.domain.menu.dto.GetMenuFolderResponse;
 import com.ourmenu.backend.domain.menu.dto.MenuFolderDto;
 import com.ourmenu.backend.domain.menu.dto.SaveMenuFolderRequest;
 import com.ourmenu.backend.domain.menu.dto.SaveMenuFolderResponse;
@@ -10,10 +11,12 @@ import com.ourmenu.backend.domain.menu.dto.UpdateMenuFolderResponse;
 import com.ourmenu.backend.domain.user.domain.CustomUserDetails;
 import com.ourmenu.backend.global.response.ApiResponse;
 import com.ourmenu.backend.global.response.util.ApiUtil;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,6 +32,13 @@ import org.springframework.web.multipart.MultipartFile;
 public class MenuFolderController {
 
     private final MenuFolderService menuFolderService;
+
+    @GetMapping
+    public ApiResponse<List<GetMenuFolderResponse>> getMenuFolder(
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        List<GetMenuFolderResponse> response = menuFolderService.findAllMenuFolder(userDetails.getId());
+        return ApiUtil.success(response);
+    }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<SaveMenuFolderResponse> saveMenuFolder(@RequestPart("data") SaveMenuFolderRequest request,
