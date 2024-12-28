@@ -4,13 +4,10 @@ import com.ourmenu.backend.domain.menu.dao.MenuFolderRepository;
 import com.ourmenu.backend.domain.menu.domain.MenuFolder;
 import com.ourmenu.backend.domain.menu.dto.MenuFolderDto;
 import com.ourmenu.backend.domain.menu.dto.SaveMenuFolderResponse;
-import com.ourmenu.backend.domain.menu.dto.UpdateMenuFolderRequest;
 import com.ourmenu.backend.domain.menu.dto.UpdateMenuFolderResponse;
-import com.ourmenu.backend.domain.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -33,23 +30,22 @@ public class MenuFolderService {
     }
 
     @Transactional
-    public void deleteMenuFolder(User user, Long menuFolderId) {
-        MenuFolder menuFolder = findOneByOwn(user, menuFolderId);
+    public void deleteMenuFolder(Long userId, Long menuFolderId) {
+        MenuFolder menuFolder = findOneByOwn(userId, menuFolderId);
         menuFolderRepository.delete(menuFolder);
     }
 
     @Transactional
-    public UpdateMenuFolderResponse updateMenuFolder(User user, Long menuFolderId, MenuFolderDto menuFolderDto){
+    public UpdateMenuFolderResponse updateMenuFolder(Long userId, Long menuFolderId, MenuFolderDto menuFolderDto) {
 
+        MenuFolder menuFolder = findOneByOwn(userId, menuFolderId);
 
-        MenuFolder menuFolder = findOneByOwn(user, menuFolderId);
-
-        if(menuFolderDto.getMenuFolderImg()!=null){
+        if (menuFolderDto.getMenuFolderImg() != null) {
             String imgUrl = awsS3Service.uploadLocalFileAsync(menuFolderDto.getMenuFolderImg());
-            menuFolder.update(menuFolderDto,imgUrl);
+            menuFolder.update(menuFolderDto, imgUrl);
             return UpdateMenuFolderResponse.from(menuFolder);
         }
-        menuFolder.update(menuFolderDto,null);
+        menuFolder.update(menuFolderDto, null);
         return UpdateMenuFolderResponse.from(menuFolder);
     }
 
@@ -73,10 +69,10 @@ public class MenuFolderService {
         return menuFolderRepository.save(menuFolder);
     }
 
-    public MenuFolder findOneByOwn(User user, Long menuFolderId) {
+    public MenuFolder findOneByOwn(Long userId, Long menuFolderId) {
         MenuFolder menuFolder = findOne(menuFolderId);
-        Long userId = menuFolder.getUserId();
-        if (!userId.equals(user.getId())) {
+        Long findUserId = menuFolder.getUserId();
+        if (!userId.equals(findUserId)) {
             throw new RuntimeException("소유하고 있는 메뉴판이 아닙니다");
         }
         return menuFolder;
