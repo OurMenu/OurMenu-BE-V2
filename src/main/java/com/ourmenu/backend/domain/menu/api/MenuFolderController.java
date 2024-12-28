@@ -6,7 +6,6 @@ import com.ourmenu.backend.domain.menu.dto.SaveMenuFolderRequest;
 import com.ourmenu.backend.domain.menu.dto.SaveMenuFolderResponse;
 import com.ourmenu.backend.domain.menu.dto.UpdateMenuFolderRequest;
 import com.ourmenu.backend.domain.menu.dto.UpdateMenuFolderResponse;
-import com.ourmenu.backend.domain.user.application.UserService;
 import com.ourmenu.backend.domain.user.domain.CustomUserDetails;
 import com.ourmenu.backend.global.response.ApiResponse;
 import com.ourmenu.backend.global.response.util.ApiUtil;
@@ -28,7 +27,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class MenuFolderController {
 
     private final MenuFolderService menuFolderService;
-    private final UserService userService;
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<SaveMenuFolderResponse> saveMenuFolder(@RequestPart("data") SaveMenuFolderRequest request,

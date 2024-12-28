@@ -17,13 +17,15 @@ public class SaveMenuFolderResponse {
     private String menuFolderUrl;
     private String menuFolderIcon;
     private List<Long> menuIds;
+    private int index;
 
-    public static SaveMenuFolderResponse from(MenuFolder menuFolder){
+    public static SaveMenuFolderResponse from(MenuFolder menuFolder) {
         return SaveMenuFolderResponse.builder()
                 .menuFolderId(menuFolder.getId())
                 .menuFolderTitle(menuFolder.getTitle())
                 .menuFolderUrl(menuFolder.getImgUrl())
                 .menuFolderIcon(menuFolder.getIcon())
+                .index(menuFolder.getIndex())
                 .build();
     }
 }
