@@ -6,6 +6,9 @@ import com.ourmenu.backend.domain.menu.dto.GetMenuFolderResponse;
 import com.ourmenu.backend.domain.menu.dto.MenuFolderDto;
 import com.ourmenu.backend.domain.menu.dto.SaveMenuFolderResponse;
 import com.ourmenu.backend.domain.menu.dto.UpdateMenuFolderResponse;
+import com.ourmenu.backend.domain.menu.exception.ForbiddenMenuFolderException;
+import com.ourmenu.backend.domain.menu.exception.NotFoundMenuFolderException;
+import com.ourmenu.backend.domain.menu.exception.OutOfBoundCustomIndexException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -63,7 +66,7 @@ public class MenuFolderService {
         int maxIndex = menuFolderRepository.findMaxIndex();
 
         if (maxIndex < index) {
-            throw new RuntimeException("현재 메뉴판이 가지고 있는 최대 인덱스 보다 높습니다");
+            throw new OutOfBoundCustomIndexException();
         }
 
         int preIndex = findMenuFolder.getIndex();
@@ -116,13 +119,13 @@ public class MenuFolderService {
         MenuFolder menuFolder = findOne(menuFolderId);
         Long findUserId = menuFolder.getUserId();
         if (!userId.equals(findUserId)) {
-            throw new RuntimeException("소유하고 있는 메뉴판이 아닙니다");
+            throw new ForbiddenMenuFolderException();
         }
         return menuFolder;
     }
 
     private MenuFolder findOne(Long menuFolderId) {
         return menuFolderRepository.findById(menuFolderId)
-                .orElseThrow(() -> new RuntimeException("찾을 수 없는 메뉴판입니다"));
+                .orElseThrow(NotFoundMenuFolderException::new);
     }
 }
