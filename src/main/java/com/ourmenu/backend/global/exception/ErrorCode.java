@@ -18,7 +18,15 @@ public enum ErrorCode {
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "U404", "해당 유저가 존재하지 않습니다."),
     PASSWORD_NOT_MATCH(HttpStatus.UNAUTHORIZED, "U401", "비밀번호가 일치하지 않습니다."),
     DUPLICATE_EMAIL(HttpStatus.CONFLICT, "U409", "이미 존재하는 이메일입니다."),
-    NOT_MATCH_TOKEN(HttpStatus.UNAUTHORIZED, "U401", "유저의 토큰값과 일치하지 않습니다.");
+    NOT_MATCH_TOKEN(HttpStatus.UNAUTHORIZED, "U401", "유저의 토큰값과 일치하지 않습니다."),
+
+    // 메뉴판
+    FORBIDDEN_MENU_RESOURCE(HttpStatus.FORBIDDEN, "M403", "접근할 수 없는 메뉴 리소스입니다"),
+    NOT_FOUND_MENU_RESOURCE(HttpStatus.NOT_FOUND, "M404", "찾을 수 없는 메뉴 리소스입니다"),
+    MENU_INTERNAL_SERVER(HttpStatus.INTERNAL_SERVER_ERROR, "M500", "메뉴 서버 로직 내부에서 에러가 발생하였습니다"),
+
+    // S3
+    UPLOAD_FAILURE(HttpStatus.INTERNAL_SERVER_ERROR, "A500", "파일 업로드중 문제가 발생하였습니다");
 
     private final HttpStatus httpStatus;
 

@@ -1,5 +1,6 @@
 package com.ourmenu.backend.domain.menu.application;
 
+import com.ourmenu.backend.domain.menu.exception.S3UploadFailureException;
 import com.ourmenu.backend.domain.menu.util.FileUtil;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
@@ -41,12 +42,12 @@ public class AwsS3Service {
             return s3AsyncClient.putObject(objectRequest, asyncRequestBody)
                     .thenApply(resp -> getS3Url(name))
                     .exceptionally(ex -> {
-                        throw new RuntimeException("이미지 업로드중 문제가 발생하였습니다", ex);
+                        throw new S3UploadFailureException();
                     })
                     .join();
 
         } catch (IOException e) {
-            throw new RuntimeException("메뉴판 이미지 저장 중 문제가 발생하였습니다");
+            throw new S3UploadFailureException();
         }
     }
 
