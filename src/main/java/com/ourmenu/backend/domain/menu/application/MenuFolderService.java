@@ -38,6 +38,11 @@ public class MenuFolderService {
     public void deleteMenuFolder(Long userId, Long menuFolderId) {
         MenuFolder menuFolder = findOne(userId, menuFolderId);
         menuFolderRepository.delete(menuFolder);
+        int maxIndex = menuFolderRepository.findMaxIndex();
+
+        if (menuFolderId != maxIndex) {
+            menuFolderRepository.decrementIndexes(userId, (int) (menuFolderId + 1), maxIndex);
+        }
     }
 
     @Transactional
