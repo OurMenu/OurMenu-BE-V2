@@ -7,7 +7,8 @@ public class FileUtil {
         int fileExtensionIndex = originalFileName.lastIndexOf(FILE_EXTENSION_DELIMITER);
         String fileExtension = originalFileName.substring(fileExtensionIndex);
         String fileName = originalFileName.substring(0, fileExtensionIndex);
-        String now = String.valueOf(System.currentTimeMillis());
+        String now = String.valueOf(System.currentTimeMillis())
+                .replace("/", "_");
         return fileName + "_" + now + fileExtension;
     }
 }

@@ -29,7 +29,7 @@ public class MenuFolderService {
      */
     @Transactional
     public SaveMenuFolderResponse saveMenuFolder(MenuFolderDto menuFolderDto) {
-        String menuFolderImgUrl = awsS3Service.uploadLocalFileAsync(menuFolderDto.getMenuFolderImg());
+        String menuFolderImgUrl = awsS3Service.uploadFileAsync(menuFolderDto.getMenuFolderImg());
         MenuFolder menuFolder = saveMenuFolder(menuFolderDto, menuFolderImgUrl);
         return SaveMenuFolderResponse.from(menuFolder);
     }
@@ -43,6 +43,7 @@ public class MenuFolderService {
         if (menuFolderId != maxIndex) {
             menuFolderRepository.decrementIndexes(userId, (int) (menuFolderId + 1), maxIndex);
         }
+        awsS3Service.deleteFileAsync(menuFolder.getImgUrl());
     }
 
     @Transactional
@@ -50,7 +51,7 @@ public class MenuFolderService {
 
         MenuFolder menuFolder = findOne(userId, menuFolderId);
         if (menuFolderDto.getMenuFolderImg() != null) {
-            String imgUrl = awsS3Service.uploadLocalFileAsync(menuFolderDto.getMenuFolderImg());
+            String imgUrl = awsS3Service.uploadFileAsync(menuFolderDto.getMenuFolderImg());
             menuFolder.update(menuFolderDto, imgUrl);
             return UpdateMenuFolderResponse.from(menuFolder);
         }

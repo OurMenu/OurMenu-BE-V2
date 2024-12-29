@@ -26,7 +26,8 @@ public enum ErrorCode {
     MENU_INTERNAL_SERVER(HttpStatus.INTERNAL_SERVER_ERROR, "M500", "메뉴 서버 로직 내부에서 에러가 발생하였습니다"),
 
     // S3
-    UPLOAD_FAILURE(HttpStatus.INTERNAL_SERVER_ERROR, "A500", "파일 업로드중 문제가 발생하였습니다");
+    UPLOAD_FAILURE(HttpStatus.INTERNAL_SERVER_ERROR, "A500", "파일 업로드중 문제가 발생하였습니다"),
+    DELETE_FAILURE(HttpStatus.INTERNAL_SERVER_ERROR, "A500", "파일 삭제중 문제가 발생하였습니다");
 
     private final HttpStatus httpStatus;
 
