@@ -15,4 +15,8 @@ public class ApiUtil {
     public static ApiResponse<?> error(ErrorResponse errorResponse) {
         return new ApiResponse<>(false, null, errorResponse);
     }
+
+    public static ApiResponse<Void> successOnly() {
+        return new ApiResponse<>(true, null, null);
+    }
 }

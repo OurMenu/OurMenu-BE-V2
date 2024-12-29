@@ -52,6 +52,8 @@ dependencies {
     //Validator
     implementation 'org.springframework.boot:spring-boot-starter-validation'
 
+    //AWS s3 sdk
+    implementation 'software.amazon.awssdk:s3:2.29.23'
 }
 
 tasks.named('test') {

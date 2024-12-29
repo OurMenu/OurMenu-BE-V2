@@ -1,5 +1,7 @@
 package com.ourmenu.backend.domain.menu.domain;
 
+import com.ourmenu.backend.domain.menu.dto.MenuFolderDto;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -32,5 +34,30 @@ public class MenuFolder {
     private String icon;
 
     @NotNull
+    @Column(name = "custom_index")
     private int index;
+
+    @NotNull
+    private Long userId;
+
+    public void update(MenuFolderDto menuFolderDto, String imgUrl) {
+        String title = menuFolderDto.getMenuFolderTitle();
+        if (title != null) {
+            this.title = title;
+        }
+
+        String icon = menuFolderDto.getMenuFolderIcon();
+        if (icon != null) {
+            this.icon = icon;
+        }
+
+        if (imgUrl != null) {
+            this.imgUrl = imgUrl;
+        }
+    }
+
+    public void updateIndex(int index) {
+        this.index = index;
+    }
+
 }
