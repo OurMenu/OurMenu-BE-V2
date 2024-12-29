@@ -36,14 +36,14 @@ public class MenuFolderService {
 
     @Transactional
     public void deleteMenuFolder(Long userId, Long menuFolderId) {
-        MenuFolder menuFolder = findOneByOwn(userId, menuFolderId);
+        MenuFolder menuFolder = findOne(userId, menuFolderId);
         menuFolderRepository.delete(menuFolder);
     }
 
     @Transactional
     public UpdateMenuFolderResponse updateMenuFolder(Long userId, Long menuFolderId, MenuFolderDto menuFolderDto) {
 
-        MenuFolder menuFolder = findOneByOwn(userId, menuFolderId);
+        MenuFolder menuFolder = findOne(userId, menuFolderId);
         if (menuFolderDto.getMenuFolderImg() != null) {
             String imgUrl = awsS3Service.uploadLocalFileAsync(menuFolderDto.getMenuFolderImg());
             menuFolder.update(menuFolderDto, imgUrl);
@@ -62,7 +62,7 @@ public class MenuFolderService {
      */
     @Transactional
     public UpdateMenuFolderResponse updateMenuFolderIndex(Long userId, Long menuFolderId, int index) {
-        MenuFolder findMenuFolder = findOneByOwn(userId, menuFolderId);
+        MenuFolder findMenuFolder = findOne(userId, menuFolderId);
         int maxIndex = menuFolderRepository.findMaxIndex();
 
         if (maxIndex < index) {
@@ -115,17 +115,13 @@ public class MenuFolderService {
         return menuFolderRepository.save(menuFolder);
     }
 
-    private MenuFolder findOneByOwn(Long userId, Long menuFolderId) {
-        MenuFolder menuFolder = findOne(menuFolderId);
+    private MenuFolder findOne(Long userId, Long menuFolderId) {
+        MenuFolder menuFolder = menuFolderRepository.findById(menuFolderId)
+                .orElseThrow(NotFoundMenuFolderException::new);
         Long findUserId = menuFolder.getUserId();
         if (!userId.equals(findUserId)) {
             throw new ForbiddenMenuFolderException();
         }
         return menuFolder;
-    }
-
-    private MenuFolder findOne(Long menuFolderId) {
-        return menuFolderRepository.findById(menuFolderId)
-                .orElseThrow(NotFoundMenuFolderException::new);
     }
 }
