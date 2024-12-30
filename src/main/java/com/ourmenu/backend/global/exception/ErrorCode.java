@@ -21,9 +21,9 @@ public enum ErrorCode {
     NOT_MATCH_TOKEN(HttpStatus.UNAUTHORIZED, "U401", "유저의 토큰값과 일치하지 않습니다."),
 
     // 메뉴판
-    FORBIDDEN_MENU_RESOURCE(HttpStatus.FORBIDDEN, "M403", "접근할 수 없는 메뉴 리소스입니다"),
-    NOT_FOUND_MENU_RESOURCE(HttpStatus.NOT_FOUND, "M404", "찾을 수 없는 메뉴 리소스입니다"),
-    MENU_INTERNAL_SERVER(HttpStatus.INTERNAL_SERVER_ERROR, "M500", "메뉴 서버 로직 내부에서 에러가 발생하였습니다"),
+    FORBIDDEN_MENU_FOLDER(HttpStatus.FORBIDDEN, "F403", "소유하고 있는 메뉴판이 아닙니다"),
+    NOT_FOUND_MENU_FOLDER(HttpStatus.NOT_FOUND, "F404", "찾을 수 없는 메뉴 리소스입니다"),
+    OUT_OF_BOUND_CUSTOM_INDEX(HttpStatus.INTERNAL_SERVER_ERROR, "F500", "현재 메뉴판이 가지고 있는 최대 인덱스를 벗어납니다"),
 
     // S3
     UPLOAD_FAILURE(HttpStatus.INTERNAL_SERVER_ERROR, "A500", "파일 업로드중 문제가 발생하였습니다"),
