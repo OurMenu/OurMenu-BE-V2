@@ -4,7 +4,7 @@ import com.ourmenu.backend.domain.menu.dao.MenuMenuFolderRepository;
 import com.ourmenu.backend.domain.menu.dao.MenuRepository;
 import com.ourmenu.backend.domain.menu.domain.Menu;
 import com.ourmenu.backend.domain.menu.domain.MenuMenuFolder;
-import com.ourmenu.backend.domain.menu.dto.SaveMenuRequest;
+import com.ourmenu.backend.domain.menu.dto.MenuDto;
 import com.ourmenu.backend.domain.menu.dto.SaveMenuResponse;
 import com.ourmenu.backend.domain.store.application.StoreService;
 import com.ourmenu.backend.domain.store.domain.Map;
@@ -24,32 +24,39 @@ public class MenuService {
     private final StoreService storeService;
 
     @Transactional
-    public SaveMenuResponse saveMenu(Long userId, SaveMenuRequest request) {
+    public SaveMenuResponse saveMenu(MenuDto menuDto) {
+
+        Map map = storeService.saveStoreAndMap(menuDto.getStoreTitle(), menuDto.getStoreAddress(),
+                menuDto.getMapX(),
+                menuDto.getMapY());
+
         Menu menu = Menu.builder()
-                .title(request.getMenuTitle())
-                .price(request.getMenuPrice())
-                .pin(request.getMenuPin())
-                .memoTitle(request.getMenuMemoTitle())
-                .memoContent(request.getMenuMemoContent())
-                .isCrawled(request.isCrawled())
+                .title(menuDto.getMenuTitle())
+                .price(menuDto.getMenuPrice())
+                .pin(menuDto.getMenuPin())
+                .memoTitle(menuDto.getMenuMemoTitle())
+                .memoContent(menuDto.getMenuMemoContent())
+                .isCrawled(menuDto.isCrawled())
+                .userId(menuDto.getUserId())
+                .store(map.getStore())
                 .build();
         Menu saveMenu = menuRepository.save(menu);
 
         //메뉴판 연관관계 생성
-        request.getMenuFolderIds().forEach(
+
+        menuDto.getMenuFolderIds().forEach(
                 menuFolderId -> {
-                    saveMenuMenuFolder(userId, menuFolderId, saveMenu);
-                });
+                    saveMenuMenuFolder(menuDto.getUserId(), menuFolderId, saveMenu);
+                }
+        );
 
         //태그 연관관계 생성
-        request.getTags().forEach(
+        menuDto.getTags().forEach(
                 tag -> {
                     menuTagService.saveTag(saveMenu.getId(), tag);
                 }
         );
-        Map map = storeService.saveStoreAndMap(request.getStoreTitle(), request.getStoreAddress(),
-                request.getMapX(),
-                request.getMapY());
+
         return SaveMenuResponse.of(saveMenu, map.getStore(), map);
     }
 
