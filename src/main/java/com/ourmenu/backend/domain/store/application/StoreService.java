@@ -1,5 +1,6 @@
 package com.ourmenu.backend.domain.store.application;
 
+import com.ourmenu.backend.domain.menu.dao.MenuRepository;
 import com.ourmenu.backend.domain.store.dao.MapRepository;
 import com.ourmenu.backend.domain.store.dao.StoreRepository;
 import com.ourmenu.backend.domain.store.domain.Map;
@@ -15,6 +16,7 @@ public class StoreService {
 
     private final StoreRepository storeRepository;
     private final MapRepository mapRepository;
+    private final MenuRepository menuRepository;
 
     @Transactional
     public Store saveStoreAndMap(String storeTitle, String storeAddress, Double mapX, Double mapY) {
@@ -29,7 +31,17 @@ public class StoreService {
      */
     @Transactional
     public void deleteStore(Store store) {
-        return;
+
+        //가게를 참조하는 메뉴가 더이상 없는 경우 -> 삭제하는 경우
+        if (!menuRepository.existsByStore(store)) {
+            storeRepository.delete(store);
+        }
+
+        Map map = store.getMap();
+        if (!storeRepository.existsByMap(map)) {
+            mapRepository.delete(map);
+        }
+
     }
 
     private Store saveStoreIfNonExists(String title, String address, Map map) {

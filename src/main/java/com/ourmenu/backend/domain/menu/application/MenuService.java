@@ -75,11 +75,11 @@ public class MenuService {
     @Transactional
     public void deleteMenu(Long userId, Long menuId) {
         Menu menu = findOne(userId, menuId);
+        menuRepository.delete(menu);
         deleteMenuMenuFolders(menu);
         menuImgService.deleteMenuImgs(menuId);
         menuTagService.deleteMenuTag(menuId);
         storeService.deleteStore(menu.getStore());
-        menuRepository.delete(menu);
     }
 
     /**
