@@ -17,12 +17,22 @@ public class StoreService {
     private final MapRepository mapRepository;
 
     @Transactional
-    public Map saveStoreAndMap(String storeTitle, String storeAddress, Double mapX, Double mapY) {
-        Store store = saveStoreIfNonExists(storeTitle, storeAddress);
-        return saveMapIfNonExists(mapX, mapY, store);
+    public Store saveStoreAndMap(String storeTitle, String storeAddress, Double mapX, Double mapY) {
+        Map map = saveMapIfNonExists(mapX, mapY);
+        return saveStoreIfNonExists(storeTitle, storeAddress, map);
     }
 
-    private Store saveStoreIfNonExists(String title, String address) {
+    /**
+     * 메뉴 - 가게 - 위치 삭제전파 참조하는 엔티티가 없어야한다.
+     *
+     * @param store
+     */
+    @Transactional
+    public void deleteStore(Store store) {
+        return;
+    }
+
+    private Store saveStoreIfNonExists(String title, String address, Map map) {
         Optional<Store> optionalStore = storeRepository.findByTitleAndAddress(title, address);
         Store store;
         if (optionalStore.isPresent()) {
@@ -31,13 +41,14 @@ public class StoreService {
             store = Store.builder()
                     .title(title)
                     .address(address)
+                    .map(map)
                     .build();
             store = storeRepository.save(store);
         }
         return store;
     }
 
-    private Map saveMapIfNonExists(Double mapX, Double mapY, Store store) {
+    private Map saveMapIfNonExists(Double mapX, Double mapY) {
         Optional<Map> optionalMap = mapRepository.findByMapXAndMapY(mapX, mapY);
         Map map;
         if (optionalMap.isPresent()) {
@@ -47,7 +58,6 @@ public class StoreService {
             map = Map.builder()
                     .mapX(mapX)
                     .mapY(mapY)
-                    .store(store)
                     .build();
             map = mapRepository.save(map);
         }

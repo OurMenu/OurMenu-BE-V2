@@ -10,7 +10,7 @@ import com.ourmenu.backend.domain.menu.dto.SaveMenuResponse;
 import com.ourmenu.backend.domain.menu.exception.ForbiddenMenuException;
 import com.ourmenu.backend.domain.menu.exception.NotFoundMenuException;
 import com.ourmenu.backend.domain.store.application.StoreService;
-import com.ourmenu.backend.domain.store.domain.Map;
+import com.ourmenu.backend.domain.store.domain.Store;
 import com.ourmenu.backend.domain.tag.application.MenuTagService;
 import com.ourmenu.backend.domain.tag.domain.Tag;
 import java.util.List;
@@ -38,7 +38,7 @@ public class MenuService {
     @Transactional
     public SaveMenuResponse saveMenu(MenuDto menuDto) {
 
-        Map map = storeService.saveStoreAndMap(menuDto.getStoreTitle(), menuDto.getStoreAddress(),
+        Store store = storeService.saveStoreAndMap(menuDto.getStoreTitle(), menuDto.getStoreAddress(),
                 menuDto.getMapX(),
                 menuDto.getMapY());
 
@@ -50,7 +50,7 @@ public class MenuService {
                 .memoContent(menuDto.getMenuMemoContent())
                 .isCrawled(menuDto.isCrawled())
                 .userId(menuDto.getUserId())
-                .store(map.getStore())
+                .store(store)
                 .build();
         Menu saveMenu = menuRepository.save(menu);
 
@@ -63,7 +63,7 @@ public class MenuService {
 
         //s3 업로드및 이미지 연관관계 생성
         List<MenuImg> menuImgs = menuImgService.saveMenuImgs(saveMenu.getId(), menuDto.getMenuImgs());
-        return SaveMenuResponse.of(saveMenu, map.getStore(), map, menuImgs, saveMenuMenuFolders, saveTag);
+        return SaveMenuResponse.of(saveMenu, store, store.getMap(), menuImgs, saveMenuMenuFolders, saveTag);
     }
 
     /**
@@ -77,8 +77,9 @@ public class MenuService {
         Menu menu = findOne(userId, menuId);
         deleteMenuMenuFolders(menu);
         menuImgService.deleteMenuImgs(menuId);
-        menuRepository.delete(menu);
         menuTagService.deleteMenuTag(menuId);
+        storeService.deleteStore(menu.getStore());
+        menuRepository.delete(menu);
     }
 
     /**
