@@ -2,6 +2,7 @@ package com.ourmenu.backend.domain.tag.domain;
 
 import com.ourmenu.backend.global.domain.BaseEntity;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -27,6 +28,6 @@ public class MenuTag extends BaseEntity {
     @NotNull
     private Long menuId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Tag tag;
 }

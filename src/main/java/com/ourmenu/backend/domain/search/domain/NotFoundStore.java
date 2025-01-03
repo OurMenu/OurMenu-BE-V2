@@ -3,6 +3,7 @@ package com.ourmenu.backend.domain.search.domain;
 import com.ourmenu.backend.domain.store.domain.Store;
 import com.ourmenu.backend.global.domain.BaseEntity;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -37,6 +38,6 @@ public class NotFoundStore extends BaseEntity {
     @NotNull
     private Double mapY;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     private Store store;
 }
