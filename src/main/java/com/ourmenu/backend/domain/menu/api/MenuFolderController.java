@@ -52,7 +52,7 @@ public class MenuFolderController {
     @PatchMapping(value = "/{menuFolderId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<UpdateMenuFolderResponse> updateMenuFolder(@PathVariable("menuFolderId") Long menuFolderId,
                                                                   @RequestPart("data") UpdateMenuFolderRequest request,
-                                                                  @RequestPart(value = "menuFolderImg", required = false) MultipartFile menuFolderImg,
+                                                                  @RequestPart("menuFolderImg") MultipartFile menuFolderImg,
                                                                   @AuthenticationPrincipal CustomUserDetails userDetails) {
         MenuFolderDto menuFolderDto = MenuFolderDto.of(request, menuFolderImg, userDetails.getId());
         UpdateMenuFolderResponse updateMenuFolderResponse = menuFolderService.updateMenuFolder(userDetails.getId(),

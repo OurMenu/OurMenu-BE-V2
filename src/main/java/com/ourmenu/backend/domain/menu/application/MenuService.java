@@ -10,6 +10,7 @@ import com.ourmenu.backend.domain.menu.dto.SaveMenuResponse;
 import com.ourmenu.backend.domain.store.application.StoreService;
 import com.ourmenu.backend.domain.store.domain.Map;
 import com.ourmenu.backend.domain.tag.application.MenuTagService;
+import com.ourmenu.backend.domain.tag.domain.Tag;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,12 @@ public class MenuService {
     private final MenuImgService menuImgService;
     private final AwsS3Service awsS3Service;
 
+    /**
+     * 메뉴 저장(메뉴 사진, 메뉴판, 태그 의존 엔티티 생성
+     *
+     * @param menuDto
+     * @return
+     */
     @Transactional
     public SaveMenuResponse saveMenu(MenuDto menuDto) {
 
@@ -47,23 +54,30 @@ public class MenuService {
         Menu saveMenu = menuRepository.save(menu);
 
         //메뉴판 연관관계 생성
-
-        menuDto.getMenuFolderIds().forEach(
-                menuFolderId -> {
-                    saveMenuMenuFolder(menuDto.getUserId(), menuFolderId, saveMenu);
-                }
-        );
+        List<MenuMenuFolder> saveMenuMenuFolders = saveMenuMenuFolders(menuDto.getMenuFolderIds(), menuDto.getUserId(),
+                saveMenu);
 
         //태그 연관관계 생성
-        menuDto.getTags().forEach(
-                tag -> {
-                    menuTagService.saveTag(saveMenu.getId(), tag);
-                }
-        );
+        List<Tag> saveTag = saveTags(menuDto.getTags(), saveMenu.getId());
 
+        //s3 업로드및 이미지 연관관계 생성
         List<String> menuImgUrls = awsS3Service.uploadFilesAsync(menuDto.getMenuImgs());
         List<MenuImg> menuImgs = menuImgService.saveMenuImgs(saveMenu.getId(), menuImgUrls);
-        return SaveMenuResponse.of(saveMenu, map.getStore(), map, menuImgs);
+        return SaveMenuResponse.of(saveMenu, map.getStore(), map, menuImgs, saveMenuMenuFolders, saveTag);
+    }
+
+    /**
+     * 메뉴 - 메뉴판 연관관계 설정(벌크) 내부적으로 saveMenuMenuFolder 호출
+     *
+     * @param menuFolderIds
+     * @param userId
+     * @param menu
+     * @return
+     */
+    private List<MenuMenuFolder> saveMenuMenuFolders(List<Long> menuFolderIds, Long userId, Menu menu) {
+        return menuFolderIds.stream().map(
+                menuFolderId -> saveMenuMenuFolder(userId, menuFolderId, menu)
+        ).toList();
     }
 
     /**
@@ -83,5 +97,9 @@ public class MenuService {
         return menuMenuFolderRepository.save(menuMenuFolder);
     }
 
-
+    private List<Tag> saveTags(List<String> tags, Long menuId) {
+        return tags.stream().map(
+                tag -> menuTagService.saveTag(menuId, tag)
+        ).toList();
+    }
 }

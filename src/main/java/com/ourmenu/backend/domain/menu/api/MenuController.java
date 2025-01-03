@@ -26,7 +26,7 @@ public class MenuController {
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<SaveMenuResponse> saveMenu(@RequestPart("data") SaveMenuRequest request,
-                                                  @RequestPart("menuFolderImgs") List<MultipartFile> menuFolderImgs,
+                                                  @RequestPart(value = "menuFolderImgs", required = false) List<MultipartFile> menuFolderImgs,
                                                   @AuthenticationPrincipal CustomUserDetails userDetails) {
         MenuDto menuDto = MenuDto.of(request, menuFolderImgs, userDetails);
         SaveMenuResponse response = menuService.saveMenu(menuDto);
