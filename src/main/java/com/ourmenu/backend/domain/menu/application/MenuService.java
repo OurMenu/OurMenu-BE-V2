@@ -7,12 +7,13 @@ import com.ourmenu.backend.domain.menu.domain.MenuImg;
 import com.ourmenu.backend.domain.menu.domain.MenuMenuFolder;
 import com.ourmenu.backend.domain.menu.dto.MenuDto;
 import com.ourmenu.backend.domain.menu.dto.SaveMenuResponse;
+import com.ourmenu.backend.domain.menu.exception.ForbiddenMenuException;
+import com.ourmenu.backend.domain.menu.exception.NotFoundMenuException;
 import com.ourmenu.backend.domain.store.application.StoreService;
 import com.ourmenu.backend.domain.store.domain.Map;
 import com.ourmenu.backend.domain.tag.application.MenuTagService;
 import com.ourmenu.backend.domain.tag.domain.Tag;
 import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -118,13 +119,10 @@ public class MenuService {
     }
 
     private Menu findOne(Long userId, Long menuId) {
-        Optional<Menu> optionalMenu = menuRepository.findById(menuId);
-        if (optionalMenu.isEmpty()) {
-            throw new RuntimeException("찾을 수 없는 메뉴입니다");
-        }
-        Menu menu = optionalMenu.get();
+        Menu menu = menuRepository.findById(menuId)
+                .orElseThrow(NotFoundMenuException::new);
         if (!menu.getUserId().equals(userId)) {
-            throw new RuntimeException("소유하고 있는 메뉴가 아닙니다");
+            throw new ForbiddenMenuException();
         }
         return menu;
     }

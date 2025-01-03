@@ -25,6 +25,10 @@ public enum ErrorCode {
     NOT_FOUND_MENU_FOLDER(HttpStatus.NOT_FOUND, "F404", "찾을 수 없는 메뉴 리소스입니다"),
     OUT_OF_BOUND_CUSTOM_INDEX(HttpStatus.INTERNAL_SERVER_ERROR, "F500", "현재 메뉴판이 가지고 있는 최대 인덱스를 벗어납니다"),
 
+    // 메뉴
+    FORBIDDEN_MENU(HttpStatus.FORBIDDEN, "M403", "소유하고 있는 메뉴가 아닙니다"),
+    NOT_FOUND_MENU(HttpStatus.NOT_FOUND, "M404", "찾을 수 없는 메뉴입니다"),
+
     // S3
     UPLOAD_FAILURE(HttpStatus.INTERNAL_SERVER_ERROR, "A500", "파일 업로드중 문제가 발생하였습니다"),
     DELETE_FAILURE(HttpStatus.INTERNAL_SERVER_ERROR, "A500", "파일 삭제중 문제가 발생하였습니다");
