@@ -40,7 +40,7 @@ public class MenuDto {
                 .menuFolderIds(request.getMenuFolderIds())
                 .isCrawled(request.isCrawled())
                 .tags(request.getTags())
-                .storeAddress(request.getStoreAddress())
+                .storeTitle(request.getStoreTitle())
                 .storeAddress(request.getStoreAddress())
                 .mapX(request.getMapX())
                 .mapY(request.getMapY())

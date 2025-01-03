@@ -1,8 +1,10 @@
 package com.ourmenu.backend.domain.menu.dto;
 
 import com.ourmenu.backend.domain.menu.domain.Menu;
+import com.ourmenu.backend.domain.menu.domain.MenuImg;
 import com.ourmenu.backend.domain.store.domain.Map;
 import com.ourmenu.backend.domain.store.domain.Store;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,8 +28,10 @@ public class SaveMenuResponse {
     private String storeAddress;
     private Double mapX;
     private Double mapY;
+    private List<String> menuImgUrls;
 
-    public static SaveMenuResponse of(Menu menu, Store store, Map map) {
+    public static SaveMenuResponse of(Menu menu, Store store, Map map, List<MenuImg> menuImgs) {
+        List<String> menuImgUrls = menuImgs.stream().map(MenuImg::getImgUrl).toList();
         return SaveMenuResponse.builder()
                 .menuId(menu.getId())
                 .menuTitle(menu.getTitle())
@@ -40,6 +44,7 @@ public class SaveMenuResponse {
                 .storeAddress(store.getAddress())
                 .mapX(map.getMapX())
                 .mapY(map.getMapY())
+                .menuImgUrls(menuImgUrls)
                 .build();
     }
 }
