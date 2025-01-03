@@ -11,6 +11,8 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -31,6 +33,13 @@ public class MenuController {
         MenuDto menuDto = MenuDto.of(request, menuFolderImgs, userDetails);
         SaveMenuResponse response = menuService.saveMenu(menuDto);
         return ApiUtil.success(response);
+    }
+
+    @DeleteMapping("/{menuId}")
+    public ApiResponse<Void> deleteMenu(@PathVariable("menuId") Long menuId,
+                                        @AuthenticationPrincipal CustomUserDetails userDetails) {
+        menuService.deleteMenu(userDetails.getId(), menuId);
+        return ApiUtil.successOnly();
     }
 
 }

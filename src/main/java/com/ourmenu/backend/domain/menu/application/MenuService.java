@@ -12,6 +12,7 @@ import com.ourmenu.backend.domain.store.domain.Map;
 import com.ourmenu.backend.domain.tag.application.MenuTagService;
 import com.ourmenu.backend.domain.tag.domain.Tag;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +27,6 @@ public class MenuService {
     private final MenuTagService menuTagService;
     private final StoreService storeService;
     private final MenuImgService menuImgService;
-    private final AwsS3Service awsS3Service;
 
     /**
      * 메뉴 저장(메뉴 사진, 메뉴판, 태그 의존 엔티티 생성
@@ -61,9 +61,23 @@ public class MenuService {
         List<Tag> saveTag = saveTags(menuDto.getTags(), saveMenu.getId());
 
         //s3 업로드및 이미지 연관관계 생성
-        List<String> menuImgUrls = awsS3Service.uploadFilesAsync(menuDto.getMenuImgs());
-        List<MenuImg> menuImgs = menuImgService.saveMenuImgs(saveMenu.getId(), menuImgUrls);
+        List<MenuImg> menuImgs = menuImgService.saveMenuImgs(saveMenu.getId(), menuDto.getMenuImgs());
         return SaveMenuResponse.of(saveMenu, map.getStore(), map, menuImgs, saveMenuMenuFolders, saveTag);
+    }
+
+    /**
+     * 메뉴 삭제 및 연관관계 엔티티 모두 삭제
+     *
+     * @param userId
+     * @param menuId
+     */
+    @Transactional
+    public void deleteMenu(Long userId, Long menuId) {
+        Menu menu = findOne(userId, menuId);
+        deleteMenuMenuFolders(menu);
+        menuImgService.deleteMenuImgs(menuId);
+        menuRepository.delete(menu);
+        menuTagService.deleteMenuTag(menuId);
     }
 
     /**
@@ -101,5 +115,21 @@ public class MenuService {
         return tags.stream().map(
                 tag -> menuTagService.saveTag(menuId, tag)
         ).toList();
+    }
+
+    private Menu findOne(Long userId, Long menuId) {
+        Optional<Menu> optionalMenu = menuRepository.findById(menuId);
+        if (optionalMenu.isEmpty()) {
+            throw new RuntimeException("찾을 수 없는 메뉴입니다");
+        }
+        Menu menu = optionalMenu.get();
+        if (!menu.getUserId().equals(userId)) {
+            throw new RuntimeException("소유하고 있는 메뉴가 아닙니다");
+        }
+        return menu;
+    }
+
+    private void deleteMenuMenuFolders(Menu menu) {
+        menuMenuFolderRepository.deleteAllByMenu(menu);
     }
 }

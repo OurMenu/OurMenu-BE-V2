@@ -35,6 +35,16 @@ public class MenuTagService {
     }
 
     /**
+     * menuTag 삭제
+     *
+     * @param menuId
+     */
+    @Transactional
+    public void deleteMenuTag(Long menuId) {
+        menuTagRepository.deleteAllByMenuId(menuId);
+    }
+
+    /**
      * 태그 확인 및 저장 (변수 이름 중복으로 tagName 한시적 사용
      *
      * @param tagName
