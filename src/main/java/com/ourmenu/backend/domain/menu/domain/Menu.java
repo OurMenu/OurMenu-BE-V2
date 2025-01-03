@@ -1,6 +1,7 @@
 package com.ourmenu.backend.domain.menu.domain;
 
 import com.ourmenu.backend.domain.store.domain.Store;
+import com.ourmenu.backend.global.domain.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -18,7 +19,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Getter
-public class Menu {
+public class Menu extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
