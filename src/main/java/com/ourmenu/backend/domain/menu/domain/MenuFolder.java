@@ -1,6 +1,7 @@
 package com.ourmenu.backend.domain.menu.domain;
 
 import com.ourmenu.backend.domain.menu.dto.MenuFolderDto;
+import com.ourmenu.backend.global.domain.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -20,7 +21,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Getter
-public class MenuFolder {
+public class MenuFolder extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
