@@ -22,4 +22,6 @@ public class SearchableStore {
     @Field(name = "menus")
     private List<StoreMenu> storeMenus;
     private String storeId;
+    private Double mapX;
+    private Double mapY;
 }

@@ -4,6 +4,7 @@ import com.ourmenu.backend.domain.search.dao.NotFoundStoreRepository;
 import com.ourmenu.backend.domain.search.dao.SearchableStoreRepository;
 import com.ourmenu.backend.domain.search.domain.NotFoundStore;
 import com.ourmenu.backend.domain.search.domain.SearchableStore;
+import com.ourmenu.backend.domain.search.dto.GetStoreResponse;
 import com.ourmenu.backend.domain.search.dto.SearchStoreResponse;
 import java.util.List;
 import java.util.Optional;
@@ -54,6 +55,24 @@ public class SearchService {
     }
 
     /**
+     * 가게 검색
+     *
+     * @param userId
+     * @param isCrawled true(몽고DB), false(mysql)
+     * @param storeId
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public GetStoreResponse getStore(Long userId, boolean isCrawled, String storeId) {
+        if (isCrawled) {
+            SearchableStore searchableStore = findByStoreId(storeId);
+            return GetStoreResponse.from(searchableStore);
+        }
+        NotFoundStore cacheEntityByStoreId = findCacheEntityByStoreId(storeId);
+        return GetStoreResponse.from(cacheEntityByStoreId);
+    }
+
+    /**
      * mysql에 식당 정보를 검색한다. mysql에는 이전 Kakao API 통신의 일부를 저장하고 있다.
      *
      * @param query
@@ -88,5 +107,13 @@ public class SearchService {
 
         notFoundStore = notFoundStoreRepository.save(notFoundStore);
         return List.of(SearchStoreResponse.from(notFoundStore));
+    }
+
+    private SearchableStore findByStoreId(String storeId) {
+        return searchableStoreRepository.findByStoreId(storeId).get();
+    }
+
+    private NotFoundStore findCacheEntityByStoreId(String storeId) {
+        return notFoundStoreRepository.findByStoreId(storeId).get();
     }
 }
