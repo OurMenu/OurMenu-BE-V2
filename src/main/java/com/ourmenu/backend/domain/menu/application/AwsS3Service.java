@@ -6,6 +6,7 @@ import com.ourmenu.backend.domain.menu.util.FileUtil;
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -53,6 +54,10 @@ public class AwsS3Service {
         } catch (IOException e) {
             throw new S3UploadFailureException();
         }
+    }
+
+    public List<String> uploadFilesAsync(List<MultipartFile> multipartFiles) {
+        return multipartFiles.stream().map(this::uploadFileAsync).toList();
     }
 
     public void deleteFileAsync(String fileUrl) {
