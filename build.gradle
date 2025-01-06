@@ -57,6 +57,9 @@ dependencies {
 
     //mongodb
     implementation('org.springframework.boot:spring-boot-starter-data-mongodb')
+
+    //webflux(Webclient)
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
 }
 
 tasks.named('test') {
