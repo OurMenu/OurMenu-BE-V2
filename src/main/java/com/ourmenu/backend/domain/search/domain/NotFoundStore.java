@@ -34,4 +34,6 @@ public class NotFoundStore extends BaseEntity {
 
     @NotNull
     private Double mapY;
+
+    private String storeId;
 }

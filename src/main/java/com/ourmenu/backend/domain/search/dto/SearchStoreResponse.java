@@ -16,11 +16,15 @@ public class SearchStoreResponse {
 
     private String storeTitle;
     private String storeAddress;
+    private boolean isCrawled;
+    private String storeId;
 
     public static SearchStoreResponse from(SearchableStore searchableStore) {
         return SearchStoreResponse.builder()
                 .storeTitle(searchableStore.getTitle())
                 .storeAddress(searchableStore.getAddress())
+                .isCrawled(true)
+                .storeId(searchableStore.getStoreId())
                 .build();
     }
 
@@ -28,6 +32,8 @@ public class SearchStoreResponse {
         return SearchStoreResponse.builder()
                 .storeTitle(notFoundStore.getTitle())
                 .storeAddress(notFoundStore.getAddress())
+                .isCrawled(false)
+                .storeId(notFoundStore.getStoreId())
                 .build();
     }
 }
