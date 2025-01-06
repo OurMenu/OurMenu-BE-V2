@@ -2,6 +2,7 @@ package com.ourmenu.backend.domain.search.application;
 
 import com.ourmenu.backend.domain.search.dao.SearchableStoreRepository;
 import com.ourmenu.backend.domain.search.domain.SearchableStore;
+import com.ourmenu.backend.domain.search.dto.SearchStoreResponse;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +17,7 @@ public class SearchService {
     private final SearchableStoreRepository searchableStoreRepository;
 
     @Transactional(readOnly = true)
-    public List<SearchableStore> searchStore(Long userId, String query) {
+    public List<SearchStoreResponse> searchStore(String query) {
         PageRequest pageRequest = PageRequest.of(0, 10);
         List<SearchableStore> searchableStores = searchableStoreRepository.findByMenuNameOrStoreNameContaining(
                 query, pageRequest);
@@ -32,6 +33,9 @@ public class SearchService {
                 .toList();
         storesWithNameMatch.addAll(otherStores);
 
-        return storesWithNameMatch.stream().limit(5).collect(Collectors.toList());
+        return storesWithNameMatch.stream()
+                .limit(5)
+                .map(SearchStoreResponse::from)
+                .toList();
     }
 }
