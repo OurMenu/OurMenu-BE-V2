@@ -1,5 +1,6 @@
 package com.ourmenu.backend.domain.menu.dto;
 
+import com.ourmenu.backend.domain.tag.domain.Tag;
 import com.ourmenu.backend.domain.user.domain.CustomUserDetails;
 import java.util.List;
 import lombok.AccessLevel;
@@ -21,7 +22,7 @@ public class MenuDto {
     private int menuPin;
     private List<Long> menuFolderIds;
     private boolean isCrawled;
-    private List<String> tags;
+    private List<Tag> tags;
     private String storeTitle;
     private String storeAddress;
     private Double mapX;

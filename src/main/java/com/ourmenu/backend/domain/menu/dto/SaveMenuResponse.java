@@ -36,7 +36,7 @@ public class SaveMenuResponse {
                                       List<MenuMenuFolder> menuMenuFolders, List<Tag> tags) {
         List<String> menuImgUrls = menuImgs.stream().map(MenuImg::getImgUrl).toList();
         List<Long> menuFolderIds = menuMenuFolders.stream().map(MenuMenuFolder::getFolderId).toList();
-        List<String> tagIds = tags.stream().map(Tag::getTag).toList();
+        List<String> tagIds = tags.stream().map(Tag::getTagName).toList();
         return SaveMenuResponse.builder()
                 .menuId(menu.getId())
                 .menuTitle(menu.getTitle())

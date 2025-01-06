@@ -113,7 +113,7 @@ public class MenuService {
         return menuMenuFolderRepository.save(menuMenuFolder);
     }
 
-    private List<Tag> saveTags(List<String> tags, Long menuId) {
+    private List<Tag> saveTags(List<Tag> tags, Long menuId) {
         return tags.stream().map(
                 tag -> menuTagService.saveTag(menuId, tag)
         ).toList();
