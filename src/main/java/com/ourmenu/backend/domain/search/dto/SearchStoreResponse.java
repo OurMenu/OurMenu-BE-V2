@@ -1,5 +1,6 @@
 package com.ourmenu.backend.domain.search.dto;
 
+import com.ourmenu.backend.domain.search.domain.NotFoundStore;
 import com.ourmenu.backend.domain.search.domain.SearchableStore;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -20,6 +21,13 @@ public class SearchStoreResponse {
         return SearchStoreResponse.builder()
                 .storeTitle(searchableStore.getTitle())
                 .storeAddress(searchableStore.getAddress())
+                .build();
+    }
+
+    public static SearchStoreResponse from(NotFoundStore notFoundStore) {
+        return SearchStoreResponse.builder()
+                .storeTitle(notFoundStore.getTitle())
+                .storeAddress(notFoundStore.getAddress())
                 .build();
     }
 }
