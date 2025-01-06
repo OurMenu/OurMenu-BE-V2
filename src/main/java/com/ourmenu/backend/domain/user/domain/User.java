@@ -1,6 +1,10 @@
 package com.ourmenu.backend.domain.user.domain;
 
-import jakarta.persistence.*;
+import com.ourmenu.backend.global.domain.BaseEntity;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -11,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class User{
+public class User extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,7 +27,7 @@ public class User{
 
     private SignInType signInType;
 
-    public void changePassword(String newPassword){
+    public void changePassword(String newPassword) {
         this.password = newPassword;
     }
 }
