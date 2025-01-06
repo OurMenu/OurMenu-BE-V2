@@ -12,7 +12,8 @@ public class SearchableStore {
 
     @Id
     private String id;
-    private String name;
+    @Field(name = "name")
+    private String title;
     private String address;
     @Field(name = "images")
     private List<String> storeImgs;

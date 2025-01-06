@@ -11,7 +11,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 public class StoreMenu {
 
     @Field(name = "menuName")
-    private String name;
+    private String title;
     @Field(name = "menuPrice")
     private String price;
 }
