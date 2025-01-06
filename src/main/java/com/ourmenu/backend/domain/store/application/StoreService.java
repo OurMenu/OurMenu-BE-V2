@@ -48,33 +48,29 @@ public class StoreService {
         Optional<Store> optionalStore = storeRepository.findByTitleAndAddress(title, address);
         Store store;
         if (optionalStore.isPresent()) {
-            store = optionalStore.get();
-        } else {
-            store = Store.builder()
-                    .title(title)
-                    .address(address)
-                    .map(map)
-                    .build();
-            store = storeRepository.save(store);
+            return optionalStore.get();
         }
-        return store;
+
+        store = Store.builder()
+                .title(title)
+                .address(address)
+                .map(map)
+                .build();
+        return storeRepository.save(store);
     }
 
     private Map saveMapIfNonExists(Double mapX, Double mapY) {
         Optional<Map> optionalMap = mapRepository.findByMapXAndMapY(mapX, mapY);
         Map map;
         if (optionalMap.isPresent()) {
-            map = optionalMap.get();
+            return optionalMap.get();
 
-        } else {
-            map = Map.builder()
-                    .mapX(mapX)
-                    .mapY(mapY)
-                    .build();
-            map = mapRepository.save(map);
         }
-        return map;
+
+        map = Map.builder()
+                .mapX(mapX)
+                .mapY(mapY)
+                .build();
+        return mapRepository.save(map);
     }
-
-
 }
