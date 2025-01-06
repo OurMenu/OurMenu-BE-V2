@@ -2,11 +2,11 @@ package com.ourmenu.backend.domain.tag.domain;
 
 import com.ourmenu.backend.global.domain.BaseEntity;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -28,6 +28,6 @@ public class MenuTag extends BaseEntity {
     @NotNull
     private Long menuId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @Enumerated(value = EnumType.STRING)
     private Tag tag;
 }

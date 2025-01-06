@@ -38,6 +38,8 @@ public class Menu extends BaseEntity {
 
     private String memoContent;
 
+    private Boolean isCrawled;
+
     @NotNull
     private Long userId;
 
