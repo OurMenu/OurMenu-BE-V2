@@ -1,8 +1,10 @@
 package com.ourmenu.backend.domain.search.application;
 
 import com.ourmenu.backend.domain.search.dao.NotFoundStoreRepository;
+import com.ourmenu.backend.domain.search.dao.NotOwnedMenuSearchRepository;
 import com.ourmenu.backend.domain.search.dao.SearchableStoreRepository;
 import com.ourmenu.backend.domain.search.domain.NotFoundStore;
+import com.ourmenu.backend.domain.search.domain.NotOwnedMenuSearch;
 import com.ourmenu.backend.domain.search.domain.SearchableStore;
 import com.ourmenu.backend.domain.search.dto.GetStoreResponse;
 import com.ourmenu.backend.domain.search.dto.SearchStoreResponse;
@@ -20,6 +22,7 @@ public class SearchService {
 
     private final SearchableStoreRepository searchableStoreRepository;
     private final NotFoundStoreRepository notFoundStoreRepository;
+    private final NotOwnedMenuSearchRepository notOwnedMenuSearchRepository;
     private final KakaoApiService kakaoApiService;
 
     /**
@@ -62,14 +65,19 @@ public class SearchService {
      * @param storeId
      * @return
      */
-    @Transactional(readOnly = true)
+    @Transactional
     public GetStoreResponse getStore(Long userId, boolean isCrawled, String storeId) {
         if (isCrawled) {
             SearchableStore searchableStore = findByStoreId(storeId);
-            return GetStoreResponse.from(searchableStore);
+            GetStoreResponse response = GetStoreResponse.from(searchableStore);
+            saveSearchHistory(userId,response);
+            return response;
+
         }
         NotFoundStore cacheEntityByStoreId = findCacheEntityByStoreId(storeId);
-        return GetStoreResponse.from(cacheEntityByStoreId);
+        GetStoreResponse response = GetStoreResponse.from(cacheEntityByStoreId);
+        saveSearchHistory(userId,response);
+        return response;
     }
 
     /**
@@ -115,5 +123,19 @@ public class SearchService {
 
     private NotFoundStore findCacheEntityByStoreId(String storeId) {
         return notFoundStoreRepository.findByStoreId(storeId).get();
+    }
+
+    /**
+     * 메뉴 검색 기록 저장
+     * 유저가 소유하지 않은 메뉴 정보
+     * @param getStoreResponse
+     */
+    private void saveSearchHistory(Long userId, GetStoreResponse getStoreResponse){
+        NotOwnedMenuSearch notOwnedMenuSearch = NotOwnedMenuSearch.builder()
+                .title(getStoreResponse.getStoreTitle())
+                .address(getStoreResponse.getStoreAddress())
+                .userId(userId)
+                .build();
+        notOwnedMenuSearchRepository.save(notOwnedMenuSearch);
     }
 }
