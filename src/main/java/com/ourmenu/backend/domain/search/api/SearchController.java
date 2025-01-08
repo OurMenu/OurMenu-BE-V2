@@ -1,6 +1,7 @@
 package com.ourmenu.backend.domain.search.api;
 
 import com.ourmenu.backend.domain.search.application.SearchService;
+import com.ourmenu.backend.domain.search.dto.GetSearchHistoryResponse;
 import com.ourmenu.backend.domain.search.dto.GetStoreResponse;
 import com.ourmenu.backend.domain.search.dto.SearchStoreResponse;
 import com.ourmenu.backend.domain.user.domain.CustomUserDetails;
@@ -33,6 +34,12 @@ public class SearchController {
                                                   @PathVariable(name = "storeId") String storeId,
                                                   @AuthenticationPrincipal CustomUserDetails userDetails) {
         GetStoreResponse response = searchService.getStore(userDetails.getId(), isCrawled, storeId);
+        return ApiUtil.success(response);
+    }
+
+    @GetMapping("priored/users/{userId}/histories")
+    public ApiResponse<List<GetSearchHistoryResponse>> getSearchHistory(@PathVariable(name = "userId") Long userId){
+        List<GetSearchHistoryResponse> response = searchService.getSearchHistory(userId);
         return ApiUtil.success(response);
     }
 }

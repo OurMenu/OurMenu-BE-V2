@@ -6,6 +6,7 @@ import com.ourmenu.backend.domain.search.dao.SearchableStoreRepository;
 import com.ourmenu.backend.domain.search.domain.NotFoundStore;
 import com.ourmenu.backend.domain.search.domain.NotOwnedMenuSearch;
 import com.ourmenu.backend.domain.search.domain.SearchableStore;
+import com.ourmenu.backend.domain.search.dto.GetSearchHistoryResponse;
 import com.ourmenu.backend.domain.search.dto.GetStoreResponse;
 import com.ourmenu.backend.domain.search.dto.SearchStoreResponse;
 import java.util.List;
@@ -78,6 +79,21 @@ public class SearchService {
         GetStoreResponse response = GetStoreResponse.from(cacheEntityByStoreId);
         saveSearchHistory(userId,response);
         return response;
+    }
+
+    /**
+     * 메뉴 검색 기록 조회
+     * 유저가 소유하지 메뉴
+     * @param userId
+     * @return
+     */
+    @Transactional
+    public List<GetSearchHistoryResponse> getSearchHistory(Long userId){
+        List<NotOwnedMenuSearch> notOwnedMenuSearches = notOwnedMenuSearchRepository.findByUserIdOrderByModifiedAtDesc(
+                userId);
+        return notOwnedMenuSearches.stream()
+                .map(GetSearchHistoryResponse::from)
+                .toList();
     }
 
     /**
