@@ -15,7 +15,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "user_owned_search_history")
+@Table(name = "not_owned_search_history")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
@@ -30,7 +30,7 @@ public class NotOwnedMenuSearch extends BaseEntity {
     private String title;
 
     @NotNull
-    private LocalDateTime searchAt;
+    private String address;
 
     @NotNull
     private Long userId;

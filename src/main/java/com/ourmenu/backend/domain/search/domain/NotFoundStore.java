@@ -1,13 +1,10 @@
 package com.ourmenu.backend.domain.search.domain;
 
-import com.ourmenu.backend.domain.store.domain.Store;
 import com.ourmenu.backend.global.domain.BaseEntity;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -38,6 +35,5 @@ public class NotFoundStore extends BaseEntity {
     @NotNull
     private Double mapY;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Store store;
+    private String storeId;
 }
