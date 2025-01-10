@@ -26,7 +26,14 @@ public class KakaoApiService {
                 .defaultHeader("Authorization", kakaoAPIKey)
                 .build();
     }
-    
+
+    /**
+     * 카카오 API 검색후 객체 생성
+     *
+     * @param query 검색어
+     * @return NotFoundStore 객체
+     * @throws NotFoundStoreInKakaoException 검색 결과가 없는 경우
+     */
     public NotFoundStore searchKakaoMap(String query) {
         KakaoAPIResponse response = getKakaoAPI(query);
 
@@ -43,6 +50,13 @@ public class KakaoApiService {
                 .build();
     }
 
+    /**
+     * 카카오 API 호출
+     *
+     * @param query 검색어
+     * @return KakaoAPIResponse 카카오 API Dto
+     * @throws ExceededDailyQuotaException 일일 사용량 초과시
+     */
     private KakaoAPIResponse getKakaoAPI(String query) {
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder
