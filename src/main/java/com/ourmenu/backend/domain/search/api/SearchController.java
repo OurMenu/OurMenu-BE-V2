@@ -38,8 +38,9 @@ public class SearchController {
     }
 
     @GetMapping("priored/users/{userId}/histories")
-    public ApiResponse<List<GetSearchHistoryResponse>> getSearchHistory(@PathVariable(name = "userId") Long userId){
-        List<GetSearchHistoryResponse> response = searchService.getSearchHistory(userId);
+    public ApiResponse<List<GetSearchHistoryResponse>> getSearchHistory(
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        List<GetSearchHistoryResponse> response = searchService.getSearchHistory(userDetails.getId());
         return ApiUtil.success(response);
     }
 }
