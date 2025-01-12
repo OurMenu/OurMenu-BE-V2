@@ -30,4 +30,9 @@ public interface MenuFolderRepository extends JpaRepository<MenuFolder, Long> {
             "WHERE m.userId = :userId AND m.index BETWEEN :start AND :end")
     void decrementIndexes(@Param("userId") Long userId, @Param("start") int start, @Param("end") int end);
 
+    @Query("SELECT DISTINCT mf FROM MenuFolder mf " +
+            "JOIN FETCH MenuMenuFolder mmf ON mf.id = mmf.folderId "+
+            "JOIN FETCH mmf.menu m " +
+            "WHERE m.id = :menuId")
+    List<MenuFolder> findMenuFoldersByMenuId(@Param("menuId") Long menuId);
 }

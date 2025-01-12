@@ -33,4 +33,15 @@ public class MapController {
         return ApiUtil.success(response);
     }
 
+    /**
+     * 지도 상세 조회 API
+     * @param mapId
+     * @param userDetails
+     * @return
+     */
+    @GetMapping("/{mapId}")
+    public ApiResponse<List<MenuInfoOnMapDto>> findMenuInfoOnMap(@PathVariable Long mapId, @AuthenticationPrincipal CustomUserDetails userDetails){
+        List<MenuInfoOnMapDto> response = mapService.findMenuOnMap(mapId, userDetails.getId());
+        return ApiUtil.success(response);
+    }
 }

@@ -60,4 +60,31 @@ public class MapService {
         return response;
     }
 
+    public List<MenuInfoOnMapDto> findMenuOnMap(Long mapId, Long userId) {
+        Map map = mapRepository.findMapById(mapId)
+                .orElseThrow(RuntimeException::new);    //예외처리 수정 필요
+
+        List<Store> stores = map.getStores();
+        List<Menu> menus = new ArrayList<>();
+        List<MenuInfoOnMapDto> response = new ArrayList<>();
+
+        for (Store store : stores) {
+            menus = menuRepository.findMenusByStoreIdAndUserId(store.getId(), userId);
+        }
+
+        for (Menu menu : menus) {
+            List<MenuTag> menuTags = menuTagRepository.findMenuTagsByMenuId(menu.getId());
+            List<MenuImg> menuImgs = menuImgRepository.findAllByMenuId(menu.getId());
+            List<MenuFolder> menuFolders = menuFolderRepository.findMenuFoldersByMenuId(menu.getId());
+
+            MenuFolder latestMenuFolder = menuFolders.stream()
+                    .max(Comparator.comparing(MenuFolder::getCreatedAt)) // createdAt으로 정렬
+                    .orElseThrow(RuntimeException::new);        //예외처리 수정 필요
+
+            MenuFolderInfoOnMapDto menuFolderInfo = MenuFolderInfoOnMapDto.of(latestMenuFolder, menuFolders.size());
+            response.add(MenuInfoOnMapDto.of(menu, menuTags, menuImgs, menuFolderInfo));
+        }
+
+        return response;
+    }
 }
