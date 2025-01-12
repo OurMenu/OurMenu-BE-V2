@@ -11,7 +11,7 @@ public class SaveMenuRequest {
 
     private String menuTitle;
     private int menuPrice;
-    private int menuPin;
+    private String menuPin;
     private String menuMemoTitle;
     private String menuMemoContent;
     private List<Long> menuFolderIds;

@@ -19,7 +19,7 @@ public class MenuDto {
     private int menuPrice;
     private String menuMemoTitle;
     private String menuMemoContent;
-    private int menuPin;
+    private String menuPin;
     private List<Long> menuFolderIds;
     private boolean isCrawled;
     private List<Tag> tags;
