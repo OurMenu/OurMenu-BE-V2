@@ -1,0 +1,36 @@
+package com.ourmenu.backend.domain.menu.api;
+
+import com.ourmenu.backend.domain.menu.application.MapService;
+import com.ourmenu.backend.domain.menu.dto.MenuInfoOnMapDto;
+import com.ourmenu.backend.domain.menu.dto.MenuOnMapDto;
+import com.ourmenu.backend.domain.user.domain.CustomUserDetails;
+import com.ourmenu.backend.global.response.ApiResponse;
+import com.ourmenu.backend.global.response.util.ApiUtil;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/api/users/menus/maps")
+public class MapController {
+
+    private final MapService mapService;
+
+    /**
+     * 지도 조회 API (핀)
+     * @param userDetails
+     * @return
+     */
+    @GetMapping("")
+    public ApiResponse<List<MenuOnMapDto>> findMenusOnMap(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        List<MenuOnMapDto> response = mapService.findMenusOnMap(userDetails.getId());
+        return ApiUtil.success(response);
+    }
+
+}
