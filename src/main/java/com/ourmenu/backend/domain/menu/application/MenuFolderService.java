@@ -102,18 +102,6 @@ public class MenuFolderService {
     }
 
     /**
-     * 메뉴판 소유 여부 확인
-     *
-     * @param userId
-     * @param menuFolderId
-     * @return
-     */
-    @Transactional
-    public void validateExistMenuFolder(Long userId, Long menuFolderId) {
-        findOne(userId, menuFolderId);
-    }
-
-    /**
      * 메뉴폴더 저장
      *
      * @param menuFolderDto
