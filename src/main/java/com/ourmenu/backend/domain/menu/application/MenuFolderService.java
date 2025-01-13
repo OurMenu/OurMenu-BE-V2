@@ -20,6 +20,7 @@ public class MenuFolderService {
 
     private final AwsS3Service awsS3Service;
     private final MenuFolderRepository menuFolderRepository;
+    private final MenuMenuFolderService menuMenuFolderService;
 
     /**
      * 메뉴 폴더 저장
@@ -31,7 +32,7 @@ public class MenuFolderService {
     public SaveMenuFolderResponse saveMenuFolder(MenuFolderDto menuFolderDto) {
         String menuFolderImgUrl = awsS3Service.uploadFileAsync(menuFolderDto.getMenuFolderImg());
         MenuFolder menuFolder = saveMenuFolder(menuFolderDto, menuFolderImgUrl);
-        return SaveMenuFolderResponse.from(menuFolder);
+        return SaveMenuFolderResponse.of(menuFolder, menuFolderDto.getMenuIds());
     }
 
     @Transactional
@@ -116,8 +117,9 @@ public class MenuFolderService {
                 .index(menuFolderRepository.findMaxIndex() + 1)
                 .userId(menuFolderDto.getUserId())
                 .build();
-
-        return menuFolderRepository.save(menuFolder);
+        MenuFolder saveMenuFolder = menuFolderRepository.save(menuFolder);
+        menuMenuFolderService.saveMenuMenuFolders(menuFolderDto.getMenuIds(), menuFolder.getUserId(), saveMenuFolder);
+        return saveMenuFolder;
     }
 
     private MenuFolder findOne(Long userId, Long menuFolderId) {

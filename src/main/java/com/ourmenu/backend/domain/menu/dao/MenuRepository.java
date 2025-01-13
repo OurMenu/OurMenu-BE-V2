@@ -9,4 +9,6 @@ import org.springframework.stereotype.Repository;
 public interface MenuRepository extends JpaRepository<Menu, Long> {
 
     boolean existsByStore(Store store);
+
+    boolean existsByUserIdAndId(Long userId, Long id);
 }

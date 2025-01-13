@@ -21,7 +21,7 @@ public class MenuFolderValidator {
      */
     @Transactional(readOnly = true)
     public void validateExistMenuFolder(Long userId, Long menuFolderId) {
-        if (!menuFolderRepository.existsByIdAndUserId(menuFolderId, userId)) {
+        if (!menuFolderRepository.existsByUserIdAndId(menuFolderId, userId)) {
             throw new ForbiddenMenuFolderException();
         }
     }
