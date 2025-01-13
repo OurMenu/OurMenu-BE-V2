@@ -108,7 +108,13 @@ public class MenuFolderService {
     @Transactional
     public List<GetMenuFolderResponse> findAllMenuFolder(Long userId) {
         List<MenuFolder> menuFolders = menuFolderRepository.findAllByUserIdOrderByIndexDesc(userId);
-        return menuFolders.stream().map(GetMenuFolderResponse::from).toList();
+
+        return menuFolders.stream()
+                .map(menuFolder -> {
+                    List<MenuMenuFolder> menuMenuFolders = menuMenuFolderService.findAllByMenuFolderId(
+                            menuFolder.getId());
+                    return GetMenuFolderResponse.of(menuFolder, menuMenuFolders);
+                }).toList();
     }
 
     /**
