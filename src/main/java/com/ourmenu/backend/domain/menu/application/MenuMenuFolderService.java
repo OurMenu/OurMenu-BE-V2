@@ -2,6 +2,7 @@ package com.ourmenu.backend.domain.menu.application;
 
 import com.ourmenu.backend.domain.menu.application.validator.MenuFolderValidator;
 import com.ourmenu.backend.domain.menu.application.validator.MenuValidator;
+import com.ourmenu.backend.domain.menu.dao.MenuFolderRepository;
 import com.ourmenu.backend.domain.menu.dao.MenuMenuFolderRepository;
 import com.ourmenu.backend.domain.menu.dao.MenuRepository;
 import com.ourmenu.backend.domain.menu.domain.Menu;
@@ -18,6 +19,7 @@ public class MenuMenuFolderService {
 
     private final MenuMenuFolderRepository menuMenuFolderRepository;
     private final MenuRepository menuRepository;
+    private final MenuFolderRepository menuFolderRepository;
     private final MenuFolderValidator menuFolderValidator;
     private final MenuValidator menuValidator;
 
@@ -54,6 +56,32 @@ public class MenuMenuFolderService {
     @Transactional
     public void deleteMenuMenuFolders(Menu menu) {
         menuMenuFolderRepository.deleteAllByMenu(menu);
+    }
+
+    /**
+     * 연관관계를 재구성 (기존 삭제)
+     *
+     * @param userId
+     * @param menuFolderId
+     * @param menuIds      변경될 메뉴(size=0 이면 기존 모두 삭제)
+     */
+    @Transactional
+    public List<MenuMenuFolder> updateMenuMenuFolder(Long userId, Long menuFolderId, List<Long> menuIds) {
+        menuIds.forEach(menuId -> menuValidator.validateExistMenu(userId, menuId));
+        menuMenuFolderRepository.deleteByFolderId(menuFolderId);
+        MenuFolder menuFolder = menuFolderRepository.findById(menuFolderId).get();
+        return saveMenuMenuFolders(menuIds, userId, menuFolder);
+    }
+
+    /**
+     * 메뉴판에 해당하는 조인 컬럼 반환
+     *
+     * @param menuFolderId
+     * @return
+     */
+    @Transactional
+    public List<MenuMenuFolder> findAllByMenuFolderId(Long menuFolderId) {
+        return menuMenuFolderRepository.findAllByFolderId(menuFolderId);
     }
 
     /**

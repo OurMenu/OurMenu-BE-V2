@@ -2,6 +2,7 @@ package com.ourmenu.backend.domain.menu.application;
 
 import com.ourmenu.backend.domain.menu.dao.MenuFolderRepository;
 import com.ourmenu.backend.domain.menu.domain.MenuFolder;
+import com.ourmenu.backend.domain.menu.domain.MenuMenuFolder;
 import com.ourmenu.backend.domain.menu.dto.GetMenuFolderResponse;
 import com.ourmenu.backend.domain.menu.dto.MenuFolderDto;
 import com.ourmenu.backend.domain.menu.dto.SaveMenuFolderResponse;
@@ -51,13 +52,20 @@ public class MenuFolderService {
     public UpdateMenuFolderResponse updateMenuFolder(Long userId, Long menuFolderId, MenuFolderDto menuFolderDto) {
 
         MenuFolder menuFolder = findOne(userId, menuFolderId);
+        if (menuFolderDto.getMenuIds() != null) {
+            menuMenuFolderService.updateMenuMenuFolder(userId, menuFolderId, menuFolderDto.getMenuIds());
+        }
+
         if (menuFolderDto.getMenuFolderImg() != null) {
             String imgUrl = awsS3Service.uploadFileAsync(menuFolderDto.getMenuFolderImg());
             menuFolder.update(menuFolderDto, imgUrl);
-            return UpdateMenuFolderResponse.from(menuFolder);
+            List<MenuMenuFolder> menuMenuFolders = menuMenuFolderService.findAllByMenuFolderId(menuFolderId);
+            return UpdateMenuFolderResponse.of(menuFolder, menuMenuFolders);
         }
+
         menuFolder.update(menuFolderDto, null);
-        return UpdateMenuFolderResponse.from(menuFolder);
+        List<MenuMenuFolder> menuMenuFolders = menuMenuFolderService.findAllByMenuFolderId(menuFolderId);
+        return UpdateMenuFolderResponse.of(menuFolder, menuMenuFolders);
     }
 
     /**
@@ -86,7 +94,8 @@ public class MenuFolderService {
         }
 
         findMenuFolder.updateIndex(index);
-        return UpdateMenuFolderResponse.from(findMenuFolder);
+        List<MenuMenuFolder> menuMenuFolders = menuMenuFolderService.findAllByMenuFolderId(menuFolderId);
+        return UpdateMenuFolderResponse.of(findMenuFolder, menuMenuFolders);
     }
 
 
