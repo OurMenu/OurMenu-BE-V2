@@ -2,6 +2,7 @@ package com.ourmenu.backend.domain.menu.application;
 
 import com.ourmenu.backend.domain.menu.dao.MenuFolderRepository;
 import com.ourmenu.backend.domain.menu.domain.MenuFolder;
+import com.ourmenu.backend.domain.menu.domain.MenuMenuFolder;
 import com.ourmenu.backend.domain.menu.dto.GetMenuFolderResponse;
 import com.ourmenu.backend.domain.menu.dto.MenuFolderDto;
 import com.ourmenu.backend.domain.menu.dto.SaveMenuFolderResponse;
@@ -20,6 +21,7 @@ public class MenuFolderService {
 
     private final AwsS3Service awsS3Service;
     private final MenuFolderRepository menuFolderRepository;
+    private final MenuMenuFolderService menuMenuFolderService;
 
     /**
      * 메뉴 폴더 저장
@@ -31,7 +33,7 @@ public class MenuFolderService {
     public SaveMenuFolderResponse saveMenuFolder(MenuFolderDto menuFolderDto) {
         String menuFolderImgUrl = awsS3Service.uploadFileAsync(menuFolderDto.getMenuFolderImg());
         MenuFolder menuFolder = saveMenuFolder(menuFolderDto, menuFolderImgUrl);
-        return SaveMenuFolderResponse.from(menuFolder);
+        return SaveMenuFolderResponse.of(menuFolder, menuFolderDto.getMenuIds());
     }
 
     @Transactional
@@ -50,13 +52,20 @@ public class MenuFolderService {
     public UpdateMenuFolderResponse updateMenuFolder(Long userId, Long menuFolderId, MenuFolderDto menuFolderDto) {
 
         MenuFolder menuFolder = findOne(userId, menuFolderId);
+        if (menuFolderDto.getMenuIds() != null) {
+            menuMenuFolderService.updateMenuMenuFolder(userId, menuFolderId, menuFolderDto.getMenuIds());
+        }
+
         if (menuFolderDto.getMenuFolderImg() != null) {
             String imgUrl = awsS3Service.uploadFileAsync(menuFolderDto.getMenuFolderImg());
             menuFolder.update(menuFolderDto, imgUrl);
-            return UpdateMenuFolderResponse.from(menuFolder);
+            List<MenuMenuFolder> menuMenuFolders = menuMenuFolderService.findAllByMenuFolderId(menuFolderId);
+            return UpdateMenuFolderResponse.of(menuFolder, menuMenuFolders);
         }
+
         menuFolder.update(menuFolderDto, null);
-        return UpdateMenuFolderResponse.from(menuFolder);
+        List<MenuMenuFolder> menuMenuFolders = menuMenuFolderService.findAllByMenuFolderId(menuFolderId);
+        return UpdateMenuFolderResponse.of(menuFolder, menuMenuFolders);
     }
 
     /**
@@ -85,7 +94,8 @@ public class MenuFolderService {
         }
 
         findMenuFolder.updateIndex(index);
-        return UpdateMenuFolderResponse.from(findMenuFolder);
+        List<MenuMenuFolder> menuMenuFolders = menuMenuFolderService.findAllByMenuFolderId(menuFolderId);
+        return UpdateMenuFolderResponse.of(findMenuFolder, menuMenuFolders);
     }
 
 
@@ -98,19 +108,13 @@ public class MenuFolderService {
     @Transactional
     public List<GetMenuFolderResponse> findAllMenuFolder(Long userId) {
         List<MenuFolder> menuFolders = menuFolderRepository.findAllByUserIdOrderByIndexDesc(userId);
-        return menuFolders.stream().map(GetMenuFolderResponse::from).toList();
-    }
 
-    /**
-     * 메뉴판 소유 여부 확인
-     *
-     * @param userId
-     * @param menuFolderId
-     * @return
-     */
-    @Transactional
-    public void validateExistMenuFolder(Long userId, Long menuFolderId) {
-        findOne(userId, menuFolderId);
+        return menuFolders.stream()
+                .map(menuFolder -> {
+                    List<MenuMenuFolder> menuMenuFolders = menuMenuFolderService.findAllByMenuFolderId(
+                            menuFolder.getId());
+                    return GetMenuFolderResponse.of(menuFolder, menuMenuFolders);
+                }).toList();
     }
 
     /**
@@ -128,8 +132,9 @@ public class MenuFolderService {
                 .index(menuFolderRepository.findMaxIndex() + 1)
                 .userId(menuFolderDto.getUserId())
                 .build();
-
-        return menuFolderRepository.save(menuFolder);
+        MenuFolder saveMenuFolder = menuFolderRepository.save(menuFolder);
+        menuMenuFolderService.saveMenuMenuFolders(menuFolderDto.getMenuIds(), menuFolder.getUserId(), saveMenuFolder);
+        return saveMenuFolder;
     }
 
     private MenuFolder findOne(Long userId, Long menuFolderId) {
