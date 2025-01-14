@@ -34,8 +34,7 @@ public class MenuFolderController {
     private final MenuFolderService menuFolderService;
 
     @GetMapping
-    public ApiResponse<List<GetMenuFolderResponse>> getMenuFolder(
-            @AuthenticationPrincipal CustomUserDetails userDetails) {
+    public ApiResponse<List<GetMenuFolderResponse>> getMenuFolder(@AuthenticationPrincipal CustomUserDetails userDetails) {
         List<GetMenuFolderResponse> response = menuFolderService.findAllMenuFolder(userDetails.getId());
         return ApiUtil.success(response);
     }

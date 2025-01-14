@@ -19,12 +19,13 @@ public class SaveMenuFolderResponse {
     private List<Long> menuIds;
     private int index;
 
-    public static SaveMenuFolderResponse from(MenuFolder menuFolder) {
+    public static SaveMenuFolderResponse of(MenuFolder menuFolder, List<Long> menuIds) {
         return SaveMenuFolderResponse.builder()
                 .menuFolderId(menuFolder.getId())
                 .menuFolderTitle(menuFolder.getTitle())
                 .menuFolderUrl(menuFolder.getImgUrl())
                 .menuFolderIcon(menuFolder.getIcon())
+                .menuIds(menuIds)
                 .index(menuFolder.getIndex())
                 .build();
     }
