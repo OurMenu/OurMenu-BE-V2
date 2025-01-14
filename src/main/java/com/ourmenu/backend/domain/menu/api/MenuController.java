@@ -4,6 +4,8 @@ import com.ourmenu.backend.domain.menu.application.MenuService;
 import com.ourmenu.backend.domain.menu.dto.MenuDto;
 import com.ourmenu.backend.domain.menu.dto.SaveMenuRequest;
 import com.ourmenu.backend.domain.menu.dto.SaveMenuResponse;
+import com.ourmenu.backend.domain.search.application.SearchService;
+import com.ourmenu.backend.domain.search.dto.SimpleSearchDto;
 import com.ourmenu.backend.domain.user.domain.CustomUserDetails;
 import com.ourmenu.backend.global.response.ApiResponse;
 import com.ourmenu.backend.global.response.util.ApiUtil;
@@ -25,12 +27,14 @@ import org.springframework.web.multipart.MultipartFile;
 public class MenuController {
 
     private final MenuService menuService;
+    private final SearchService searchService;
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<SaveMenuResponse> saveMenu(@RequestPart("data") SaveMenuRequest request,
                                                   @RequestPart(value = "menuFolderImgs", required = false) List<MultipartFile> menuFolderImgs,
                                                   @AuthenticationPrincipal CustomUserDetails userDetails) {
-        MenuDto menuDto = MenuDto.of(request, menuFolderImgs, userDetails);
+        SimpleSearchDto simpleSearchDto = searchService.getSearchDto(request.isCrawled(), request.getStoreId());
+        MenuDto menuDto = MenuDto.of(request, menuFolderImgs, userDetails, simpleSearchDto);
         SaveMenuResponse response = menuService.saveMenu(menuDto);
         return ApiUtil.success(response);
     }
@@ -41,5 +45,4 @@ public class MenuController {
         menuService.deleteMenu(userDetails.getId(), menuId);
         return ApiUtil.successOnly();
     }
-
 }
