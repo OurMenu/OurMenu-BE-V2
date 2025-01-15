@@ -9,6 +9,7 @@ import com.ourmenu.backend.domain.search.domain.SearchableStore;
 import com.ourmenu.backend.domain.search.dto.GetSearchHistoryResponse;
 import com.ourmenu.backend.domain.search.dto.GetStoreResponse;
 import com.ourmenu.backend.domain.search.dto.SearchStoreResponse;
+import com.ourmenu.backend.domain.search.dto.SimpleSearchDto;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -70,6 +71,24 @@ public class SearchService {
         GetStoreResponse response = GetStoreResponse.from(cacheEntityByStoreId);
         saveSearchHistory(userId, response);
         return response;
+    }
+
+    /**
+     * 단순 가게 정보 Dto를 반환한다.
+     *
+     * @param isCrawled
+     * @param storeId
+     * @return
+     */
+    @Transactional
+    public SimpleSearchDto getSearchDto(boolean isCrawled, String storeId) {
+        if (isCrawled) {
+            SearchableStore searchableStore = findByStoreId(storeId);
+            return SimpleSearchDto.of(searchableStore, isCrawled);
+
+        }
+        NotFoundStore notFoundStore = findCacheEntityByStoreId(storeId);
+        return SimpleSearchDto.of(notFoundStore, isCrawled);
     }
 
     /**

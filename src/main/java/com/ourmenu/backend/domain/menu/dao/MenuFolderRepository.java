@@ -35,4 +35,6 @@ public interface MenuFolderRepository extends JpaRepository<MenuFolder, Long> {
 //            "JOIN FETCH mmf.menu m " +
             "WHERE mmf.menu.id = :menuId")
     List<MenuFolder> findMenuFoldersByMenuId(@Param("menuId") Long menuId);
+
+    boolean existsByUserIdAndId(Long userId, Long id);
 }

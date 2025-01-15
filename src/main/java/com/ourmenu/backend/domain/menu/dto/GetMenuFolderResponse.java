@@ -1,6 +1,7 @@
 package com.ourmenu.backend.domain.menu.dto;
 
 import com.ourmenu.backend.domain.menu.domain.MenuFolder;
+import com.ourmenu.backend.domain.menu.domain.MenuMenuFolder;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -19,12 +20,16 @@ public class GetMenuFolderResponse {
     private List<Long> menuIds;
     private int index;
 
-    public static GetMenuFolderResponse from(MenuFolder menuFolder) {
+    public static GetMenuFolderResponse of(MenuFolder menuFolder, List<MenuMenuFolder> menuFolders) {
+        List<Long> menuIds = menuFolders.stream()
+                .map(menuMenuFolder -> menuMenuFolder.getMenu().getId())
+                .toList();
         return GetMenuFolderResponse.builder()
                 .menuFolderId(menuFolder.getId())
                 .menuFolderTitle(menuFolder.getTitle())
                 .menuFolderUrl(menuFolder.getImgUrl())
                 .menuFolderIcon(menuFolder.getIcon())
+                .menuIds(menuIds)
                 .index(menuFolder.getIndex())
                 .build();
     }
