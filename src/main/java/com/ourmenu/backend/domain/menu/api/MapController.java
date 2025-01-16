@@ -1,6 +1,7 @@
 package com.ourmenu.backend.domain.menu.api;
 
 import com.ourmenu.backend.domain.menu.application.MapService;
+import com.ourmenu.backend.domain.menu.dto.MapSearchDto;
 import com.ourmenu.backend.domain.menu.dto.MenuInfoOnMapDto;
 import com.ourmenu.backend.domain.menu.dto.MenuOnMapDto;
 import com.ourmenu.backend.domain.user.domain.CustomUserDetails;
@@ -8,10 +9,7 @@ import com.ourmenu.backend.global.response.ApiResponse;
 import com.ourmenu.backend.global.response.util.ApiUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -44,4 +42,18 @@ public class MapController {
         List<MenuInfoOnMapDto> response = mapService.findMenuOnMap(mapId, userDetails.getId());
         return ApiUtil.success(response);
     }
+
+    /**
+     * 지도 화면 검색 API
+     * @param title
+     * @param userDetails
+     * @return
+     */
+    @GetMapping("/search")
+    public ApiResponse<List<MapSearchDto>> findSearchOnMap(@RequestParam String title, @AuthenticationPrincipal CustomUserDetails userDetails){
+        List<MapSearchDto> response = mapService.findSearchResultOnMap(title, userDetails.getId());
+        return ApiUtil.success(response);
+    }
+
+
 }

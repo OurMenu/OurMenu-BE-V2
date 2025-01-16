@@ -4,6 +4,7 @@ import com.ourmenu.backend.domain.menu.dao.MenuFolderRepository;
 import com.ourmenu.backend.domain.menu.dao.MenuImgRepository;
 import com.ourmenu.backend.domain.menu.domain.MenuFolder;
 import com.ourmenu.backend.domain.menu.domain.MenuImg;
+import com.ourmenu.backend.domain.menu.dto.MapSearchDto;
 import com.ourmenu.backend.domain.menu.dto.MenuFolderInfoOnMapDto;
 import com.ourmenu.backend.domain.menu.dto.MenuInfoOnMapDto;
 import com.ourmenu.backend.domain.menu.dto.MenuOnMapDto;
@@ -16,6 +17,7 @@ import com.ourmenu.backend.domain.store.domain.Store;
 import com.ourmenu.backend.domain.tag.dao.MenuTagRepository;
 import com.ourmenu.backend.domain.tag.domain.MenuTag;
 import com.ourmenu.backend.domain.user.dao.UserRepository;
+import com.ourmenu.backend.domain.user.domain.CustomUserDetails;
 import com.ourmenu.backend.domain.user.domain.User;
 import com.ourmenu.backend.domain.user.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +27,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -84,6 +87,20 @@ public class MapService {
             MenuFolderInfoOnMapDto menuFolderInfo = MenuFolderInfoOnMapDto.of(latestMenuFolder, menuFolders.size());
             response.add(MenuInfoOnMapDto.of(menu, menuTags, menuImgs, menuFolderInfo));
         }
+
+        return response;
+    }
+
+    public List<MapSearchDto> findSearchResultOnMap(String title, Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(UserNotFoundException::new);
+
+        List<Menu> menus = menuRepository.findMenusByUserId(userId);
+        List<MapSearchDto> response = menus.stream()
+                .filter(m -> m.getStore().getTitle().contains(title)
+                        || m.getTitle().contains(title))
+                .map(MapSearchDto::from)
+                .toList();
 
         return response;
     }
