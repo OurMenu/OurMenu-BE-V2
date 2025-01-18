@@ -61,11 +61,9 @@ public class MapService {
                 .filter(menu -> menu.getStore().getMap() != null)
                 .collect(Collectors.groupingBy(menu -> menu.getStore().getMap()));
 
-        List<MenuOnMapDto> response = menuMaps.entrySet().stream()
+        return menuMaps.entrySet().stream()
                 .map(entry -> MenuOnMapDto.from(entry.getKey(), entry.getValue()))
                 .collect(Collectors.toList());
-
-        return response;
     }
 
     public List<MenuInfoOnMapDto> findMenuOnMap(Long mapId, Long userId) {
@@ -74,17 +72,17 @@ public class MapService {
 
         List<Store> stores = map.getStores();
         List<Menu> menus = new ArrayList<>();
-        List<MenuInfoOnMapDto> response = new ArrayList<>();
+        List<MenuInfoOnMapDto> menuInfoOnMapDtos = new ArrayList<>();
 
         for (Store store : stores) {
             menus = menuRepository.findMenusByStoreIdAndUserId(store.getId(), userId);
         }
 
         for (Menu menu : menus) {
-            response.add(getMenuInfo(menu));
+            menuInfoOnMapDtos.add(getMenuInfo(menu));
         }
 
-        return response;
+        return menuInfoOnMapDtos;
     }
 
     public List<MapSearchDto> findSearchResultOnMap(String title, Long userId) {
@@ -92,7 +90,7 @@ public class MapService {
                 .orElseThrow(UserNotFoundException::new);
 
         List<Menu> menus = menuRepository.findMenusByUserId(userId);
-        List<MapSearchDto> response = menus.stream()
+        List<MapSearchDto> mapSearchDtos = menus.stream()
                 .filter(m -> m.getStore().getTitle().contains(title)
                         || m.getTitle().contains(title))
                 .map(MapSearchDto::from)
@@ -106,7 +104,7 @@ public class MapService {
 
         ownedMenuSearchRepository.save(ownedMenuSearch);
 
-        return response;
+        return mapSearchDtos;
     }
 
     public List<MapSearchDto> findSearchHistoryOnMap(Long userId) {
@@ -115,30 +113,27 @@ public class MapService {
         Page<OwnedMenuSearch> searchHistoryPage = ownedMenuSearchRepository
                 .findByUserIdOrderBySearchAtDesc(userId, pageable);
 
-        List<MapSearchDto> response = searchHistoryPage.stream()
+        return searchHistoryPage.stream()
                 .map(MapSearchDto::from)
                 .collect(Collectors.toList());
-
-        return response;
     }
 
     public MenuInfoOnMapDto findMenuByMenuIdOnMap(Long menuId, Long userId) {
         Menu menu = menuRepository.findByIdAndUserId(menuId, userId);
 
-        MenuInfoOnMapDto response = getInfo(menu);
-        return response;
+        return getMenuInfo(menu);
     }
 
 
     public List<MenuInfoOnMapDto> findMenuByStoreIdOnMap(Long storeId, Long userId) {
         List<Menu> menus = menuRepository.findByUserIdAndStoreId(userId, storeId);
-        List<MenuInfoOnMapDto> response = new ArrayList<>();
+        List<MenuInfoOnMapDto> menuInfoOnMapDtos = new ArrayList<>();
 
         for (Menu menu : menus) {
-            response.add(getMenuInfo(menu));
+            menuInfoOnMapDtos.add(getMenuInfo(menu));
         }
 
-        return response;
+        return menuInfoOnMapDtos;
     }
 
     private MenuInfoOnMapDto getMenuInfo(Menu menu) {
@@ -152,7 +147,6 @@ public class MapService {
 
         MenuFolderInfoOnMapDto menuFolderInfo = MenuFolderInfoOnMapDto.of(latestMenuFolder, menuFolders.size());
 
-        MenuInfoOnMapDto response = MenuInfoOnMapDto.of(menu, menuTags, menuImgs, menuFolderInfo);
-        return response;
+        return MenuInfoOnMapDto.of(menu, menuTags, menuImgs, menuFolderInfo);
     }
 }
