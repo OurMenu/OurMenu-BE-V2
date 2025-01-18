@@ -66,4 +66,10 @@ public class MapController {
         List<MenuInfoOnMapDto> response = mapService.findMenuByStoreIdOnMap(storeId, userDetails.getId());
         return ApiUtil.success(response);
     }
+
+    @GetMapping("/search-history")
+    public ApiResponse<List<MapSearchDto>> findSearchHistoryOnMap(@AuthenticationPrincipal CustomUserDetails userDetails){
+        List<MapSearchDto> response = mapService.findSearchHistoryOnMap(userDetails.getId());
+        return ApiUtil.success(response);
+    }
 }
