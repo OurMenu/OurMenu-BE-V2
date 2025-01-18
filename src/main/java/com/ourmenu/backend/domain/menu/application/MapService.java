@@ -81,7 +81,7 @@ public class MapService {
         }
 
         for (Menu menu : menus) {
-            response.add(getInfo(menu));
+            response.add(getMenuInfo(menu));
         }
 
         return response;
@@ -135,7 +135,7 @@ public class MapService {
         List<MenuInfoOnMapDto> response = new ArrayList<>();
 
         for (Menu menu : menus) {
-            response.add(getInfo(menu));
+            response.add(getMenuInfo(menu));
         }
 
         return response;
