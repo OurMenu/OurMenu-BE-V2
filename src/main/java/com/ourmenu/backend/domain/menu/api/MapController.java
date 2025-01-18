@@ -38,7 +38,7 @@ public class MapController {
      * @return
      */
     @GetMapping("/{mapId}")
-    public ApiResponse<List<MenuInfoOnMapDto>> findMenuInfoOnMap(@PathVariable Long mapId, @AuthenticationPrincipal CustomUserDetails userDetails){
+    public ApiResponse<List<MenuInfoOnMapDto>> findMenuInfoByMapId(@PathVariable Long mapId, @AuthenticationPrincipal CustomUserDetails userDetails){
         List<MenuInfoOnMapDto> response = mapService.findMenuOnMap(mapId, userDetails.getId());
         return ApiUtil.success(response);
     }
@@ -55,5 +55,15 @@ public class MapController {
         return ApiUtil.success(response);
     }
 
+    @GetMapping("/{menuId}")
+    public ApiResponse<MenuInfoOnMapDto> findMenuInfoByMenuId(@PathVariable Long menuId, @AuthenticationPrincipal CustomUserDetails userDetails){
+        MenuInfoOnMapDto response = mapService.findMenuByMenuIdOnMap(menuId, userDetails.getId());
+        return ApiUtil.success(response);
+    }
 
+    @GetMapping("/{storeId}")
+    public ApiResponse<List<MenuInfoOnMapDto>> findMenuInfoByStoreId(@PathVariable Long storeId, @AuthenticationPrincipal CustomUserDetails userDetails){
+        List<MenuInfoOnMapDto> response = mapService.findMenuByStoreIdOnMap(storeId, userDetails.getId());
+        return ApiUtil.success(response);
+    }
 }
