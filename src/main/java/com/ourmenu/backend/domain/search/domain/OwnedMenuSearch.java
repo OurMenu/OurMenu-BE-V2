@@ -27,7 +27,13 @@ public class OwnedMenuSearch extends BaseEntity {
     private Long id;
 
     @NotNull
-    private String title;
+    private String menuTitle;
+
+    @NotNull
+    private String storeTitle;
+
+    @NotNull
+    private String storeAddress;
 
     @NotNull
     private LocalDateTime searchAt;
