@@ -81,16 +81,7 @@ public class MapService {
         }
 
         for (Menu menu : menus) {
-            List<MenuTag> menuTags = menuTagRepository.findMenuTagsByMenuId(menu.getId());
-            List<MenuImg> menuImgs = menuImgRepository.findAllByMenuId(menu.getId());
-            List<MenuFolder> menuFolders = menuFolderRepository.findMenuFoldersByMenuId(menu.getId());
-
-            MenuFolder latestMenuFolder = menuFolders.stream()
-                    .max(Comparator.comparing(MenuFolder::getCreatedAt)) // createdAt으로 정렬
-                    .orElseThrow(RuntimeException::new);        //예외처리 수정 필요
-
-            MenuFolderInfoOnMapDto menuFolderInfo = MenuFolderInfoOnMapDto.of(latestMenuFolder, menuFolders.size());
-            response.add(MenuInfoOnMapDto.of(menu, menuTags, menuImgs, menuFolderInfo));
+            response.add(getInfo(menu));
         }
 
         return response;
@@ -134,6 +125,23 @@ public class MapService {
     public MenuInfoOnMapDto findMenuByMenuIdOnMap(Long menuId, Long userId) {
         Menu menu = menuRepository.findByIdAndUserId(menuId, userId);
 
+        MenuInfoOnMapDto response = getInfo(menu);
+        return response;
+    }
+
+
+    public List<MenuInfoOnMapDto> findMenuByStoreIdOnMap(Long storeId, Long userId) {
+        List<Menu> menus = menuRepository.findByUserIdAndStoreId(userId, storeId);
+        List<MenuInfoOnMapDto> response = new ArrayList<>();
+
+        for (Menu menu : menus) {
+            response.add(getInfo(menu));
+        }
+
+        return response;
+    }
+
+    private MenuInfoOnMapDto getMenuInfo(Menu menu) {
         List<MenuTag> menuTags = menuTagRepository.findMenuTagsByMenuId(menu.getId());
         List<MenuImg> menuImgs = menuImgRepository.findAllByMenuId(menu.getId());
         List<MenuFolder> menuFolders = menuFolderRepository.findMenuFoldersByMenuId(menu.getId());
@@ -145,26 +153,6 @@ public class MapService {
         MenuFolderInfoOnMapDto menuFolderInfo = MenuFolderInfoOnMapDto.of(latestMenuFolder, menuFolders.size());
 
         MenuInfoOnMapDto response = MenuInfoOnMapDto.of(menu, menuTags, menuImgs, menuFolderInfo);
-        return response;
-    }
-
-    public List<MenuInfoOnMapDto> findMenuByStoreIdOnMap(Long storeId, Long userId) {
-        List<Menu> menus = menuRepository.findByUserIdAndStoreId(userId, storeId);
-        List<MenuInfoOnMapDto> response = new ArrayList<>();
-
-        for (Menu menu : menus) {
-            List<MenuTag> menuTags = menuTagRepository.findMenuTagsByMenuId(menu.getId());
-            List<MenuImg> menuImgs = menuImgRepository.findAllByMenuId(menu.getId());
-            List<MenuFolder> menuFolders = menuFolderRepository.findMenuFoldersByMenuId(menu.getId());
-
-            MenuFolder latestMenuFolder = menuFolders.stream()
-                    .max(Comparator.comparing(MenuFolder::getCreatedAt)) // createdAt으로 정렬
-                    .orElseThrow(RuntimeException::new);        //예외처리 수정 필요
-
-            MenuFolderInfoOnMapDto menuFolderInfo = MenuFolderInfoOnMapDto.of(latestMenuFolder, menuFolders.size());
-            response.add(MenuInfoOnMapDto.of(menu, menuTags, menuImgs, menuFolderInfo));
-        }
-
         return response;
     }
 }
