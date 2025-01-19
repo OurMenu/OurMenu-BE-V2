@@ -68,14 +68,15 @@ public class MapService {
                 .orElseThrow(RuntimeException::new);    //예외처리 수정 필요
 
         List<Store> stores = map.getStores();
-        List<Menu> menus = new ArrayList<>();
+        List<Menu> menuList = new ArrayList<>();
         List<MenuInfoOnMapDto> menuInfoOnMapDtos = new ArrayList<>();
 
         for (Store store : stores) {
-            menus = menuRepository.findMenusByStoreIdAndUserId(store.getId(), userId);
+            List<Menu> findMenuList = menuRepository.findMenusByStoreIdAndUserId(store.getId(), userId);
+            menuList.addAll(findMenuList);
         }
 
-        for (Menu menu : menus) {
+        for (Menu menu : menuList) {
             menuInfoOnMapDtos.add(getMenuInfo(menu));
         }
 
