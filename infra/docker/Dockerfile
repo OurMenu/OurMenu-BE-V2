@@ -7,6 +7,7 @@ COPY gradle ./gradle
 
 COPY src ./src
 
+RUN chmod +x gradlew
 RUN ./gradlew clean build -x test
 
 FROM openjdk:17-jdk-slim
