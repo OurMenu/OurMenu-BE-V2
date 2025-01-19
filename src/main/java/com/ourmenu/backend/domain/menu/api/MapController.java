@@ -15,7 +15,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/users/menus/maps")
+@RequestMapping("/api/users/menus")
 public class MapController {
 
     private final MapService mapService;
@@ -25,7 +25,7 @@ public class MapController {
      * @param userDetails
      * @return
      */
-    @GetMapping("")
+    @GetMapping("/maps")
     public ApiResponse<List<MenuOnMapDto>> findMenusOnMap(@AuthenticationPrincipal CustomUserDetails userDetails) {
         List<MenuOnMapDto> response = mapService.findMenusOnMap(userDetails.getId());
         return ApiUtil.success(response);
@@ -37,7 +37,7 @@ public class MapController {
      * @param userDetails
      * @return
      */
-    @GetMapping("/{mapId}")
+    @GetMapping("/{mapId}/maps")
     public ApiResponse<List<MenuInfoOnMapDto>> findMenuInfoByMapId(@PathVariable Long mapId, @AuthenticationPrincipal CustomUserDetails userDetails){
         List<MenuInfoOnMapDto> response = mapService.findMenuOnMap(mapId, userDetails.getId());
         return ApiUtil.success(response);
@@ -49,13 +49,13 @@ public class MapController {
      * @param userDetails
      * @return
      */
-    @GetMapping("/search")
+    @GetMapping("/maps/search")
     public ApiResponse<List<MapSearchDto>> findSearchOnMap(@RequestParam String title, @AuthenticationPrincipal CustomUserDetails userDetails){
         List<MapSearchDto> response = mapService.findSearchResultOnMap(title, userDetails.getId());
         return ApiUtil.success(response);
     }
 
-    @GetMapping("/{menuId}")
+    @GetMapping("/{menuId}/maps")
     public ApiResponse<MenuInfoOnMapDto> findMenuInfoByMenuId(@PathVariable Long menuId, @AuthenticationPrincipal CustomUserDetails userDetails){
         MenuInfoOnMapDto response = mapService.findMenuByMenuIdOnMap(menuId, userDetails.getId());
         return ApiUtil.success(response);
@@ -67,7 +67,7 @@ public class MapController {
 //        return ApiUtil.success(response);
 //    }
 
-    @GetMapping("/search-history")
+    @GetMapping("/maps/search-history")
     public ApiResponse<List<MapSearchDto>> findSearchHistoryOnMap(@AuthenticationPrincipal CustomUserDetails userDetails){
         List<MapSearchDto> response = mapService.findSearchHistoryOnMap(userDetails.getId());
         return ApiUtil.success(response);
