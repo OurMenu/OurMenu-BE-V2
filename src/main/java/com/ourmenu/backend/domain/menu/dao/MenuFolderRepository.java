@@ -32,7 +32,6 @@ public interface MenuFolderRepository extends JpaRepository<MenuFolder, Long> {
 
     @Query("SELECT DISTINCT mf FROM MenuFolder mf " +
             "JOIN MenuMenuFolder mmf ON mf.id = mmf.folderId "+
-//            "JOIN FETCH mmf.menu m " +
             "WHERE mmf.menu.id = :menuId")
     List<MenuFolder> findMenuFoldersByMenuId(@Param("menuId") Long menuId);
 
