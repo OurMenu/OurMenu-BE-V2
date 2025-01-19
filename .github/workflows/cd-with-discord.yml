@@ -1,0 +1,80 @@
+name: CI and request Discord Message to review
+
+on:
+  push:
+    branches:
+      - 'main'
+
+#동시성 환경을 해결한다
+concurrency:
+  group: ${{ github.ref }} # 동일한 PR에 대한 식별자
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      write-all
+    steps:
+      - name: 배포한다
+        uses: appleboy/ssh-action@master
+        id: deploy
+        with:
+          host: ${{ secrets.HOST }}
+          username: ubuntu
+          port: 22
+          key: ${{ secrets.KEY }}
+          envs: GITHUB_SHA
+          script: |
+            cd ${{secrets.PROJECT_PATH}}
+            chmod +x ./infra/script/deploy.sh
+            ./infra/script/deploy.sh
+
+  send_discord_message:
+    needs: deploy
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: 성공시 Discord 메세지를 보낸다
+        if: ${{ needs.build.result == 'success' }}
+        uses: Ilshidur/action-discord@master
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          DISCORD_USERNAME: 개발진스
+          DISCORD_AVATAR: "https://github.com/user-attachments/assets/1ff8e3ad-40c1-4a99-85cf-367376ed5d93"
+          DISCORD_EMBEDS: '
+          [
+            { 
+              "title": "배포 공지",
+
+              "fields": [
+                {
+                  "name": "내용",
+                  "value": "배포 완료했습니다"
+
+                }
+              ] 
+            }
+          ]'
+
+      - name: 실패시 실패 메세지를 보낸다
+        if: ${{ needs.build.result == 'failure' }}
+        uses: Ilshidur/action-discord@master
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          DISCORD_USERNAME: 개발진스
+          DISCORD_AVATAR: "https://github.com/user-attachments/assets/1ff8e3ad-40c1-4a99-85cf-367376ed5d93"
+          DISCORD_EMBEDS: '
+                    [
+                      { 
+                        "title": "배포 공지",
+
+                        "fields": [
+                          {
+                            "name": "내용",
+                            "value": "배포 실패입니다"
+
+                          }
+                        ] 
+                      }
+                    ]'
