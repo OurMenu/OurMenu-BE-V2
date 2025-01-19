@@ -61,11 +61,11 @@ public class MapController {
         return ApiUtil.success(response);
     }
 
-    @GetMapping("/{storeId}")
-    public ApiResponse<List<MenuInfoOnMapDto>> findMenuInfoByStoreId(@PathVariable Long storeId, @AuthenticationPrincipal CustomUserDetails userDetails){
-        List<MenuInfoOnMapDto> response = mapService.findMenuByStoreIdOnMap(storeId, userDetails.getId());
-        return ApiUtil.success(response);
-    }
+//    @GetMapping("/{storeId}")
+//    public ApiResponse<List<MenuInfoOnMapDto>> findMenuInfoByStoreId(@PathVariable Long storeId, @AuthenticationPrincipal CustomUserDetails userDetails){
+//        List<MenuInfoOnMapDto> response = mapService.findMenuByStoreIdOnMap(storeId, userDetails.getId());
+//        return ApiUtil.success(response);
+//    }
 
     @GetMapping("/search-history")
     public ApiResponse<List<MapSearchDto>> findSearchHistoryOnMap(@AuthenticationPrincipal CustomUserDetails userDetails){
