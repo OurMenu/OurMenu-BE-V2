@@ -14,8 +14,8 @@ public class MenuOnMapDto {
 
     private Long mapId;
     private List<String> menuPins;
-    private Double latitude;
-    private Double longitude;
+    private Double mapX;
+    private Double mapY;
 
     public static MenuOnMapDto from(Map map, List<Menu> menus){
         return MenuOnMapDto.builder()
@@ -23,8 +23,8 @@ public class MenuOnMapDto {
                 .menuPins(menus.stream()
                         .map(Menu::getPin)
                         .collect(Collectors.toList()))
-                .latitude(map.getMapX())
-                .longitude(map.getMapY())
+                .mapX(map.getMapX())
+                .mapY(map.getMapY())
                 .build();
     }
 }
