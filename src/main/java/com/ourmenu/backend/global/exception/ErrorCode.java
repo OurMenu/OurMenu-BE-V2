@@ -19,6 +19,7 @@ public enum ErrorCode {
     PASSWORD_NOT_MATCH(HttpStatus.UNAUTHORIZED, "U401", "비밀번호가 일치하지 않습니다."),
     DUPLICATE_EMAIL(HttpStatus.CONFLICT, "U409", "이미 존재하는 이메일입니다."),
     NOT_MATCH_TOKEN(HttpStatus.UNAUTHORIZED, "U401", "유저의 토큰값과 일치하지 않습니다."),
+    INVALID_MEAL_TIME_COUNT(HttpStatus.BAD_REQUEST, "U400", "식사시간 배열의 크기가 유효하지 않습니다."),
 
     // 메뉴판
     FORBIDDEN_MENU_FOLDER(HttpStatus.FORBIDDEN, "F403", "소유하고 있는 메뉴판이 아닙니다"),

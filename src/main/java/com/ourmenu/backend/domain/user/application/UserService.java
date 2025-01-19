@@ -11,10 +11,7 @@ import com.ourmenu.backend.domain.user.dto.request.SignUpRequest;
 import com.ourmenu.backend.domain.user.dto.response.ReissueToken;
 import com.ourmenu.backend.domain.user.dto.response.TokenDto;
 import com.ourmenu.backend.domain.user.dto.response.UserDto;
-import com.ourmenu.backend.domain.user.exception.DuplicateEmailException;
-import com.ourmenu.backend.domain.user.exception.NotMatchTokenException;
-import com.ourmenu.backend.domain.user.exception.PasswordNotMatchException;
-import com.ourmenu.backend.domain.user.exception.UserNotFoundException;
+import com.ourmenu.backend.domain.user.exception.*;
 import com.ourmenu.backend.global.util.JwtTokenProvider;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -68,6 +65,11 @@ public class UserService {
                     .build();
             mealTimes.add(newMealTime);
         }
+
+        if (mealTimes.isEmpty() || mealTimes.size() > 4){
+            throw new InvalidMealTimeCountException();
+        }
+
         mealTimeRepository.saveAll(mealTimes);
 
         return "OK";
@@ -147,6 +149,10 @@ public class UserService {
                     .mealTime(mealTime)
                     .build();
             updatedMealTimes.add(newMealTime);
+        }
+
+        if (updatedMealTimes.isEmpty() || updatedMealTimes.size() > 4){
+            throw new InvalidMealTimeCountException();
         }
 
         mealTimeRepository.saveAll(updatedMealTimes);
