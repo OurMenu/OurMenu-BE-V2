@@ -27,7 +27,7 @@ jobs:
           envs: GITHUB_SHA
           script: |
             cd ${{secrets.PROJECT_PATH}}
-            chmod +x ./infra/script/deploy.sh
+            sudo chmod +x ./infra/script/deploy.sh
             ./infra/script/deploy.sh
 
   send_discord_message:
