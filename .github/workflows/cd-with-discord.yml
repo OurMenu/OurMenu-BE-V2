@@ -36,7 +36,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 성공시 Discord 메세지를 보낸다
-        if: ${{ needs.build.result == 'success' }}
+        if: ${{ needs.deploy.result == 'success' }}
         uses: Ilshidur/action-discord@master
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
@@ -58,7 +58,7 @@ jobs:
           ]'
 
       - name: 실패시 실패 메세지를 보낸다
-        if: ${{ needs.build.result == 'failure' }}
+        if: ${{ needs.deploy.result == 'failure' }}
         uses: Ilshidur/action-discord@master
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
