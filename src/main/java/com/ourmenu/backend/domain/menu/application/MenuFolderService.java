@@ -36,6 +36,12 @@ public class MenuFolderService {
         return SaveMenuFolderResponse.of(menuFolder, menuFolderDto.getMenuIds());
     }
 
+    /**
+     * 메뉴판 삭제 (인덱스 조정)
+     *
+     * @param userId
+     * @param menuFolderId
+     */
     @Transactional
     public void deleteMenuFolder(Long userId, Long menuFolderId) {
         MenuFolder menuFolder = findOne(userId, menuFolderId);
