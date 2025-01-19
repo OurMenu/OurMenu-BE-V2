@@ -4,10 +4,7 @@ import com.ourmenu.backend.domain.menu.dao.MenuFolderRepository;
 import com.ourmenu.backend.domain.menu.dao.MenuImgRepository;
 import com.ourmenu.backend.domain.menu.domain.MenuFolder;
 import com.ourmenu.backend.domain.menu.domain.MenuImg;
-import com.ourmenu.backend.domain.menu.dto.MapSearchDto;
-import com.ourmenu.backend.domain.menu.dto.MenuFolderInfoOnMapDto;
-import com.ourmenu.backend.domain.menu.dto.MenuInfoOnMapDto;
-import com.ourmenu.backend.domain.menu.dto.MenuOnMapDto;
+import com.ourmenu.backend.domain.menu.dto.*;
 import com.ourmenu.backend.domain.menu.dao.MenuRepository;
 import com.ourmenu.backend.domain.menu.domain.Menu;
 import com.ourmenu.backend.domain.search.dao.OwnedMenuSearchRepository;
@@ -27,8 +24,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -99,17 +96,18 @@ public class MapService {
         return mapSearchDtos;
     }
 
-    public List<MapSearchDto> findSearchHistoryOnMap(Long userId) {
+    public List<MapSearchHistoryDto> findSearchHistoryOnMap(Long userId) {
         Pageable pageable = PageRequest.of(0, 10);
 
         Page<OwnedMenuSearch> searchHistoryPage = ownedMenuSearchRepository
-                .findByUserIdOrderBySearchAtDesc(userId, pageable);
+                .findByUserIdOrderByModifiedAtDesc(userId, pageable);
 
         return searchHistoryPage.stream()
-                .map(MapSearchDto::from)
+                .map(MapSearchHistoryDto::from)
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public MenuInfoOnMapDto findMenuByMenuIdOnMap(Long menuId, Long userId) {
         Menu menu = menuRepository.findByIdAndUserId(menuId, userId);
 
@@ -118,7 +116,6 @@ public class MapService {
                 .storeTitle(menu.getStore().getTitle())
                 .storeAddress(menu.getStore().getAddress())
                 .userId(userId)
-                .searchAt(LocalDateTime.now())
                 .build();
 
         ownedMenuSearchRepository.save(ownedMenuSearch);

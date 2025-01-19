@@ -7,5 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface OwnedMenuSearchRepository extends JpaRepository<OwnedMenuSearch, Long> {
 
-    Page<OwnedMenuSearch> findByUserIdOrderBySearchAtDesc(Long userId, Pageable pageable);
+    Page<OwnedMenuSearch> findByUserIdOrderByModifiedAtDesc(Long userId, Pageable pageable);
 }

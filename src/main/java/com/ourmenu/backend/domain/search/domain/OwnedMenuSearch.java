@@ -36,8 +36,5 @@ public class OwnedMenuSearch extends BaseEntity {
     private String storeAddress;
 
     @NotNull
-    private LocalDateTime searchAt;
-
-    @NotNull
     private Long userId;
 }
