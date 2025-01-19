@@ -1,5 +1,6 @@
 package com.ourmenu.backend.domain.menu.dto;
 
+import com.ourmenu.backend.domain.search.dto.SimpleSearchDto;
 import com.ourmenu.backend.domain.tag.domain.Tag;
 import com.ourmenu.backend.domain.user.domain.CustomUserDetails;
 import java.util.List;
@@ -19,8 +20,9 @@ public class MenuDto {
     private int menuPrice;
     private String menuMemoTitle;
     private String menuMemoContent;
-    private int menuPin;
+    private String menuPin;
     private List<Long> menuFolderIds;
+    private String storeId;
     private boolean isCrawled;
     private List<Tag> tags;
     private String storeTitle;
@@ -30,7 +32,7 @@ public class MenuDto {
     private Long userId;
 
     public static MenuDto of(SaveMenuRequest request, List<MultipartFile> menuFolderImgs,
-                             CustomUserDetails userDetails) {
+                             CustomUserDetails userDetails, SimpleSearchDto simpleSearchDto) {
         return MenuDto.builder()
                 .menuImgs(menuFolderImgs)
                 .menuTitle(request.getMenuTitle())
@@ -41,10 +43,10 @@ public class MenuDto {
                 .menuFolderIds(request.getMenuFolderIds())
                 .isCrawled(request.isCrawled())
                 .tags(request.getTags())
-                .storeTitle(request.getStoreTitle())
-                .storeAddress(request.getStoreAddress())
-                .mapX(request.getMapX())
-                .mapY(request.getMapY())
+                .storeTitle(simpleSearchDto.getStoreTitle())
+                .storeAddress(simpleSearchDto.getStoreAddress())
+                .mapX(simpleSearchDto.getMapX())
+                .mapY(simpleSearchDto.getMapY())
                 .userId(userDetails.getId())
                 .build();
     }

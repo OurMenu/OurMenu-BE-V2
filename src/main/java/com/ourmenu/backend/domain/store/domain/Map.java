@@ -2,17 +2,18 @@ package com.ourmenu.backend.domain.store.domain;
 
 import com.ourmenu.backend.global.domain.BaseEntity;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -31,6 +32,6 @@ public class Map extends BaseEntity {
     @NotNull
     private Double mapY;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Store store;
+    @OneToMany(mappedBy = "map")
+    private List<Store> stores;
 }
