@@ -34,7 +34,8 @@ public class MenuFolderController {
     private final MenuFolderService menuFolderService;
 
     @GetMapping
-    public ApiResponse<List<GetMenuFolderResponse>> getMenuFolder(@AuthenticationPrincipal CustomUserDetails userDetails) {
+    public ApiResponse<List<GetMenuFolderResponse>> getMenuFolder(
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
         List<GetMenuFolderResponse> response = menuFolderService.findAllMenuFolder(userDetails.getId());
         return ApiUtil.success(response);
     }
@@ -51,7 +52,7 @@ public class MenuFolderController {
     @PatchMapping(value = "/{menuFolderId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<UpdateMenuFolderResponse> updateMenuFolder(@PathVariable("menuFolderId") Long menuFolderId,
                                                                   @RequestPart("data") UpdateMenuFolderRequest request,
-                                                                  @RequestPart("menuFolderImg") MultipartFile menuFolderImg,
+                                                                  @RequestPart(value = "menuFolderImg", required = false) MultipartFile menuFolderImg,
                                                                   @AuthenticationPrincipal CustomUserDetails userDetails) {
         MenuFolderDto menuFolderDto = MenuFolderDto.of(request, menuFolderImg, userDetails.getId());
         UpdateMenuFolderResponse updateMenuFolderResponse = menuFolderService.updateMenuFolder(userDetails.getId(),
