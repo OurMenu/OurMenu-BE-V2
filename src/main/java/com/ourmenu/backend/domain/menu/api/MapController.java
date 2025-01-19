@@ -55,6 +55,12 @@ public class MapController {
         return ApiUtil.success(response);
     }
 
+    /**
+     * 지도 화면 MenuID 값으로 메뉴 상세 조회
+     * @param menuId
+     * @param userDetails
+     * @return
+     */
     @GetMapping("/maps/{menuId}/search")
     public ApiResponse<MenuInfoOnMapDto> findMenuInfoByMenuId(@PathVariable Long menuId, @AuthenticationPrincipal CustomUserDetails userDetails){
         MenuInfoOnMapDto response = mapService.findMenuByMenuIdOnMap(menuId, userDetails.getId());
@@ -67,6 +73,11 @@ public class MapController {
 //        return ApiUtil.success(response);
 //    }
 
+    /**
+     * 지도 화면 유저 검색 기록 조회
+     * @param userDetails
+     * @return
+     */
     @GetMapping("/maps/search-history")
     public ApiResponse<List<MapSearchDto>> findSearchHistoryOnMap(@AuthenticationPrincipal CustomUserDetails userDetails){
         List<MapSearchDto> response = mapService.findSearchHistoryOnMap(userDetails.getId());
