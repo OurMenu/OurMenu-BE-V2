@@ -55,7 +55,7 @@ public class MapController {
         return ApiUtil.success(response);
     }
 
-    @GetMapping("/{menuId}/maps")
+    @GetMapping("/maps/{menuId}/search")
     public ApiResponse<MenuInfoOnMapDto> findMenuInfoByMenuId(@PathVariable Long menuId, @AuthenticationPrincipal CustomUserDetails userDetails){
         MenuInfoOnMapDto response = mapService.findMenuByMenuIdOnMap(menuId, userDetails.getId());
         return ApiUtil.success(response);

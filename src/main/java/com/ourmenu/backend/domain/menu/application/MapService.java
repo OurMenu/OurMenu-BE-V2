@@ -96,14 +96,6 @@ public class MapService {
                 .map(MapSearchDto::from)
                 .toList();
 
-        OwnedMenuSearch ownedMenuSearch = OwnedMenuSearch.builder()
-                .menuTitle(title)
-                .userId(userId)
-                .searchAt(LocalDateTime.now())
-                .build();
-
-        ownedMenuSearchRepository.save(ownedMenuSearch);
-
         return mapSearchDtos;
     }
 
@@ -120,6 +112,16 @@ public class MapService {
 
     public MenuInfoOnMapDto findMenuByMenuIdOnMap(Long menuId, Long userId) {
         Menu menu = menuRepository.findByIdAndUserId(menuId, userId);
+
+        OwnedMenuSearch ownedMenuSearch = OwnedMenuSearch.builder()
+                .menuTitle(menu.getTitle())
+                .storeTitle(menu.getStore().getTitle())
+                .storeAddress(menu.getStore().getAddress())
+                .userId(userId)
+                .searchAt(LocalDateTime.now())
+                .build();
+
+        ownedMenuSearchRepository.save(ownedMenuSearch);
 
         return getMenuInfo(menu);
     }
