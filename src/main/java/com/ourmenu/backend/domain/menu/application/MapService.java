@@ -87,13 +87,12 @@ public class MapService {
                 .orElseThrow(UserNotFoundException::new);
 
         List<Menu> menus = menuRepository.findMenusByUserId(userId);
-        List<MapSearchDto> mapSearchDtos = menus.stream()
+
+        return menus.stream()
                 .filter(m -> m.getStore().getTitle().contains(title)
                         || m.getTitle().contains(title))
                 .map(MapSearchDto::from)
                 .toList();
-
-        return mapSearchDtos;
     }
 
     public List<MapSearchHistoryDto> findSearchHistoryOnMap(Long userId) {
@@ -110,19 +109,9 @@ public class MapService {
     @Transactional
     public MenuInfoOnMapDto findMenuByMenuIdOnMap(Long menuId, Long userId) {
         Menu menu = menuRepository.findByIdAndUserId(menuId, userId);
-
-        OwnedMenuSearch ownedMenuSearch = OwnedMenuSearch.builder()
-                .menuTitle(menu.getTitle())
-                .storeTitle(menu.getStore().getTitle())
-                .storeAddress(menu.getStore().getAddress())
-                .userId(userId)
-                .build();
-
-        ownedMenuSearchRepository.save(ownedMenuSearch);
-
+        saveOwnedMenuSearchHistory(userId, menu);
         return getMenuInfo(menu);
     }
-
 
     public List<MenuInfoOnMapDto> findMenuByStoreIdOnMap(Long storeId, Long userId) {
         List<Menu> menus = menuRepository.findByUserIdAndStoreId(userId, storeId);
@@ -147,5 +136,16 @@ public class MapService {
         MenuFolderInfoOnMapDto menuFolderInfo = MenuFolderInfoOnMapDto.of(latestMenuFolder, menuFolders.size());
 
         return MenuInfoOnMapDto.of(menu, menuTags, menuImgs, menuFolderInfo);
+    }
+
+    private void saveOwnedMenuSearchHistory(Long userId, Menu menu) {
+        OwnedMenuSearch ownedMenuSearch = OwnedMenuSearch.builder()
+                .menuTitle(menu.getTitle())
+                .storeTitle(menu.getStore().getTitle())
+                .storeAddress(menu.getStore().getAddress())
+                .userId(userId)
+                .build();
+
+        ownedMenuSearchRepository.save(ownedMenuSearch);
     }
 }

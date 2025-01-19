@@ -2,6 +2,7 @@ package com.ourmenu.backend.domain.menu.api;
 
 import com.ourmenu.backend.domain.menu.application.MapService;
 import com.ourmenu.backend.domain.menu.dto.MapSearchDto;
+import com.ourmenu.backend.domain.menu.dto.MapSearchHistoryDto;
 import com.ourmenu.backend.domain.menu.dto.MenuInfoOnMapDto;
 import com.ourmenu.backend.domain.menu.dto.MenuOnMapDto;
 import com.ourmenu.backend.domain.user.domain.CustomUserDetails;
@@ -79,8 +80,8 @@ public class MapController {
      * @return
      */
     @GetMapping("/maps/search-history")
-    public ApiResponse<List<MapSearchDto>> findSearchHistoryOnMap(@AuthenticationPrincipal CustomUserDetails userDetails){
-        List<MapSearchDto> response = mapService.findSearchHistoryOnMap(userDetails.getId());
+    public ApiResponse<List<MapSearchHistoryDto>> findSearchHistoryOnMap(@AuthenticationPrincipal CustomUserDetails userDetails){
+        List<MapSearchHistoryDto> response = mapService.findSearchHistoryOnMap(userDetails.getId());
         return ApiUtil.success(response);
     }
 }
