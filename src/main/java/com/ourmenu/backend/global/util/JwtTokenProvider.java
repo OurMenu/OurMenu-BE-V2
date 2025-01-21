@@ -92,14 +92,7 @@ public class JwtTokenProvider {
 
         Instant refreshTokenExpiredAt = Instant.now().plus(30, ChronoUnit.DAYS);
 
-        TokenDto tokenDto = TokenDto.builder()
-                .grantType("Bearer")
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .refreshTokenExpiredAt(refreshTokenExpiredAt)
-                .build();
-
-        return tokenDto;
+        return TokenDto.of(accessToken, refreshToken, refreshTokenExpiredAt);
     }
 
     /**
