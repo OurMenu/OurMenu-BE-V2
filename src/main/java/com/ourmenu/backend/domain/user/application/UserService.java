@@ -168,13 +168,16 @@ public class UserService {
         String refreshToken = reissueToken.getRefreshToken();
         String email = jwtTokenProvider.getEmailFromToken(refreshToken);
 
+        if (email.isEmpty()){
+            throw new InvalidTokenException();
+        }
+
         if (!jwtTokenProvider.tokenValidation(refreshToken)) {
             throw new TokenExpiredExcpetion();
         }
 
         RefreshToken storedToken = refreshTokenRepository.findRefreshTokenByEmail(email)
                 .orElseThrow(NotMatchTokenException::new);
-
 
         String newAccessToken = jwtTokenProvider.createToken(email, "Access");
         String newRefreshToken = reissueToken.getRefreshToken();
