@@ -13,6 +13,7 @@ import com.ourmenu.backend.domain.user.dto.response.TokenDto;
 import com.ourmenu.backend.domain.user.dto.response.UserDto;
 import com.ourmenu.backend.domain.user.exception.*;
 import com.ourmenu.backend.global.util.JwtTokenProvider;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -192,4 +193,16 @@ public class UserService {
                 .build();
     }
 
+    public void signOut(HttpServletRequest request, Long userId){
+        String token = request.getHeader("Authorization");
+
+        log.info("{}", token);
+        if (token != null && token.startsWith("Bearer ")) {
+            token = token.substring(7);
+            String email = jwtTokenProvider.getEmailFromToken(token);
+
+            refreshTokenRepository.findRefreshTokenByEmail(email)
+                    .ifPresent(refreshTokenRepository::delete);
+        }
+    }
 }

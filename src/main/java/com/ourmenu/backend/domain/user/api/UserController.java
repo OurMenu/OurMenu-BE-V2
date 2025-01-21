@@ -66,8 +66,9 @@ public class UserController {
     }
 
     @PostMapping("/sign-out")
-    private ApiResponse<String> signOut(){
-        return ApiUtil.success("OK");
+    private ApiResponse<Void> signOut(HttpServletRequest request, @AuthenticationPrincipal CustomUserDetails userDetails){
+        userService.signOut(request, userDetails.getId());
+        return ApiUtil.successOnly();
     }
 
     @PostMapping("/reissue-token")
