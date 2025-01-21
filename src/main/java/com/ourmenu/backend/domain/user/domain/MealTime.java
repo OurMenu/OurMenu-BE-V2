@@ -23,5 +23,5 @@ public class MealTime extends BaseEntity {
 
     private Long userId;
 
-    private String mealTime;
+    private Integer mealTime;
 }

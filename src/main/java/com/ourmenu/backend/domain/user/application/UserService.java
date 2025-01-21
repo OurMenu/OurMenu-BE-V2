@@ -59,7 +59,7 @@ public class UserService {
         User savedUser = userRepository.save(user);
 
         List<MealTime> mealTimes = new ArrayList<>();
-        for (String mealTime : signUpRequest.getMealTime()) {
+        for (Integer mealTime : signUpRequest.getMealTime()) {
             MealTime newMealTime = MealTime.builder()
                     .userId(savedUser.getId())
                     .mealTime(mealTime)
@@ -139,10 +139,10 @@ public class UserService {
 
         mealTimeRepository.deleteAllByUserId(userDetails.getId());
 
-        ArrayList<String> newMealTimes = request.getMealTime();
+        ArrayList<Integer> newMealTimes = request.getMealTime();
 
         ArrayList<MealTime> updatedMealTimes = new ArrayList<>();
-        for (String mealTime : newMealTimes) {
+        for (Integer mealTime : newMealTimes) {
             MealTime newMealTime = MealTime.builder()
                     .userId(userDetails.getId())
                     .mealTime(mealTime)

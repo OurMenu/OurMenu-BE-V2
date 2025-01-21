@@ -7,6 +7,5 @@ import java.util.ArrayList;
 
 @Getter
 public class MealTimeRequest {
-
-    @NotEmpty ArrayList<String> mealTime;
+    ArrayList<Integer> mealTime;
 }

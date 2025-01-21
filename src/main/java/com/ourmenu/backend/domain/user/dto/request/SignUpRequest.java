@@ -15,10 +15,6 @@ public class SignUpRequest {
 
     @NotBlank
     private String password;
-
-    @NotEmpty
-    private ArrayList<String> mealTime;
-
-    @NotBlank
+    private ArrayList<Integer> mealTime;
     private String signInType;
 }
