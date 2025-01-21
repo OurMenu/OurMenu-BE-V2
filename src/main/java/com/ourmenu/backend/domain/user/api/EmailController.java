@@ -27,8 +27,8 @@ public class EmailController {
     }
 
     @PostMapping("/confirm-code")
-    private ApiResponse<String> verifyEmail(@Valid @RequestBody VerifyEmailRequest request){
-        String response = emailService.verifyConfirmCode(request);
-        return ApiUtil.success(response);
+    private ApiResponse<Void> verifyEmail(@Valid @RequestBody VerifyEmailRequest request){
+        emailService.verifyConfirmCode(request);
+        return ApiUtil.successOnly();
     }
 }

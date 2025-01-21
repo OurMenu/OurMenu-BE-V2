@@ -76,11 +76,9 @@ public class EmailService {
         return confirmCode.toString();
     }
 
-    public String verifyConfirmCode(VerifyEmailRequest request){
+    public void verifyConfirmCode(VerifyEmailRequest request){
         String email = request.getEmail();
         String inputConfirmCode = request.getConfirmCode();
-
-        log.error("{},{}", email, inputConfirmCode);
 
         ConfirmCode confirmCode = confirmCodeRepository.findConfirmCodeByEmail(email)
                 .orElseThrow(ConfirmCodeNotFoundException::new);
@@ -88,8 +86,6 @@ public class EmailService {
         if (!confirmCode.getConfirmCode().equals(inputConfirmCode)) {
             throw new NotMatchConfirmCodeException();
         }
-
-        return "OK";
     }
 
 }

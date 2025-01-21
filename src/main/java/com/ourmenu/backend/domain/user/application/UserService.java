@@ -41,7 +41,7 @@ public class UserService {
      * @param signUpRequest User의 Email, Password, SignInType, MealTime 정보를 가진 Request
      * @return 회원가입 완료
      */
-    public String signUp(SignUpRequest signUpRequest) {
+    public void signUp(SignUpRequest signUpRequest) {
 
         if(userRepository.findByEmail(signUpRequest.getEmail()).isPresent()){
             throw new DuplicateEmailException();
@@ -72,7 +72,6 @@ public class UserService {
 
         mealTimeRepository.saveAll(mealTimes);
 
-        return "OK";
     }
 
     /**
@@ -117,7 +116,7 @@ public class UserService {
         response.addHeader(JwtTokenProvider.REFRESH_TOKEN, tokenDto.getRefreshToken());
     }
 
-    public String changePassword(PasswordRequest request, CustomUserDetails userDetails) {
+    public void changePassword(PasswordRequest request, CustomUserDetails userDetails) {
         String rawPassword = request.password();
         String encodedPassword = userDetails.getPassword();
 
@@ -131,11 +130,10 @@ public class UserService {
         String newPassword = passwordEncoder.encode(request.newPassword());
         user.changePassword(newPassword);
         userRepository.save(user);
-        return "OK";
     }
 
     @Transactional
-    public String changeMealTime(MealTimeRequest request, CustomUserDetails userDetails) {
+    public void changeMealTime(MealTimeRequest request, CustomUserDetails userDetails) {
         log.debug("{}", userDetails.getId());
 
         mealTimeRepository.deleteAllByUserId(userDetails.getId());
@@ -156,7 +154,6 @@ public class UserService {
         }
 
         mealTimeRepository.saveAll(updatedMealTimes);
-        return "OK";
     }
 
     public UserDto getUserInfo(CustomUserDetails userDetails) {

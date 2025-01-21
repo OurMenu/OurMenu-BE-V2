@@ -30,9 +30,9 @@ public class UserController {
      * @return
      */
     @PostMapping("/sign-up")
-    private ApiResponse<String> signUp(@Valid @RequestBody SignUpRequest signUpRequest){
-        String response = userService.signUp(signUpRequest);
-        return ApiUtil.success(response);
+    private ApiResponse<Void> signUp(@Valid @RequestBody SignUpRequest signUpRequest){
+        userService.signUp(signUpRequest);
+        return ApiUtil.successOnly();
     }
 
     /**
@@ -48,15 +48,15 @@ public class UserController {
     }
 
     @PatchMapping("/password")
-    private ApiResponse<String> changePassword(@Valid @RequestBody PasswordRequest request, @AuthenticationPrincipal CustomUserDetails userDetails){
-        String response = userService.changePassword(request, userDetails);
-        return ApiUtil.success(response);
+    private ApiResponse<Void> changePassword(@Valid @RequestBody PasswordRequest request, @AuthenticationPrincipal CustomUserDetails userDetails){
+        userService.changePassword(request, userDetails);
+        return ApiUtil.successOnly();
     }
 
     @PatchMapping("/meal-time")
-    private ApiResponse<String> changeMealTime(@Valid @RequestBody MealTimeRequest request, @AuthenticationPrincipal CustomUserDetails userDetails){
-        String response = userService.changeMealTime(request, userDetails);
-        return ApiUtil.success(response);
+    private ApiResponse<Void> changeMealTime(@Valid @RequestBody MealTimeRequest request, @AuthenticationPrincipal CustomUserDetails userDetails){
+        userService.changeMealTime(request, userDetails);
+        return ApiUtil.successOnly();
     }
 
     @GetMapping("")
