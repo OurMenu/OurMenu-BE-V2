@@ -55,7 +55,6 @@ public class UserService {
                 .password(encodedPassword)
                 .signInType(SignInType.valueOf(signUpRequest.getSignInType()))
                 .build();
-
         User savedUser = userRepository.save(user);
 
         List<MealTime> mealTimes = new ArrayList<>();
@@ -68,6 +67,7 @@ public class UserService {
         }
 
         if (mealTimes.isEmpty() || mealTimes.size() > 4){
+            userRepository.delete(savedUser);
             throw new InvalidMealTimeCountException();
         }
 
@@ -199,7 +199,6 @@ public class UserService {
     public void signOut(HttpServletRequest request, Long userId){
         String token = request.getHeader("Authorization");
 
-        log.info("{}", token);
         if (token != null && token.startsWith("Bearer ")) {
             token = token.substring(7);
             String email = jwtTokenProvider.getEmailFromToken(token);
