@@ -3,13 +3,11 @@ package com.ourmenu.backend.domain.user.dto.request;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 
 import java.util.ArrayList;
 
-@Data
-@AllArgsConstructor
+@Getter
 public class SignUpRequest {
 
     @Email

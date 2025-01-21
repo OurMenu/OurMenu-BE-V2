@@ -12,7 +12,7 @@ public class UserDto {
     private String email;
     private String signInType;
 
-    public static UserDto of(User user){
+    public static UserDto from(User user){
         return UserDto.builder()
                 .userId(user.getId())
                 .email(user.getEmail())

@@ -118,7 +118,7 @@ public class UserService {
     }
 
     public void changePassword(PasswordRequest request, CustomUserDetails userDetails) {
-        String rawPassword = request.password();
+        String rawPassword = request.getPassword();
         String encodedPassword = userDetails.getPassword();
 
         if (!passwordEncoder.matches(rawPassword, encodedPassword)) {
@@ -128,7 +128,7 @@ public class UserService {
         User user = userRepository.findById(userDetails.getId())
                 .orElseThrow(UserNotFoundException::new);
 
-        String newPassword = passwordEncoder.encode(request.newPassword());
+        String newPassword = passwordEncoder.encode(request.getNewPassword());
         user.changePassword(newPassword);
         userRepository.save(user);
     }
@@ -139,7 +139,7 @@ public class UserService {
 
         mealTimeRepository.deleteAllByUserId(userDetails.getId());
 
-        ArrayList<String> newMealTimes = request.mealTime();
+        ArrayList<String> newMealTimes = request.getMealTime();
 
         ArrayList<MealTime> updatedMealTimes = new ArrayList<>();
         for (String mealTime : newMealTimes) {
@@ -161,7 +161,7 @@ public class UserService {
         User user = userRepository.findById(userDetails.getId())
                 .orElseThrow(UserNotFoundException::new);
 
-        return UserDto.of(user);
+        return UserDto.from(user);
     }
 
     public TokenDto reissueToken(ReissueToken reissueToken) {

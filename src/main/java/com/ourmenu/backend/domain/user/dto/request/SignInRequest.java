@@ -2,11 +2,9 @@ package com.ourmenu.backend.domain.user.dto.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 
-@Data
-@Builder
+@Getter
 public class SignInRequest {
 
     @Email

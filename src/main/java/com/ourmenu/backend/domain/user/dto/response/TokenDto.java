@@ -1,11 +1,11 @@
 package com.ourmenu.backend.domain.user.dto.response;
 
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 
 import java.time.Instant;
 
-@Data
+@Getter
 @Builder
 public class TokenDto {
     private String grantType;
