@@ -108,7 +108,11 @@ public class JwtTokenProvider {
         Claims claims = Jwts.claims();
         claims.put("email", email);
 
-        long time = type.equals("Access") ? ACCESS_TIME : REFRESH_TIME;
+        long time = ACCESS_TIME;
+
+        if (type.equals("Refresh")){
+            time = REFRESH_TIME;
+        }
 
         return Jwts.builder()
                 .setClaims(claims)
