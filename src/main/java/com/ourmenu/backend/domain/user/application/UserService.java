@@ -88,7 +88,7 @@ public class UserService {
         );
 
         if(!passwordEncoder.matches(signInRequest.getPassword(), user.getPassword())) {
-            throw new PasswordNotMatchException();
+            throw new NotMatchPasswordException();
         }
 
         TokenDto tokenDto = jwtTokenProvider.createAllToken(signInRequest.getEmail());
@@ -122,7 +122,7 @@ public class UserService {
         String encodedPassword = userDetails.getPassword();
 
         if (!passwordEncoder.matches(rawPassword, encodedPassword)) {
-            throw new PasswordNotMatchException();
+            throw new NotMatchPasswordException();
         }
 
         User user = userRepository.findById(userDetails.getId())
@@ -161,7 +161,7 @@ public class UserService {
 
     public UserDto getUserInfo(CustomUserDetails userDetails) {
         User user = userRepository.findById(userDetails.getId())
-                .orElseThrow(() -> new UserNotFoundException());
+                .orElseThrow(UserNotFoundException::new);
 
         return UserDto.of(user);
     }
@@ -171,11 +171,11 @@ public class UserService {
         String email = jwtTokenProvider.getEmailFromToken(refreshToken);
 
         if (!jwtTokenProvider.tokenValidation(refreshToken)) {
-            throw new RuntimeException();
+            throw new TokenExpiredExcpetion();
         }
 
         RefreshToken storedToken = refreshTokenRepository.findRefreshTokenByEmail(email)
-                .orElseThrow(() -> new NotMatchTokenException());
+                .orElseThrow(NotMatchTokenException::new);
 
 
         String newAccessToken = jwtTokenProvider.createToken(email, "Access");

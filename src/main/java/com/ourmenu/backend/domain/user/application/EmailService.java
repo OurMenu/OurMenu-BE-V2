@@ -5,6 +5,9 @@ import com.ourmenu.backend.domain.user.domain.ConfirmCode;
 import com.ourmenu.backend.domain.user.dto.request.EmailRequest;
 import com.ourmenu.backend.domain.user.dto.response.EmailResponse;
 import com.ourmenu.backend.domain.user.dto.request.VerifyEmailRequest;
+import com.ourmenu.backend.domain.user.exception.ConfirmCodeNotFoundException;
+import com.ourmenu.backend.domain.user.exception.NotMatchConfirmCodeException;
+import com.ourmenu.backend.domain.user.exception.SendCodeFailureException;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -31,15 +34,10 @@ public class EmailService {
         helper.setSubject(title);
         helper.setText(content, true);
         helper.setReplyTo("ourmenuv2@gmail.com");
-        try {
-            emailSender.send(message);
-        } catch (RuntimeException e) {
-            e.printStackTrace();
-            throw new RuntimeException("Unable to send email in sendEmail", e);
-        }
+        emailSender.send(message);
     }
 
-    public EmailResponse sendCodeToEmail(EmailRequest request) {
+    public EmailResponse sendCodeToEmail(EmailRequest request){
         String email = request.getEmail();
         String title = "아워메뉴 이메일 인증 번호";
         String generatedRandomCode = generateRandomCode(CONFIRM_CODE_LENGTH);
@@ -50,21 +48,19 @@ public class EmailService {
                 + "</body>"
                 + "</html>";
 
+
         try {
             sendEmail(email, title, content);
-        } catch (RuntimeException | MessagingException e) {
-            e.printStackTrace();
-            throw new RuntimeException("Unable to send email in sendCodeToEmail", e);
+        }catch (MessagingException e){
+            throw new SendCodeFailureException();
         }
 
         ConfirmCode confirmCode = ConfirmCode.of(email, generatedRandomCode);
         confirmCodeRepository.save(confirmCode);
 
-        EmailResponse response = EmailResponse.builder()
+        return EmailResponse.builder()
                 .code(generatedRandomCode)
                 .build();
-
-        return response;
     }
 
     public String generateRandomCode(int length) {
@@ -87,10 +83,10 @@ public class EmailService {
         log.error("{},{}", email, inputConfirmCode);
 
         ConfirmCode confirmCode = confirmCodeRepository.findConfirmCodeByEmail(email)
-                .orElseThrow(() -> new RuntimeException("ConfirmCode not found"));
+                .orElseThrow(ConfirmCodeNotFoundException::new);
 
         if (!confirmCode.getConfirmCode().equals(inputConfirmCode)) {
-            throw new IllegalArgumentException("Confirmation code does not match.");
+            throw new NotMatchConfirmCodeException();
         }
 
         return "OK";
