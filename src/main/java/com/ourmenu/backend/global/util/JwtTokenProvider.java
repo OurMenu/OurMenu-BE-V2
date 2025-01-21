@@ -4,6 +4,7 @@ import com.ourmenu.backend.domain.user.application.CustomUserDetailsService;
 import com.ourmenu.backend.domain.user.dao.RefreshTokenRepository;
 import com.ourmenu.backend.domain.user.domain.RefreshToken;
 import com.ourmenu.backend.domain.user.dto.response.TokenDto;
+import com.ourmenu.backend.domain.user.exception.InvalidTokenException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -132,7 +133,6 @@ public class JwtTokenProvider {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
         } catch (Exception ex) {
-            log.error(ex.getMessage());
             return false;
         }
     }
@@ -202,8 +202,7 @@ public class JwtTokenProvider {
                     .getBody()
                     .getExpiration(); // Claims에서 만료 시간 추출
         } catch (Exception e) {
-            log.error("Failed to get expiration time from token: {}", e.getMessage());
-            throw new IllegalArgumentException("Invalid token", e);
+            throw new InvalidTokenException();
         }
     }
 
