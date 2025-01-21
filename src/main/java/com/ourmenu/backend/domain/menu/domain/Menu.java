@@ -32,7 +32,7 @@ public class Menu extends BaseEntity {
     @NotNull
     private Integer price;
 
-    private int pin;
+    private String pin;
 
     private String memoTitle;
 

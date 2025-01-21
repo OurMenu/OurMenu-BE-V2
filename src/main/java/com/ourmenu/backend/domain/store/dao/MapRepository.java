@@ -9,4 +9,6 @@ import org.springframework.stereotype.Repository;
 public interface MapRepository extends JpaRepository<Map, Long> {
 
     Optional<Map> findByMapXAndMapY(Double mapX, Double mapY);
+
+    Optional<Map> findMapById(Long mapId);
 }
