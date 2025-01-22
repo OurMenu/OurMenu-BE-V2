@@ -27,7 +27,7 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
         try {
             chain.doFilter(request, response);
         } catch (Exception e) {
-            if(e.equals(TokenExpiredExcpetion.class)) {
+            if(e instanceof TokenExpiredExcpetion) {
                 setResponse(response, ApiUtil.error(ErrorResponse.of(ErrorCode.TOKEN_EXPIRED)));
             }
             else {
