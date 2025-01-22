@@ -161,7 +161,9 @@ public class UserService {
         User user = userRepository.findById(userDetails.getId())
                 .orElseThrow(UserNotFoundException::new);
 
-        return UserDto.from(user);
+        List<MealTime> mealTimes = mealTimeRepository.findAllByUserId(userDetails.getId());
+
+        return UserDto.of(user, mealTimes);
     }
 
     public TokenDto reissueToken(ReissueToken reissueToken) {
