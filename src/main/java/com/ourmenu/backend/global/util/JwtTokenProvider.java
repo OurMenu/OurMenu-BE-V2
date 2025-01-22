@@ -5,9 +5,8 @@ import com.ourmenu.backend.domain.user.dao.RefreshTokenRepository;
 import com.ourmenu.backend.domain.user.domain.RefreshToken;
 import com.ourmenu.backend.domain.user.dto.response.TokenDto;
 import com.ourmenu.backend.domain.user.exception.InvalidTokenException;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import com.ourmenu.backend.domain.user.exception.TokenExpiredExcpetion;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
@@ -128,12 +127,14 @@ public class JwtTokenProvider {
      * @param token JWT 토큰값
      * @return Token의 유효 여부(True, False)
      */
-    public Boolean tokenValidation(String token) {
+    public Boolean validateToken(String token) {
         try {
-            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
-            return true;
-        } catch (Exception ex) {
-            return false;
+            Jws<Claims> claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+            return !claims.getBody().getExpiration().before(new Date());
+        } catch (ExpiredJwtException e) {
+            throw new TokenExpiredExcpetion();
+        } catch (JwtException e){
+            throw new InvalidTokenException();
         }
     }
 
@@ -143,7 +144,7 @@ public class JwtTokenProvider {
      * @return RefreshToken 유효 여부 (True, False)
      */
     public Boolean refreshTokenValidation(String token) {
-        if(!tokenValidation(token)) {
+        if(!validateToken(token)) {
             return false;
         }
 

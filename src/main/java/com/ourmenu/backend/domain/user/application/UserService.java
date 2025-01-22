@@ -174,7 +174,7 @@ public class UserService {
             throw new InvalidTokenException();
         }
 
-        if (!jwtTokenProvider.tokenValidation(refreshToken)) {
+        if (!jwtTokenProvider.validateToken(refreshToken)) {
             throw new TokenExpiredExcpetion();
         }
 
@@ -184,7 +184,7 @@ public class UserService {
         String newAccessToken = jwtTokenProvider.createToken(email, "Access");
         String newRefreshToken = reissueToken.getRefreshToken();
 
-        if (jwtTokenProvider.tokenValidation(refreshToken)) {
+        if (jwtTokenProvider.validateToken(refreshToken)) {
             newRefreshToken = jwtTokenProvider.createToken(email, "Refresh");
             storedToken.updateToken(newRefreshToken);
             refreshTokenRepository.save(storedToken);

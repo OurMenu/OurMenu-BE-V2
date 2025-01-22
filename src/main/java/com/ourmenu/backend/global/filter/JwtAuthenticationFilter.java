@@ -26,7 +26,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String accessToken = jwtTokenProvider.getHeaderToken(request, HttpHeaders.AUTHORIZATION);
         String refreshToken = jwtTokenProvider.getHeaderToken(request, "Refresh_token");
 
-        if(accessToken != null && jwtTokenProvider.tokenValidation(accessToken)) {
+        if(accessToken != null && jwtTokenProvider.validateToken(accessToken)) {
             setAuthentication(jwtTokenProvider.getEmailFromToken(accessToken));
             filterChain.doFilter(request,response);
             return;
