@@ -2,6 +2,7 @@ package com.ourmenu.backend.global.config;
 
 import com.ourmenu.backend.domain.user.dao.RefreshTokenRepository;
 import com.ourmenu.backend.global.filter.JwtAuthenticationFilter;
+import com.ourmenu.backend.global.filter.JwtExceptionFilter;
 import com.ourmenu.backend.global.util.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -24,6 +25,7 @@ public class SecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final JwtExceptionFilter jwtExceptionFilter;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -39,6 +41,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/emails/**").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtExceptionFilter, JwtAuthenticationFilter.class)
                 .build();
     }
 
