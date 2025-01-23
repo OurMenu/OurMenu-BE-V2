@@ -1,10 +1,9 @@
 package com.ourmenu.backend.domain.user.dto.request;
 
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 
-@Builder
 @Getter
+@NoArgsConstructor
 public class EmailRequest {
     private String email;
 }
