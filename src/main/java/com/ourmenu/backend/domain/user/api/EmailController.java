@@ -4,6 +4,7 @@ import com.ourmenu.backend.domain.user.application.EmailService;
 import com.ourmenu.backend.domain.user.dto.request.EmailRequest;
 import com.ourmenu.backend.domain.user.dto.response.EmailResponse;
 import com.ourmenu.backend.domain.user.dto.request.VerifyEmailRequest;
+import com.ourmenu.backend.domain.user.dto.response.TemporaryPasswordResponse;
 import com.ourmenu.backend.global.response.ApiResponse;
 import com.ourmenu.backend.global.response.util.ApiUtil;
 import jakarta.validation.Valid;
@@ -30,5 +31,11 @@ public class EmailController {
     private ApiResponse<Void> verifyEmail(@Valid @RequestBody VerifyEmailRequest request){
         emailService.verifyConfirmCode(request);
         return ApiUtil.successOnly();
+    }
+
+    @PostMapping("/temporary-password")
+    private ApiResponse<TemporaryPasswordResponse> sendTemporaryPassword(@RequestBody EmailRequest request){
+        TemporaryPasswordResponse response = emailService.sendTemporaryPassword(request);
+        return ApiUtil.success(response);
     }
 }

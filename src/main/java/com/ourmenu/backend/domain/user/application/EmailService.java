@@ -1,18 +1,24 @@
 package com.ourmenu.backend.domain.user.application;
 
 import com.ourmenu.backend.domain.user.dao.ConfirmCodeRepository;
+import com.ourmenu.backend.domain.user.dao.UserRepository;
 import com.ourmenu.backend.domain.user.domain.ConfirmCode;
+import com.ourmenu.backend.domain.user.domain.User;
 import com.ourmenu.backend.domain.user.dto.request.EmailRequest;
 import com.ourmenu.backend.domain.user.dto.response.EmailResponse;
 import com.ourmenu.backend.domain.user.dto.request.VerifyEmailRequest;
+import com.ourmenu.backend.domain.user.dto.response.TemporaryPasswordResponse;
 import com.ourmenu.backend.domain.user.exception.ConfirmCodeNotFoundException;
 import com.ourmenu.backend.domain.user.exception.NotMatchConfirmCodeException;
 import com.ourmenu.backend.domain.user.exception.SendCodeFailureException;
+import com.ourmenu.backend.domain.user.exception.UserNotFoundException;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
@@ -23,6 +29,7 @@ public class EmailService {
     private final AsyncEmailSenderService asyncEmailSenderService;
     private final int CONFIRM_CODE_LENGTH = 6;
     private final ConfirmCodeRepository confirmCodeRepository;
+    private final UserRepository userRepository;
 
     public EmailResponse sendCodeToEmail(EmailRequest request){
         String email = request.getEmail();
@@ -74,4 +81,15 @@ public class EmailService {
         }
     }
 
+    public TemporaryPasswordResponse sendTemporaryPassword(EmailRequest request) {
+        String email = request.getEmail();
+        log.warn("{}", email);
+        String temporaryPassword = generateRandomCode(8);
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(UserNotFoundException::new);
+
+        user.changePassword(temporaryPassword);
+        userRepository.save(user);
+        return TemporaryPasswordResponse.from(temporaryPassword);
+    }
 }
