@@ -22,7 +22,7 @@ public class UpdateMenuFolderResponse {
 
     public static UpdateMenuFolderResponse of(MenuFolder menuFolder, List<MenuMenuFolder> menuMenuFolders) {
         List<Long> menuId = menuMenuFolders.stream()
-                .map(menuMenuFolder -> menuMenuFolder.getFolderId())
+                .map(menuMenuFolder -> menuMenuFolder.getMenu().getId())
                 .toList();
         return UpdateMenuFolderResponse.builder()
                 .menuFolderId(menuFolder.getId())
