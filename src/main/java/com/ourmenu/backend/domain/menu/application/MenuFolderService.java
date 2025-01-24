@@ -62,7 +62,7 @@ public class MenuFolderService {
             menuMenuFolderService.updateMenuMenuFolder(userId, menuFolderId, menuFolderDto.getMenuIds());
         }
 
-        if (!menuFolderDto.getMenuFolderImg().isEmpty()) {
+        if (menuFolderDto.getMenuFolderImg() != null) {
             String imgUrl = awsS3Service.uploadFileAsync(menuFolderDto.getMenuFolderImg());
             menuFolder.update(menuFolderDto, imgUrl);
             List<MenuMenuFolder> menuMenuFolders = menuMenuFolderService.findAllByMenuFolderId(menuFolderId);
