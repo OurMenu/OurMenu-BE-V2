@@ -16,9 +16,15 @@ public enum ErrorCode {
 
     // 유저
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "U404", "해당 유저가 존재하지 않습니다."),
-    PASSWORD_NOT_MATCH(HttpStatus.UNAUTHORIZED, "U401", "비밀번호가 일치하지 않습니다."),
+    NOT_MATCH_PASSWORD(HttpStatus.UNAUTHORIZED, "U401", "비밀번호가 일치하지 않습니다."),
     DUPLICATE_EMAIL(HttpStatus.CONFLICT, "U409", "이미 존재하는 이메일입니다."),
     NOT_MATCH_TOKEN(HttpStatus.UNAUTHORIZED, "U401", "유저의 토큰값과 일치하지 않습니다."),
+    INVALID_MEAL_TIME_COUNT(HttpStatus.BAD_REQUEST, "U400", "식사시간 배열의 크기가 유효하지 않습니다."),
+    CONFIRM_CODE_NOT_FOUND(HttpStatus.NOT_FOUND, "U404", "인증 코드가 존재하지 않습니다."),
+    NOT_MATCH_CONFIRM_CODE(HttpStatus.UNAUTHORIZED, "U401", "인증 코드가 일치하지 않습니다."),
+    TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "U401", "JWT 토큰의 유효 기간이 만료되었습니다."),
+    SEND_CODE_FAILURE(HttpStatus.INTERNAL_SERVER_ERROR, "U500", "이메일 인증 코드 전송에 실패하였습니다."),
+    INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "U401", "유효하지 않은 토큰입니다."),
 
     // 메뉴판
     FORBIDDEN_MENU_FOLDER(HttpStatus.FORBIDDEN, "F403", "소유하고 있는 메뉴판이 아닙니다"),

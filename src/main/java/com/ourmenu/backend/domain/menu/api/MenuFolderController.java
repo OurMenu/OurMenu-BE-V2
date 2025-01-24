@@ -17,14 +17,13 @@ import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/menu-folders")
@@ -41,20 +40,18 @@ public class MenuFolderController {
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ApiResponse<SaveMenuFolderResponse> saveMenuFolder(@RequestPart("data") SaveMenuFolderRequest request,
-                                                              @RequestPart("menuFolderImg") MultipartFile menuFolderImg,
+    public ApiResponse<SaveMenuFolderResponse> saveMenuFolder(@ModelAttribute SaveMenuFolderRequest request,
                                                               @AuthenticationPrincipal CustomUserDetails userDetails) {
-        MenuFolderDto menuFolderDto = MenuFolderDto.of(request, menuFolderImg, userDetails.getId());
+        MenuFolderDto menuFolderDto = MenuFolderDto.of(request, request.getMenuFolderImg(), userDetails.getId());
         SaveMenuFolderResponse response = menuFolderService.saveMenuFolder(menuFolderDto);
         return ApiUtil.success(response);
     }
 
     @PatchMapping(value = "/{menuFolderId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<UpdateMenuFolderResponse> updateMenuFolder(@PathVariable("menuFolderId") Long menuFolderId,
-                                                                  @RequestPart("data") UpdateMenuFolderRequest request,
-                                                                  @RequestPart(value = "menuFolderImg", required = false) MultipartFile menuFolderImg,
+                                                                  @ModelAttribute UpdateMenuFolderRequest request,
                                                                   @AuthenticationPrincipal CustomUserDetails userDetails) {
-        MenuFolderDto menuFolderDto = MenuFolderDto.of(request, menuFolderImg, userDetails.getId());
+        MenuFolderDto menuFolderDto = MenuFolderDto.of(request, request.getMenuFolderImg(), userDetails.getId());
         UpdateMenuFolderResponse updateMenuFolderResponse = menuFolderService.updateMenuFolder(userDetails.getId(),
                 menuFolderId, menuFolderDto);
         return ApiUtil.success(updateMenuFolderResponse);
