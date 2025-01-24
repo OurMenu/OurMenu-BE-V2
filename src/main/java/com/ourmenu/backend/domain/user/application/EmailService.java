@@ -83,7 +83,6 @@ public class EmailService {
 
     public TemporaryPasswordResponse sendTemporaryPassword(EmailRequest request) {
         String email = request.getEmail();
-        log.warn("{}", email);
         String temporaryPassword = generateRandomCode(8);
         User user = userRepository.findByEmail(email)
                 .orElseThrow(UserNotFoundException::new);
