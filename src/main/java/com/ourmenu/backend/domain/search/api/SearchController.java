@@ -26,7 +26,7 @@ public class SearchController {
 
     private final SearchService searchService;
 
-    @Operation(summary = "식당 검색", description = "식당을 검색한다.")
+    @Operation(summary = "식당 검색", description = "식당을 검색한다. 메뉴 이름과 가게 이름이 검색 범주에 포함된다.")
     @GetMapping("/priored/stores/menus")
     public ApiResponse<List<SearchStoreResponse>> searchStore(@RequestParam(name = "query") String query) {
         List<SearchStoreResponse> response = searchService.searchStore(query);
@@ -42,7 +42,7 @@ public class SearchController {
         return ApiUtil.success(response);
     }
 
-    @Operation(summary = "식당 검색 기록 조회", description = "식당 검색 기록을 조회한다")
+    @Operation(summary = "식당 검색 기록 조회", description = "식당 검색 기록을 조회한다.")
     @GetMapping("priored/users/{userId}/histories")
     public ApiResponse<List<GetSearchHistoryResponse>> getSearchHistory(
             @AuthenticationPrincipal CustomUserDetails userDetails) {
