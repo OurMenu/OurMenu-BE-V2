@@ -9,6 +9,8 @@ import com.ourmenu.backend.domain.search.dto.SimpleSearchDto;
 import com.ourmenu.backend.domain.user.domain.CustomUserDetails;
 import com.ourmenu.backend.global.response.ApiResponse;
 import com.ourmenu.backend.global.response.util.ApiUtil;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Tag(name = "메뉴 API")
 @RestController
 @RequestMapping("/api/menu")
 @RequiredArgsConstructor
@@ -27,6 +30,7 @@ public class MenuController {
     private final MenuService menuService;
     private final SearchService searchService;
 
+    @Operation(summary = "메뉴 등록", description = "메뉴를 등록한다. 메뉴판 관계를 설정할 수 있다.")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<SaveMenuResponse> saveMenu(@ModelAttribute SaveMenuRequest request,
                                                   @AuthenticationPrincipal CustomUserDetails userDetails) {
@@ -36,6 +40,7 @@ public class MenuController {
         return ApiUtil.success(response);
     }
 
+    @Operation(summary = "메뉴 삭제", description = "메뉴 및 해당 메뉴 엔티티와 관련된 엔티티를 삭제한다.")
     @DeleteMapping("/{menuId}")
     public ApiResponse<Void> deleteMenu(@PathVariable("menuId") Long menuId,
                                         @AuthenticationPrincipal CustomUserDetails userDetails) {
