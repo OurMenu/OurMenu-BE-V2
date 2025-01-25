@@ -2,7 +2,7 @@ package com.ourmenu.backend.global.config;
 
 import com.ourmenu.backend.domain.user.dao.RefreshTokenRepository;
 import com.ourmenu.backend.global.filter.JwtAuthenticationFilter;
-import com.ourmenu.backend.global.filter.SignOutFilter;
+import com.ourmenu.backend.global.filter.JwtExceptionFilter;
 import com.ourmenu.backend.global.util.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -25,6 +25,7 @@ public class SecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final JwtExceptionFilter jwtExceptionFilter;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -34,11 +35,16 @@ public class SecurityConfig {
                 .formLogin(AbstractHttpConfigurer::disable)
                 .sessionManagement(sessionManagementConfigurer ->
                         sessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .logout(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/api/users").permitAll()
-                        .anyRequest().permitAll()) // 테스트 용도로 우선 모든 경로 허용
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(new SignOutFilter(jwtTokenProvider, refreshTokenRepository), JwtAuthenticationFilter.class)
+                        .requestMatchers("/api/users/sign-up", "/api/users/sign-in", "/api/users/reissue-token")
+                        .permitAll()
+                        .requestMatchers("/api/emails/**").permitAll()
+                        .requestMatchers("/swagger-ui/**", "/swagger-resources/**", "/v3/api-docs/**").permitAll()
+                        .anyRequest().authenticated())
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
+                        UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtExceptionFilter, JwtAuthenticationFilter.class)
                 .build();
     }
 
