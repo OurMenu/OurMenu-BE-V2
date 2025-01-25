@@ -47,7 +47,7 @@ public class UserController {
         return ApiUtil.success(tokenDto);
     }
 
-    @Operation(summary = "패스워드 변경", description = "패스원드를 변경한다.")
+    @Operation(summary = "패스워드 변경", description = "패스워드를 변경한다.")
     @PatchMapping("/password")
     private ApiResponse<Void> changePassword(@Valid @RequestBody PasswordRequest request,
                                              @AuthenticationPrincipal CustomUserDetails userDetails) {
@@ -55,7 +55,7 @@ public class UserController {
         return ApiUtil.successOnly();
     }
 
-    @Operation(summary = "식사 시간 변경", description = "회원 정보중 식사 시간을 변경한다.")
+    @Operation(summary = "식사 시간 변경", description = "식사 시간을 변경한다.")
     @PatchMapping("/meal-time")
     private ApiResponse<Void> changeMealTime(@Valid @RequestBody MealTimeRequest request,
                                              @AuthenticationPrincipal CustomUserDetails userDetails) {
@@ -78,7 +78,7 @@ public class UserController {
         return ApiUtil.successOnly();
     }
 
-    @Operation(summary = "토큰 갱싱", description = "refresh 토큰을 갱신한다.")
+    @Operation(summary = "토큰 갱신", description = "refresh 토큰을 갱신한다.")
     @PostMapping("/reissue-token")
     private ApiResponse<TokenDto> reissueToken(@Valid @RequestBody ReissueToken reissueToken) {
         TokenDto response = userService.reissueToken(reissueToken);
