@@ -52,7 +52,7 @@ public class MenuFolderController {
         return ApiUtil.success(response);
     }
 
-    @Operation(summary = "메뉴판 인덱스 수정", description = "메뉴판 인덱스를 수정한다.")
+    @Operation(summary = "메뉴판 수정", description = "메뉴판을 수정한다. 입력에 따라 수정 범위를 결정한다")
     @PatchMapping(value = "/{menuFolderId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<UpdateMenuFolderResponse> updateMenuFolder(@PathVariable("menuFolderId") Long menuFolderId,
                                                                   @ModelAttribute UpdateMenuFolderRequest request,
@@ -63,7 +63,7 @@ public class MenuFolderController {
         return ApiUtil.success(updateMenuFolderResponse);
     }
 
-    @Operation(summary = "메뉴 저장", description = "메뉴판을 저장한다. 메뉴와 관계를 설정할 수 있다")
+    @Operation(summary = "메뉴판 인덱스 수정", description = "메뉴판 인덱스를 수정한다.")
     @PatchMapping("/{menuFolderId}/index")
     public ApiResponse<UpdateMenuFolderResponse> updateMenuFolderIndex(@PathVariable("menuFolderId") Long menuFolderId,
                                                                        @RequestBody UpdateMenuFolderIndexRequest request,
@@ -73,6 +73,7 @@ public class MenuFolderController {
         return ApiUtil.success(updateMenuFolderResponse);
     }
 
+    @Operation(summary = "메뉴판 삭제", description = "메뉴판 삭제 및 해당 메뉴판과 연관련 엔티티를 삭제한다")
     @DeleteMapping("/{menuFolderId}")
     public ApiResponse<Void> deleteMenuFolder(@PathVariable("menuFolderId") Long menuFolderId,
                                               @AuthenticationPrincipal CustomUserDetails userDetails) {
