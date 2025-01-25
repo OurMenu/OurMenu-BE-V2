@@ -3,6 +3,7 @@ package com.ourmenu.backend.domain.user.application;
 import com.ourmenu.backend.domain.user.dao.UserRepository;
 import com.ourmenu.backend.domain.user.domain.User;
 import com.ourmenu.backend.domain.user.domain.CustomUserDetails;
+import com.ourmenu.backend.domain.user.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,9 +21,8 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 
-        User user= userRepository.findByEmail(email).orElseThrow(
-                () -> new RuntimeException("Not Found Account")
-        );
+        User user= userRepository.findByEmail(email).
+                orElseThrow(UserNotFoundException::new);
 
         return new CustomUserDetails(
                 user.getId(),

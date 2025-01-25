@@ -11,6 +11,7 @@ import com.ourmenu.backend.domain.user.dto.request.SignInRequest;
 import com.ourmenu.backend.domain.user.dto.request.SignUpRequest;
 import com.ourmenu.backend.global.response.ApiResponse;
 import com.ourmenu.backend.global.response.util.ApiUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -30,9 +31,9 @@ public class UserController {
      * @return
      */
     @PostMapping("/sign-up")
-    private ApiResponse<String> signUp(@Valid @RequestBody SignUpRequest signUpRequest){
-        String response = userService.signUp(signUpRequest);
-        return ApiUtil.success(response);
+    private ApiResponse<Void> signUp(@Valid @RequestBody SignUpRequest signUpRequest){
+        userService.signUp(signUpRequest);
+        return ApiUtil.successOnly();
     }
 
     /**
@@ -48,15 +49,15 @@ public class UserController {
     }
 
     @PatchMapping("/password")
-    private ApiResponse<String> changePassword(@Valid @RequestBody PasswordRequest request, @AuthenticationPrincipal CustomUserDetails userDetails){
-        String response = userService.changePassword(request, userDetails);
-        return ApiUtil.success(response);
+    private ApiResponse<Void> changePassword(@Valid @RequestBody PasswordRequest request, @AuthenticationPrincipal CustomUserDetails userDetails){
+        userService.changePassword(request, userDetails);
+        return ApiUtil.successOnly();
     }
 
     @PatchMapping("/meal-time")
-    private ApiResponse<String> changeMealTime(@Valid @RequestBody MealTimeRequest request, @AuthenticationPrincipal CustomUserDetails userDetails){
-        String response = userService.changeMealTime(request, userDetails);
-        return ApiUtil.success(response);
+    private ApiResponse<Void> changeMealTime(@Valid @RequestBody MealTimeRequest request, @AuthenticationPrincipal CustomUserDetails userDetails){
+        userService.changeMealTime(request, userDetails);
+        return ApiUtil.successOnly();
     }
 
     @GetMapping("")
@@ -66,8 +67,9 @@ public class UserController {
     }
 
     @PostMapping("/sign-out")
-    private ApiResponse<String> signOut(){
-        return ApiUtil.success("OK");
+    private ApiResponse<Void> signOut(HttpServletRequest request, @AuthenticationPrincipal CustomUserDetails userDetails){
+        userService.signOut(request, userDetails.getId());
+        return ApiUtil.successOnly();
     }
 
     @PostMapping("/reissue-token")

@@ -4,9 +4,9 @@ import com.ourmenu.backend.domain.user.application.CustomUserDetailsService;
 import com.ourmenu.backend.domain.user.dao.RefreshTokenRepository;
 import com.ourmenu.backend.domain.user.domain.RefreshToken;
 import com.ourmenu.backend.domain.user.dto.response.TokenDto;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import com.ourmenu.backend.domain.user.exception.InvalidTokenException;
+import com.ourmenu.backend.domain.user.exception.TokenExpiredExcpetion;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
@@ -39,10 +39,10 @@ public class JwtTokenProvider {
     private Key key;
     private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
 
-    private static final long ACCESS_TIME =  60 * 60 * 1000L;   // 1시간
+    private static final long ACCESS_TIME =  60 * 1000L;   // 1시간
     private static final long REFRESH_TIME =  30 * 24 * 60 * 60 * 1000L;    // 30일
     public static final String ACCESS_TOKEN = "Authorization";
-    public static final String REFRESH_TOKEN = "Refresh_Token";
+    public static final String REFRESH_TOKEN = "Refresh-Token";
 
     private final CustomUserDetailsService customUserDetailsService;
     private final RefreshTokenRepository refreshTokenRepository;
@@ -92,14 +92,7 @@ public class JwtTokenProvider {
 
         Instant refreshTokenExpiredAt = Instant.now().plus(30, ChronoUnit.DAYS);
 
-        TokenDto tokenDto = TokenDto.builder()
-                .grantType("Bearer")
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .refreshTokenExpiredAt(refreshTokenExpiredAt)
-                .build();
-
-        return tokenDto;
+        return TokenDto.of(accessToken, refreshToken, refreshTokenExpiredAt);
     }
 
     /**
@@ -115,7 +108,11 @@ public class JwtTokenProvider {
         Claims claims = Jwts.claims();
         claims.put("email", email);
 
-        long time = type.equals("Access") ? ACCESS_TIME : REFRESH_TIME;
+        long time = ACCESS_TIME;
+
+        if (type.equals("Refresh")){
+            time = REFRESH_TIME;
+        }
 
         return Jwts.builder()
                 .setClaims(claims)
@@ -130,13 +127,14 @@ public class JwtTokenProvider {
      * @param token JWT 토큰값
      * @return Token의 유효 여부(True, False)
      */
-    public Boolean tokenValidation(String token) {
+    public Boolean validateToken(String token) {
         try {
-            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+            Jws<Claims> claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
-        } catch (Exception ex) {
-            log.error(ex.getMessage());
-            return false;
+        } catch (ExpiredJwtException e){
+            throw new TokenExpiredExcpetion();
+        } catch (JwtException e){
+            throw new InvalidTokenException();
         }
     }
 
@@ -146,7 +144,7 @@ public class JwtTokenProvider {
      * @return RefreshToken 유효 여부 (True, False)
      */
     public Boolean refreshTokenValidation(String token) {
-        if(!tokenValidation(token)) {
+        if(!validateToken(token)) {
             return false;
         }
 
@@ -205,8 +203,7 @@ public class JwtTokenProvider {
                     .getBody()
                     .getExpiration(); // Claims에서 만료 시간 추출
         } catch (Exception e) {
-            log.error("Failed to get expiration time from token: {}", e.getMessage());
-            throw new IllegalArgumentException("Invalid token", e);
+            throw new InvalidTokenException();
         }
     }
 

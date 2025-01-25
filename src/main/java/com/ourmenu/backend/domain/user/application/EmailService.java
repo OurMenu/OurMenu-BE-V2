@@ -1,18 +1,24 @@
 package com.ourmenu.backend.domain.user.application;
 
 import com.ourmenu.backend.domain.user.dao.ConfirmCodeRepository;
+import com.ourmenu.backend.domain.user.dao.UserRepository;
 import com.ourmenu.backend.domain.user.domain.ConfirmCode;
+import com.ourmenu.backend.domain.user.domain.User;
 import com.ourmenu.backend.domain.user.dto.request.EmailRequest;
 import com.ourmenu.backend.domain.user.dto.response.EmailResponse;
 import com.ourmenu.backend.domain.user.dto.request.VerifyEmailRequest;
+import com.ourmenu.backend.domain.user.dto.response.TemporaryPasswordResponse;
+import com.ourmenu.backend.domain.user.exception.ConfirmCodeNotFoundException;
+import com.ourmenu.backend.domain.user.exception.NotMatchConfirmCodeException;
+import com.ourmenu.backend.domain.user.exception.SendCodeFailureException;
+import com.ourmenu.backend.domain.user.exception.UserNotFoundException;
 import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
@@ -20,26 +26,12 @@ import java.util.concurrent.ThreadLocalRandom;
 @RequiredArgsConstructor
 public class EmailService {
 
-    private final JavaMailSender emailSender;
+    private final AsyncEmailSenderService asyncEmailSenderService;
     private final int CONFIRM_CODE_LENGTH = 6;
     private final ConfirmCodeRepository confirmCodeRepository;
+    private final UserRepository userRepository;
 
-    public void sendEmail(String toEmail, String title, String content) throws MessagingException {
-        MimeMessage message = emailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message, true);
-        helper.setTo(toEmail);
-        helper.setSubject(title);
-        helper.setText(content, true);
-        helper.setReplyTo("ourmenuv2@gmail.com");
-        try {
-            emailSender.send(message);
-        } catch (RuntimeException e) {
-            e.printStackTrace();
-            throw new RuntimeException("Unable to send email in sendEmail", e);
-        }
-    }
-
-    public EmailResponse sendCodeToEmail(EmailRequest request) {
+    public EmailResponse sendCodeToEmail(EmailRequest request){
         String email = request.getEmail();
         String title = "아워메뉴 이메일 인증 번호";
         String generatedRandomCode = generateRandomCode(CONFIRM_CODE_LENGTH);
@@ -51,20 +43,17 @@ public class EmailService {
                 + "</html>";
 
         try {
-            sendEmail(email, title, content);
-        } catch (RuntimeException | MessagingException e) {
-            e.printStackTrace();
-            throw new RuntimeException("Unable to send email in sendCodeToEmail", e);
+            asyncEmailSenderService.sendEmail(email, title, content);
+        }catch (MessagingException e){
+            throw new SendCodeFailureException();
         }
 
         ConfirmCode confirmCode = ConfirmCode.of(email, generatedRandomCode);
         confirmCodeRepository.save(confirmCode);
 
-        EmailResponse response = EmailResponse.builder()
+        return EmailResponse.builder()
                 .code(generatedRandomCode)
                 .build();
-
-        return response;
     }
 
     public String generateRandomCode(int length) {
@@ -80,20 +69,26 @@ public class EmailService {
         return confirmCode.toString();
     }
 
-    public String verifyConfirmCode(VerifyEmailRequest request){
+    public void verifyConfirmCode(VerifyEmailRequest request){
         String email = request.getEmail();
         String inputConfirmCode = request.getConfirmCode();
 
-        log.error("{},{}", email, inputConfirmCode);
-
         ConfirmCode confirmCode = confirmCodeRepository.findConfirmCodeByEmail(email)
-                .orElseThrow(() -> new RuntimeException("ConfirmCode not found"));
+                .orElseThrow(ConfirmCodeNotFoundException::new);
 
         if (!confirmCode.getConfirmCode().equals(inputConfirmCode)) {
-            throw new IllegalArgumentException("Confirmation code does not match.");
+            throw new NotMatchConfirmCodeException();
         }
-
-        return "OK";
     }
 
+    public TemporaryPasswordResponse sendTemporaryPassword(EmailRequest request) {
+        String email = request.getEmail();
+        String temporaryPassword = generateRandomCode(8);
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(UserNotFoundException::new);
+
+        user.changePassword(temporaryPassword);
+        userRepository.save(user);
+        return TemporaryPasswordResponse.from(temporaryPassword);
+    }
 }
