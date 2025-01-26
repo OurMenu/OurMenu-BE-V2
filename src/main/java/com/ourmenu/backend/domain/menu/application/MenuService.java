@@ -4,7 +4,10 @@ import com.ourmenu.backend.domain.menu.dao.MenuRepository;
 import com.ourmenu.backend.domain.menu.domain.Menu;
 import com.ourmenu.backend.domain.menu.domain.MenuImg;
 import com.ourmenu.backend.domain.menu.domain.MenuMenuFolder;
+import com.ourmenu.backend.domain.menu.dto.GetMenuFolderMenuResponse;
 import com.ourmenu.backend.domain.menu.dto.MenuDto;
+import com.ourmenu.backend.domain.menu.dto.MenuFilterDto;
+import com.ourmenu.backend.domain.menu.dto.MenuSimpleDto;
 import com.ourmenu.backend.domain.menu.dto.SaveMenuResponse;
 import com.ourmenu.backend.domain.menu.exception.ForbiddenMenuException;
 import com.ourmenu.backend.domain.menu.exception.NotFoundMenuException;
@@ -81,6 +84,30 @@ public class MenuService {
         storeService.deleteStore(menu.getStore());
     }
 
+    /**
+     * 유저 메뉴판 메뉴 조회
+     *
+     * @param userId
+     * @param menuFolderId
+     * @return
+     */
+    @Transactional
+    public List<GetMenuFolderMenuResponse> findMenusByMenuFolder(Long userId, Long menuFolderId,
+                                                                 MenuFilterDto menuFilterDto) {
+        Long tagSize = (long) menuFilterDto.getTags().size();
+        List<String> tagStrings = menuFilterDto.getTags().stream()
+                .map(Tag::toString)
+                .toList();
+        List<MenuSimpleDto> findMenuSimpleDto = menuRepository.findByTagNameAndPriceRange(userId, menuFolderId,
+                tagStrings, tagSize, menuFilterDto.getMinPrice(), menuFilterDto.getMaxPrice());
+        return findMenuSimpleDto.stream()
+                .map(menuSimpleDto -> {
+                    String imgUrl = menuImgService.getUniqueImg(menuSimpleDto.getMenuId());
+                    return GetMenuFolderMenuResponse.of(menuSimpleDto, imgUrl);
+                })
+                .toList();
+    }
+
     private List<Tag> saveTags(List<Tag> tags, Long menuId) {
         return tags.stream().map(
                 tag -> menuTagService.saveTag(menuId, tag)
@@ -95,5 +122,4 @@ public class MenuService {
         }
         return menu;
     }
-
 }

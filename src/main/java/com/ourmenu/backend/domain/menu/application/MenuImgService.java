@@ -43,4 +43,18 @@ public class MenuImgService {
         menuImgs.forEach(menuImg -> awsS3Service.deleteFileAsync(menuImg.getImgUrl()));
         menuImgRepository.deleteAllByMenuId(menuId);
     }
+
+    /**
+     * 메뉴 이미지 하나 조회 하나도 없다면 기본 메뉴
+     *
+     * @param menuId
+     * @return
+     */
+    @Transactional
+    public String getUniqueImg(Long menuId) {
+        return menuImgRepository.findAllByMenuId(menuId).stream()
+                .map(MenuImg::getImgUrl)
+                .findFirst()
+                .orElse("default.jpg");
+    }
 }
