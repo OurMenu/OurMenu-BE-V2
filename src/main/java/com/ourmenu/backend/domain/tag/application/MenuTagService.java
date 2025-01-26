@@ -3,6 +3,7 @@ package com.ourmenu.backend.domain.tag.application;
 import com.ourmenu.backend.domain.tag.dao.MenuTagRepository;
 import com.ourmenu.backend.domain.tag.domain.MenuTag;
 import com.ourmenu.backend.domain.tag.domain.Tag;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,5 +39,18 @@ public class MenuTagService {
     @Transactional
     public void deleteMenuTag(Long menuId) {
         menuTagRepository.deleteAllByMenuId(menuId);
+    }
+
+    /**
+     * 태그 조회
+     *
+     * @param menuId
+     * @return
+     */
+    @Transactional
+    public List<String> findTagNames(Long menuId) {
+        return menuTagRepository.findMenuTagsByMenuId(menuId).stream()
+                .map(menuTag -> menuTag.getTag().getTagName())
+                .toList();
     }
 }

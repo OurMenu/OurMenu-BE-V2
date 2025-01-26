@@ -123,6 +123,11 @@ public class MenuFolderService {
                 }).toList();
     }
 
+    @Transactional
+    public List<MenuFolder> findAllByMenuId(Long menuId) {
+        return menuFolderRepository.findMenuFoldersByMenuId(menuId);
+    }
+
     /**
      * 메뉴폴더 저장
      *

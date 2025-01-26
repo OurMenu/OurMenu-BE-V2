@@ -9,6 +9,8 @@ public interface MenuMenuFolderRepository extends JpaRepository<MenuMenuFolder, 
 
     List<MenuMenuFolder> findAllByFolderId(Long FolderId);
 
+    List<MenuMenuFolder> findAllByMenu(Menu menu);
+
     void deleteAllByMenu(Menu menu);
 
     void deleteByFolderId(Long folderId);

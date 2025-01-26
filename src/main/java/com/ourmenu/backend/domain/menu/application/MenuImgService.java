@@ -51,10 +51,23 @@ public class MenuImgService {
      * @return
      */
     @Transactional
-    public String getUniqueImg(Long menuId) {
+    public String findUniqueImg(Long menuId) {
         return menuImgRepository.findAllByMenuId(menuId).stream()
                 .map(MenuImg::getImgUrl)
                 .findFirst()
                 .orElse("default.jpg");
+    }
+
+    /**
+     * 메뉴 이미지 조회
+     *
+     * @param menuId
+     * @return
+     */
+    @Transactional
+    public List<String> findImgUrls(Long menuId) {
+        return menuImgRepository.findAllByMenuId(menuId).stream()
+                .map(MenuImg::getImgUrl)
+                .toList();
     }
 }

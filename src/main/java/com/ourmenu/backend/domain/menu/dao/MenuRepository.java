@@ -4,6 +4,7 @@ import com.ourmenu.backend.domain.menu.domain.Menu;
 import com.ourmenu.backend.domain.menu.dto.MenuSimpleDto;
 import com.ourmenu.backend.domain.store.domain.Store;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -52,5 +53,13 @@ public interface MenuRepository extends JpaRepository<Menu, Long> {
     );
 
     Page<Menu> findByUserId(Long userId, Pageable pageable);
+
+    @Query(value = """
+            SELECT DISTINCT m FROM Menu m
+            JOIN FETCH m.store
+            WHERE m.id = :menuId
+            AND m.userId = :userId
+            """)
+    Optional<Menu> findByIdWithStore(Long userId, Long menuId);
 }
 

@@ -3,6 +3,7 @@ package com.ourmenu.backend.domain.menu.api;
 import com.ourmenu.backend.domain.menu.application.MenuService;
 import com.ourmenu.backend.domain.menu.domain.SortOrder;
 import com.ourmenu.backend.domain.menu.dto.GetMenuFolderMenuResponse;
+import com.ourmenu.backend.domain.menu.dto.GetMenuResponse;
 import com.ourmenu.backend.domain.menu.dto.GetSimpleMenuResponse;
 import com.ourmenu.backend.domain.menu.dto.MenuDto;
 import com.ourmenu.backend.domain.menu.dto.MenuFilterDto;
@@ -79,6 +80,14 @@ public class MenuController {
         MenuFilterDto menuFilterDto = MenuFilterDto.of(page, size, sortOrder);
         List<GetSimpleMenuResponse> response = menuService.findMenusByPageAndSort(userDetails.getId(),
                 menuFilterDto);
+        return ApiUtil.success(response);
+    }
+
+    @Operation(summary = "메뉴 상세 조회", description = "메뉴를 상세 조회한다")
+    @GetMapping("/menus/{menuId}")
+    public ApiResponse<GetMenuResponse> getMenu(@PathVariable("menuId") Long menuId,
+                                                @AuthenticationPrincipal CustomUserDetails userDetails) {
+        GetMenuResponse response = menuService.findMenu(userDetails.getId(), menuId);
         return ApiUtil.success(response);
     }
 }
