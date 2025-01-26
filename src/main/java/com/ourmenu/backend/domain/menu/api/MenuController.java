@@ -54,7 +54,7 @@ public class MenuController {
     }
 
     @Operation(summary = "메뉴판 메뉴 조회", description = "메뉴판의 메뉴를 조회한다. 필터를 사용할 수 있다")
-    @GetMapping("menu-folders/{menuFolderId}/menus")
+    @GetMapping("/menu-folders/{menuFolderId}/menus")
     public ApiResponse<List<GetMenuFolderMenuResponse>> getMenuFolderMenus(
             @PathVariable("menuFolderId") Long menuFolderId,
             @RequestParam("tags") List<com.ourmenu.backend.domain.tag.domain.Tag> tags,
