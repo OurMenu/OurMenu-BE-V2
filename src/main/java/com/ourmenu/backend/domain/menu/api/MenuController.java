@@ -69,7 +69,7 @@ public class MenuController {
         return ApiUtil.success(response);
     }
 
-    @Operation(summary = "메뉴 리트 조회", description = "메뉴 리스트를 조회한다. 필터를 사용할 수 있다")
+    @Operation(summary = "메뉴 리스트 조회", description = "메뉴 리스트를 조회한다. 필터를 사용할 수 있다")
     @GetMapping("/menus")
     public ApiResponse<List<GetMenuResponse>> getMenus(
             @RequestParam(value = "page", defaultValue = "0") int page,
