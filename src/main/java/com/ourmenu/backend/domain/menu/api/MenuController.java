@@ -3,7 +3,7 @@ package com.ourmenu.backend.domain.menu.api;
 import com.ourmenu.backend.domain.menu.application.MenuService;
 import com.ourmenu.backend.domain.menu.domain.SortOrder;
 import com.ourmenu.backend.domain.menu.dto.GetMenuFolderMenuResponse;
-import com.ourmenu.backend.domain.menu.dto.GetMenuResponse;
+import com.ourmenu.backend.domain.menu.dto.GetSimpleMenuResponse;
 import com.ourmenu.backend.domain.menu.dto.MenuDto;
 import com.ourmenu.backend.domain.menu.dto.MenuFilterDto;
 import com.ourmenu.backend.domain.menu.dto.SaveMenuRequest;
@@ -71,13 +71,13 @@ public class MenuController {
 
     @Operation(summary = "메뉴 리스트 조회", description = "메뉴 리스트를 조회한다. 필터를 사용할 수 있다")
     @GetMapping("/menus")
-    public ApiResponse<List<GetMenuResponse>> getMenus(
+    public ApiResponse<List<GetSimpleMenuResponse>> getMenus(
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size") int size,
             @RequestParam(value = "sortOrder") SortOrder sortOrder,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         MenuFilterDto menuFilterDto = MenuFilterDto.of(page, size, sortOrder);
-        List<GetMenuResponse> response = menuService.findMenusByPageAndSort(userDetails.getId(),
+        List<GetSimpleMenuResponse> response = menuService.findMenusByPageAndSort(userDetails.getId(),
                 menuFilterDto);
         return ApiUtil.success(response);
     }

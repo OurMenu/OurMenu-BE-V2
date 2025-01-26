@@ -10,7 +10,7 @@ import lombok.Getter;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 @Builder(access = AccessLevel.PRIVATE)
-public class GetMenuResponse {
+public class GetSimpleMenuResponse {
 
     private Long menuId;
     private String menuTitle;
@@ -20,8 +20,8 @@ public class GetMenuResponse {
     private String menuImgUrl;
     private LocalDateTime createdAt;
 
-    public static GetMenuResponse of(Menu menu, String menuImgUrl) {
-        return GetMenuResponse.builder()
+    public static GetSimpleMenuResponse of(Menu menu, String menuImgUrl) {
+        return GetSimpleMenuResponse.builder()
                 .menuId(menu.getId())
                 .menuTitle(menu.getTitle())
                 .storeTitle(menu.getStore().getTitle())

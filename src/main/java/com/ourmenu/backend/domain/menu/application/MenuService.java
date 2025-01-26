@@ -5,7 +5,7 @@ import com.ourmenu.backend.domain.menu.domain.Menu;
 import com.ourmenu.backend.domain.menu.domain.MenuImg;
 import com.ourmenu.backend.domain.menu.domain.MenuMenuFolder;
 import com.ourmenu.backend.domain.menu.dto.GetMenuFolderMenuResponse;
-import com.ourmenu.backend.domain.menu.dto.GetMenuResponse;
+import com.ourmenu.backend.domain.menu.dto.GetSimpleMenuResponse;
 import com.ourmenu.backend.domain.menu.dto.MenuDto;
 import com.ourmenu.backend.domain.menu.dto.MenuFilterDto;
 import com.ourmenu.backend.domain.menu.dto.MenuSimpleDto;
@@ -110,11 +110,11 @@ public class MenuService {
     }
 
     @Transactional
-    public List<GetMenuResponse> findMenusByPageAndSort(Long userId, MenuFilterDto menuFilterDto) {
+    public List<GetSimpleMenuResponse> findMenusByPageAndSort(Long userId, MenuFilterDto menuFilterDto) {
         return menuRepository.findByUserId(userId, menuFilterDto.getPageable()).stream()
                 .map(menu -> {
                     String imgUrl = menuImgService.getUniqueImg(menu.getId());
-                    return GetMenuResponse.of(menu, imgUrl);
+                    return GetSimpleMenuResponse.of(menu, imgUrl);
                 })
                 .toList();
     }
