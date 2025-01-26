@@ -4,6 +4,8 @@ import com.ourmenu.backend.domain.menu.domain.Menu;
 import com.ourmenu.backend.domain.menu.dto.MenuSimpleDto;
 import com.ourmenu.backend.domain.store.domain.Store;
 import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -48,5 +50,7 @@ public interface MenuRepository extends JpaRepository<Menu, Long> {
             @Param("minPrice") Long minPrice,
             @Param("maxPrice") Long maxPrice
     );
+
+    Page<Menu> findByUserId(Long userId, Pageable pageable);
 }
 

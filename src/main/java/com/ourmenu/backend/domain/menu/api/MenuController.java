@@ -1,7 +1,9 @@
 package com.ourmenu.backend.domain.menu.api;
 
 import com.ourmenu.backend.domain.menu.application.MenuService;
+import com.ourmenu.backend.domain.menu.domain.SortOrder;
 import com.ourmenu.backend.domain.menu.dto.GetMenuFolderMenuResponse;
+import com.ourmenu.backend.domain.menu.dto.GetMenuResponse;
 import com.ourmenu.backend.domain.menu.dto.MenuDto;
 import com.ourmenu.backend.domain.menu.dto.MenuFilterDto;
 import com.ourmenu.backend.domain.menu.dto.SaveMenuRequest;
@@ -53,7 +55,7 @@ public class MenuController {
         return ApiUtil.successOnly();
     }
 
-    @Operation(summary = "메뉴판 메뉴 조회", description = "메뉴판의 메뉴를 조회한다. 필터를 사용할 수 있다")
+    @Operation(summary = "메뉴판 메뉴 리스트 조회", description = "메뉴판의 메뉴 리스트를 조회한다. 필터를 사용할 수 있다")
     @GetMapping("/menu-folders/{menuFolderId}/menus")
     public ApiResponse<List<GetMenuFolderMenuResponse>> getMenuFolderMenus(
             @PathVariable("menuFolderId") Long menuFolderId,
@@ -64,6 +66,19 @@ public class MenuController {
         MenuFilterDto menuFilterDto = MenuFilterDto.of(tags, minPrice, maxPrice);
         List<GetMenuFolderMenuResponse> response = menuService.findMenusByMenuFolder(userDetails.getId(),
                 menuFolderId, menuFilterDto);
+        return ApiUtil.success(response);
+    }
+
+    @Operation(summary = "메뉴 리트 조회", description = "메뉴 리스트를 조회한다. 필터를 사용할 수 있다")
+    @GetMapping("/menus")
+    public ApiResponse<List<GetMenuResponse>> getMenus(
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size") int size,
+            @RequestParam(value = "sortOrder") SortOrder sortOrder,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        MenuFilterDto menuFilterDto = MenuFilterDto.of(page, size, sortOrder);
+        List<GetMenuResponse> response = menuService.findMenusByPageAndSort(userDetails.getId(),
+                menuFilterDto);
         return ApiUtil.success(response);
     }
 }
