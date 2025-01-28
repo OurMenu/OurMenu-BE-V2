@@ -60,6 +60,9 @@ dependencies {
 
     //webflux(Webclient)
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
+    //OAuth
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 }
 
 tasks.named('test') {
