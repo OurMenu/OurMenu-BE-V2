@@ -32,9 +32,13 @@ public class MenuFilterDto {
                 .build();
     }
 
-    public static MenuFilterDto from(int page, int size, SortOrder sortOrder) {
+    public static MenuFilterDto from(List<Tag> tags, Long minPrice, Long maxPrice, int page, int size,
+                                     SortOrder sortOrder) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(sortOrder.getDirection(), sortOrder.getField()));
         return MenuFilterDto.builder()
+                .tags(tags)
+                .minPrice(minPrice)
+                .maxPrice(maxPrice)
                 .pageable(pageable)
                 .sortOrder(sortOrder)
                 .build();

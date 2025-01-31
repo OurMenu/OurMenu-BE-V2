@@ -71,15 +71,16 @@ public class MenuController {
     @Operation(summary = "메뉴 리스트 조회", description = "메뉴 리스트를 조회한다. 필터를 사용할 수 있다")
     @GetMapping("/menus")
     public ApiResponse<List<GetSimpleMenuResponse>> getMenus(
-            @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(value = "size") int size,
             @RequestParam("tags") List<com.ourmenu.backend.domain.tag.domain.Tag> tags,
             @RequestParam(value = "minPrice", required = false) Long minPrice,
             @RequestParam(value = "maxPrice", required = false) Long maxPrice,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size") int size,
             @RequestParam(value = "sortOrder") SortOrder sortOrder,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
-        MenuFilterDto menuFilterDto = MenuFilterDto.from(page, size, sortOrder);
-        List<GetSimpleMenuResponse> response = menuService.findMenusByPageAndSort(userDetails.getId(),
+        MenuFilterDto menuFilterDto = MenuFilterDto.from(tags, minPrice, maxPrice, page, size, sortOrder);
+
+        List<GetSimpleMenuResponse> response = menuService.findMenusByCriteriaPageAndSort(userDetails.getId(),
                 menuFilterDto);
         return ApiUtil.success(response);
     }

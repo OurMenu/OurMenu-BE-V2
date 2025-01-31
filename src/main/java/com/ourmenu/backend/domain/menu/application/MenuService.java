@@ -119,14 +119,77 @@ public class MenuService {
                 .toList();
     }
 
+    /**
+     * 전체 메뉴 조회 태그 검색 포함 유무로 함수 분기
+     *
+     * @param userId
+     * @param menuFilterDto
+     * @return
+     */
     @Transactional
-    public List<GetSimpleMenuResponse> findMenusByPageAndSort(Long userId, MenuFilterDto menuFilterDto) {
-        return menuRepository.findByUserId(userId, menuFilterDto.getPageable()).stream()
-                .map(menu -> {
-                    String imgUrl = menuImgService.findUniqueImg(menu.getId());
-                    return GetSimpleMenuResponse.of(menu, imgUrl);
-                })
+    public List<GetSimpleMenuResponse> findMenusByCriteriaPageAndSort(Long userId, MenuFilterDto menuFilterDto) {
+        if (menuFilterDto.getTags().isEmpty()) {
+            return findMenusByPricePageAndSort(userId, menuFilterDto);
+        }
+
+        return findMenusByTagsAndPricePageAndSort(userId, menuFilterDto);
+    }
+
+    /**
+     * 유저 메뉴 전체 조회 tag가 있는 경우
+     *
+     * @param userId
+     * @param menuFilterDto
+     * @return
+     */
+    private List<GetSimpleMenuResponse> findMenusByTagsAndPricePageAndSort(Long userId, MenuFilterDto menuFilterDto) {
+
+        List<MenuSimpleDto> menuSimpleDtos = new ArrayList<>();
+        SortOrder sortOrder = menuFilterDto.getSortOrder();
+        List<String> tags = menuFilterDto.getTags().stream()
+                .map(Tag::getTagEnum)
                 .toList();
+        Long size = (long) tags.size();
+
+        if (sortOrder.equals(SortOrder.TITLE_ASC)) {
+            menuSimpleDtos.addAll(menuRepository.findByTagNameAndPriceRangeOrderByTitleAsc(userId, tags, size,
+                    menuFilterDto.getMinPrice(), menuFilterDto.getMaxPrice(), menuFilterDto.getPageable()
+            ));
+        }
+        if (sortOrder.equals(SortOrder.CREATED_AT_DESC)) {
+            menuSimpleDtos.addAll(menuRepository.findByTagNameAndPriceRangeOrderByCreatedByDesc(userId, tags, size,
+                    menuFilterDto.getMinPrice(), menuFilterDto.getMaxPrice(), menuFilterDto.getPageable()
+            ));
+        }
+        if (sortOrder.equals(SortOrder.PRICE_ASC)) {
+            menuSimpleDtos.addAll(menuRepository.findByTagNameAndPriceRangeOrderByPriceAsc(userId, tags, size,
+                    menuFilterDto.getMinPrice(), menuFilterDto.getMaxPrice(), menuFilterDto.getPageable()
+            ));
+        }
+
+        return menuSimpleDtos.stream()
+                .map(menuSimpleDto -> {
+                            String imgUrl = menuImgService.findUniqueImg(menuSimpleDto.getMenuId());
+                            return GetSimpleMenuResponse.of(menuSimpleDto, imgUrl);
+                        }
+                ).toList();
+    }
+
+    /**
+     * 유저 메뉴 전체 조회 태그가 없는 경우
+     *
+     * @param userId
+     * @param menuFilterDto
+     * @return
+     */
+    private List<GetSimpleMenuResponse> findMenusByPricePageAndSort(Long userId, MenuFilterDto menuFilterDto) {
+        return menuRepository.findByUserId(userId, menuFilterDto.getMinPrice(), menuFilterDto.getMaxPrice(),
+                        menuFilterDto.getPageable()).stream()
+                .map(menu -> {
+                            String imgUrl = menuImgService.findUniqueImg(menu.getId());
+                            return GetSimpleMenuResponse.of(menu, imgUrl);
+                        }
+                ).toList();
     }
 
     /**
