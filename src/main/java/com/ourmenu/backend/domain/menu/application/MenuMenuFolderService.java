@@ -85,17 +85,6 @@ public class MenuMenuFolderService {
     }
 
     /**
-     * 메뉴에 해당하는 조인 컬럼 반환
-     *
-     * @param menu
-     * @return
-     */
-    @Transactional
-    public List<MenuMenuFolder> findALlByMenuId(Menu menu) {
-        return menuMenuFolderRepository.findAllByMenu(menu);
-    }
-
-    /**
      * 메뉴 - 메뉴판 연관관계 설정
      *
      * @param userId
