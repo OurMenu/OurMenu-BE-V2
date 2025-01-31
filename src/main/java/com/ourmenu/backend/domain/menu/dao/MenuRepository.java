@@ -52,6 +52,51 @@ public interface MenuRepository extends JpaRepository<Menu, Long> {
             @Param("maxPrice") Long maxPrice
     );
 
+    @Query(value = """
+            SELECT m.id AS menuId, m.title AS menuTitle, s.title AS storeTitle, s.address
+            AS storeAddress, m.price AS menuPrice, m.created_at AS createdAt
+            FROM menu_menu_folder mf
+            JOIN menu m ON mf.menu_id = m.id
+            JOIN store s ON m.store_id = s.id
+            AND m.user_id = :userId
+            AND mf.folder_id = :menuFolderId
+            ORDER BY m.title ASC
+            """, nativeQuery = true)
+    List<MenuSimpleDto> findByMenuFolderIdOrderByTitleAsc(
+            @Param("userId") Long userId,
+            @Param("menuFolderId") Long menuFolderId
+    );
+
+    @Query(value = """
+            SELECT m.id AS menuId, m.title AS menuTitle, s.title AS storeTitle, s.address
+            AS storeAddress, m.price AS menuPrice, m.created_at AS createdAt
+            FROM menu_menu_folder mf
+            JOIN menu m ON mf.menu_id = m.id
+            JOIN store s ON m.store_id = s.id
+            AND m.user_id = :userId
+            AND mf.folder_id = :menuFolderId
+            ORDER BY m.created_at DESC
+            """, nativeQuery = true)
+    List<MenuSimpleDto> findByMenuFolderIdOrderByCreatedAtDesc(
+            @Param("userId") Long userId,
+            @Param("menuFolderId") Long menuFolderId
+    );
+
+    @Query(value = """
+            SELECT m.id AS menuId, m.title AS menuTitle, s.title AS storeTitle, s.address
+            AS storeAddress, m.price AS menuPrice, m.created_at AS createdAt
+            FROM menu_menu_folder mf
+            JOIN menu m ON mf.menu_id = m.id
+            JOIN store s ON m.store_id = s.id
+            AND m.user_id = :userId
+            AND mf.folder_id = :menuFolderId
+            ORDER BY m.price ASC
+            """, nativeQuery = true)
+    List<MenuSimpleDto> findByMenuFolderIdOrderByPriceAsc(
+            @Param("userId") Long userId,
+            @Param("menuFolderId") Long menuFolderId
+    );
+
     Page<Menu> findByUserId(Long userId, Pageable pageable);
 
     @Query(value = """

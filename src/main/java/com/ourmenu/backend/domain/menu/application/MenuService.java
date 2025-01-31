@@ -5,6 +5,7 @@ import com.ourmenu.backend.domain.menu.domain.Menu;
 import com.ourmenu.backend.domain.menu.domain.MenuFolder;
 import com.ourmenu.backend.domain.menu.domain.MenuImg;
 import com.ourmenu.backend.domain.menu.domain.MenuMenuFolder;
+import com.ourmenu.backend.domain.menu.domain.SortOrder;
 import com.ourmenu.backend.domain.menu.dto.GetMenuFolderMenuResponse;
 import com.ourmenu.backend.domain.menu.dto.GetMenuResponse;
 import com.ourmenu.backend.domain.menu.dto.GetSimpleMenuResponse;
@@ -18,6 +19,7 @@ import com.ourmenu.backend.domain.store.application.StoreService;
 import com.ourmenu.backend.domain.store.domain.Store;
 import com.ourmenu.backend.domain.tag.application.MenuTagService;
 import com.ourmenu.backend.domain.tag.domain.Tag;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -89,7 +91,7 @@ public class MenuService {
     }
 
     /**
-     * 유저 메뉴판 메뉴 조회
+     * 유저 메뉴판 메뉴 조회 정렬 기준에 따른 적절한 메소드를 호출
      *
      * @param userId
      * @param menuFolderId
@@ -98,12 +100,17 @@ public class MenuService {
     @Transactional
     public List<GetMenuFolderMenuResponse> findMenusByMenuFolder(Long userId, Long menuFolderId,
                                                                  MenuFilterDto menuFilterDto) {
-        Long tagSize = (long) menuFilterDto.getTags().size();
-        List<String> tagStrings = menuFilterDto.getTags().stream()
-                .map(Tag::toString)
-                .toList();
-        List<MenuSimpleDto> findMenuSimpleDto = menuRepository.findByTagNameAndPriceRange(userId, menuFolderId,
-                tagStrings, tagSize, menuFilterDto.getMinPrice(), menuFilterDto.getMaxPrice());
+        List<MenuSimpleDto> findMenuSimpleDto = new ArrayList<>();
+        SortOrder sortOrder = menuFilterDto.getSortOrder();
+        if (sortOrder.equals(SortOrder.TITLE_ASC)) {
+            findMenuSimpleDto.addAll(menuRepository.findByMenuFolderIdOrderByTitleAsc(userId, menuFolderId));
+        }
+        if (sortOrder.equals(SortOrder.CREATED_AT_DESC)) {
+            findMenuSimpleDto.addAll(menuRepository.findByMenuFolderIdOrderByCreatedAtDesc(userId, menuFolderId));
+        }
+        if (sortOrder.equals(SortOrder.PRICE_ASC)) {
+            findMenuSimpleDto.addAll(menuRepository.findByMenuFolderIdOrderByPriceAsc(userId, menuFolderId));
+        }
         return findMenuSimpleDto.stream()
                 .map(menuSimpleDto -> {
                     String imgUrl = menuImgService.findUniqueImg(menuSimpleDto.getMenuId());

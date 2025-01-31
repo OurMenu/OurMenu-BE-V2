@@ -60,11 +60,9 @@ public class MenuController {
     @GetMapping("/menu-folders/{menuFolderId}/menus")
     public ApiResponse<List<GetMenuFolderMenuResponse>> getMenuFolderMenus(
             @PathVariable("menuFolderId") Long menuFolderId,
-            @RequestParam("tags") List<com.ourmenu.backend.domain.tag.domain.Tag> tags,
-            @RequestParam(value = "minPrice", required = false) Long minPrice,
-            @RequestParam(value = "maxPrice", required = false) Long maxPrice,
+            @RequestParam(value = "sortOrder") SortOrder sortOrder,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
-        MenuFilterDto menuFilterDto = MenuFilterDto.of(tags, minPrice, maxPrice);
+        MenuFilterDto menuFilterDto = MenuFilterDto.from(sortOrder);
         List<GetMenuFolderMenuResponse> response = menuService.findMenusByMenuFolder(userDetails.getId(),
                 menuFolderId, menuFilterDto);
         return ApiUtil.success(response);
@@ -75,9 +73,12 @@ public class MenuController {
     public ApiResponse<List<GetSimpleMenuResponse>> getMenus(
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size") int size,
+            @RequestParam("tags") List<com.ourmenu.backend.domain.tag.domain.Tag> tags,
+            @RequestParam(value = "minPrice", required = false) Long minPrice,
+            @RequestParam(value = "maxPrice", required = false) Long maxPrice,
             @RequestParam(value = "sortOrder") SortOrder sortOrder,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
-        MenuFilterDto menuFilterDto = MenuFilterDto.of(page, size, sortOrder);
+        MenuFilterDto menuFilterDto = MenuFilterDto.from(page, size, sortOrder);
         List<GetSimpleMenuResponse> response = menuService.findMenusByPageAndSort(userDetails.getId(),
                 menuFilterDto);
         return ApiUtil.success(response);
