@@ -9,17 +9,11 @@ public class DefaultImgConvertor {
     @Value("${spring.cloud.aws.credentials.default.bucket.url}")
     private String url;
 
-    public String getDefaultMenuFolderImgUrl(String menuFolderImgUrl) {
-        if (menuFolderImgUrl == null) {
-            return url + "/default_menu_folder_img.svg";
-        }
-        return menuFolderImgUrl;
+    public String getDefaultMenuFolderImgUrl() {
+        return url + "/default_menu_folder_img.svg";
     }
 
-    public String getDefaultMenuImgUrl(String menuImgUrl) {
-        if (menuImgUrl == null) {
-            return url + "/default_menu_img.svg";
-        }
-        return menuImgUrl;
+    public String getDefaultMenuImgUrl() {
+        return url + "/default_menu_img.svg";
     }
 }
