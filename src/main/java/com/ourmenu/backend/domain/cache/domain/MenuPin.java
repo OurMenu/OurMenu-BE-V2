@@ -1,6 +1,6 @@
-package com.ourmenu.backend.domain.cash.domain;
+package com.ourmenu.backend.domain.cache.domain;
 
-public enum MenuFolderIcon {
+public enum MenuPin {
 
     BAKERY("빵", "bakery.svg"),
     BBQ("비비큐", "bbq.svg"),
@@ -26,7 +26,7 @@ public enum MenuFolderIcon {
     private String name;
     private String imgUrl;
 
-    MenuFolderIcon(String name, String imgUrl) {
+    MenuPin(String name, String imgUrl) {
         this.name = name;
         this.imgUrl = imgUrl;
     }

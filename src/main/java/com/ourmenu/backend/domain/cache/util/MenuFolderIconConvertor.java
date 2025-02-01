@@ -1,6 +1,6 @@
-package com.ourmenu.backend.domain.cash.util;
+package com.ourmenu.backend.domain.cache.util;
 
-import com.ourmenu.backend.domain.cash.domain.MenuFolderIcon;
+import com.ourmenu.backend.domain.cache.domain.MenuPin;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -10,7 +10,7 @@ public class MenuFolderIconConvertor {
     @Value("${spring.cloud.aws.credentials.default.bucket.url}")
     private String url;
 
-    public String getIcon(MenuFolderIcon icon) {
+    public String getIcon(MenuPin icon) {
         return url + "/menu-pin/" + icon.getImgUrl();
     }
 }
