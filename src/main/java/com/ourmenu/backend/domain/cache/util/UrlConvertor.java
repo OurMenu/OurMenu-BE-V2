@@ -21,6 +21,6 @@ public class UrlConvertor {
     }
 
     public String getHomeImgUrl(HomeImg homeImg) {
-        return url + "/menu-folder-icon/" + homeImg.getRandomImgUrl() + ".svg";
+        return url + "/menu-folder-icon/" + homeImg.getImgUrl() + ".svg";
     }
 }
