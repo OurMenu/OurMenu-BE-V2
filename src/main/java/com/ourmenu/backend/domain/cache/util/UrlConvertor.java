@@ -1,5 +1,6 @@
 package com.ourmenu.backend.domain.cache.util;
 
+import com.ourmenu.backend.domain.cache.domain.HomeImg;
 import com.ourmenu.backend.domain.cache.domain.MenuFolderIcon;
 import com.ourmenu.backend.domain.cache.domain.MenuPin;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,5 +18,9 @@ public class UrlConvertor {
 
     public String getMenuFolderUrl(MenuFolderIcon icon) {
         return url + "/menu-folder-icon/" + icon.getImgUrl() + ".svg";
+    }
+
+    public String getHomeImgUrl(HomeImg homeImg) {
+        return url + "/menu-folder-icon/" + homeImg.getRandomImgUrl() + ".svg";
     }
 }
