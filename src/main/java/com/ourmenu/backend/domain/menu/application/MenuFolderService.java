@@ -36,6 +36,12 @@ public class MenuFolderService {
         return SaveMenuFolderResponse.of(menuFolder, menuFolderDto.getMenuIds());
     }
 
+    /**
+     * 메뉴판 삭제 (인덱스 조정)
+     *
+     * @param userId
+     * @param menuFolderId
+     */
     @Transactional
     public void deleteMenuFolder(Long userId, Long menuFolderId) {
         MenuFolder menuFolder = findOne(userId, menuFolderId);
@@ -56,7 +62,7 @@ public class MenuFolderService {
             menuMenuFolderService.updateMenuMenuFolder(userId, menuFolderId, menuFolderDto.getMenuIds());
         }
 
-        if (menuFolderDto.getMenuFolderImg() != null) {
+        if (!menuFolderDto.getMenuFolderImg().isEmpty()) {
             String imgUrl = awsS3Service.uploadFileAsync(menuFolderDto.getMenuFolderImg());
             menuFolder.update(menuFolderDto, imgUrl);
             List<MenuMenuFolder> menuMenuFolders = menuMenuFolderService.findAllByMenuFolderId(menuFolderId);
@@ -115,6 +121,11 @@ public class MenuFolderService {
                             menuFolder.getId());
                     return GetMenuFolderResponse.of(menuFolder, menuMenuFolders);
                 }).toList();
+    }
+
+    @Transactional
+    public List<MenuFolder> findAllByMenuId(Long menuId) {
+        return menuFolderRepository.findMenuFoldersByMenuId(menuId);
     }
 
     /**

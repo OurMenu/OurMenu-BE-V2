@@ -80,5 +80,4 @@ public class MenuFolderController {
         menuFolderService.deleteMenuFolder(userDetails.getId(), menuFolderId);
         return ApiUtil.successOnly();
     }
-
 }
