@@ -9,6 +9,7 @@ import com.ourmenu.backend.domain.menu.dto.MenuDto;
 import com.ourmenu.backend.domain.menu.dto.MenuFilterDto;
 import com.ourmenu.backend.domain.menu.dto.SaveMenuRequest;
 import com.ourmenu.backend.domain.menu.dto.SaveMenuResponse;
+import com.ourmenu.backend.domain.menu.util.PriceUtil;
 import com.ourmenu.backend.domain.search.application.SearchService;
 import com.ourmenu.backend.domain.search.dto.SimpleSearchDto;
 import com.ourmenu.backend.domain.user.domain.CustomUserDetails;
@@ -60,11 +61,9 @@ public class MenuController {
     @GetMapping("/menu-folders/{menuFolderId}/menus")
     public ApiResponse<List<GetMenuFolderMenuResponse>> getMenuFolderMenus(
             @PathVariable("menuFolderId") Long menuFolderId,
-            @RequestParam("tags") List<com.ourmenu.backend.domain.tag.domain.Tag> tags,
-            @RequestParam(value = "minPrice", required = false) Long minPrice,
-            @RequestParam(value = "maxPrice", required = false) Long maxPrice,
+            @RequestParam(value = "sortOrder") SortOrder sortOrder,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
-        MenuFilterDto menuFilterDto = MenuFilterDto.of(tags, minPrice, maxPrice);
+        MenuFilterDto menuFilterDto = MenuFilterDto.from(sortOrder);
         List<GetMenuFolderMenuResponse> response = menuService.findMenusByMenuFolder(userDetails.getId(),
                 menuFolderId, menuFilterDto);
         return ApiUtil.success(response);
@@ -73,12 +72,18 @@ public class MenuController {
     @Operation(summary = "메뉴 리스트 조회", description = "메뉴 리스트를 조회한다. 필터를 사용할 수 있다")
     @GetMapping("/menus")
     public ApiResponse<List<GetSimpleMenuResponse>> getMenus(
+            @RequestParam("tags") List<com.ourmenu.backend.domain.tag.domain.Tag> tags,
+            @RequestParam(value = "minPrice", required = false) Long minPrice,
+            @RequestParam(value = "maxPrice", required = false) Long maxPrice,
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size") int size,
             @RequestParam(value = "sortOrder") SortOrder sortOrder,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
-        MenuFilterDto menuFilterDto = MenuFilterDto.of(page, size, sortOrder);
-        List<GetSimpleMenuResponse> response = menuService.findMenusByPageAndSort(userDetails.getId(),
+        minPrice = PriceUtil.convertMinPrice(minPrice);
+        maxPrice = PriceUtil.convertMaxPrice(maxPrice);
+        MenuFilterDto menuFilterDto = MenuFilterDto.from(tags, minPrice, maxPrice, page, size, sortOrder);
+
+        List<GetSimpleMenuResponse> response = menuService.findMenusByCriteriaPageAndSort(userDetails.getId(),
                 menuFilterDto);
         return ApiUtil.success(response);
     }

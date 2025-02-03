@@ -31,4 +31,16 @@ public class GetSimpleMenuResponse {
                 .createdAt(menu.getCreatedAt())
                 .build();
     }
+
+    public static GetSimpleMenuResponse of(MenuSimpleDto menuSimpleDto, String menuImgUrl) {
+        return GetSimpleMenuResponse.builder()
+                .menuId(menuSimpleDto.getMenuId())
+                .menuTitle(menuSimpleDto.getMenuTitle())
+                .storeTitle(menuSimpleDto.getStoreTitle())
+                .storeAddress(menuSimpleDto.getStoreAddress())
+                .menuPrice(menuSimpleDto.getMenuPrice())
+                .menuImgUrl(menuImgUrl)
+                .createdAt(menuSimpleDto.getCreatedAt())
+                .build();
+    }
 }
