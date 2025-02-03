@@ -52,9 +52,8 @@ public class JwtTokenProvider {
     private final RefreshTokenRepository refreshTokenRepository;
 
     /**
-     * 환경 변수로 지정한 SecretKey값으로 JWT 서명 키를 초기화
-     *
-     * @PostConstruct 어노테이션에 의해 의존성 주입이 완료된 후 자동으로 실행 base64로 인코딩된 비밀 키를 디코딩, JWT 토큰 생성 및 검증에 사용할 서명 키를 생성
+     * 환경 변수로 지정한 SecretKey값으로 JWT 서명 키를 초기화 PostConstruct 어노테이션에 의해 의존성 주입이 완료된 후 자동으로 실행 base64로 인코딩된 비밀 키를 디코딩, JWT
+     * 토큰 생성 및 검증에 사용할 서명 키를 생성
      */
     @PostConstruct
     public void init() {
@@ -179,7 +178,8 @@ public class JwtTokenProvider {
      * @return Email
      */
     public String getEmailFromToken(String token) {
-        return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody()
+        return Jwts.parserBuilder().setSigningKey(key).build()
+                .parseClaimsJws(token).getBody()
                 .get("email", String.class);
     }
 
