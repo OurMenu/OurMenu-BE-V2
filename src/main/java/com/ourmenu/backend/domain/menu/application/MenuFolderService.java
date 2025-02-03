@@ -62,21 +62,29 @@ public class MenuFolderService {
     }
 
     @Transactional
-    public UpdateMenuFolderResponse updateMenuFolder(Long userId, Long menuFolderId, MenuFolderDto menuFolderDto) {
+    public UpdateMenuFolderResponse updateMenuFolder(Long userId, Long menuFolderId, MenuFolderDto menuFolderDto,
+                                                     Boolean isImageModified) {
 
         MenuFolder menuFolder = findOne(userId, menuFolderId);
         if (menuFolderDto.getMenuIds() != null) {
             menuMenuFolderService.updateMenuMenuFolder(userId, menuFolderId, menuFolderDto.getMenuIds());
         }
 
-        if (!menuFolderDto.getMenuFolderImg().isEmpty()) {
-            String imgUrl = awsS3Service.uploadFileAsync(menuFolderDto.getMenuFolderImg());
-            menuFolder.update(menuFolderDto, imgUrl);
-            List<MenuMenuFolder> menuMenuFolders = menuMenuFolderService.findAllByMenuFolderId(menuFolderId);
-            return UpdateMenuFolderResponse.of(menuFolder, menuMenuFolders);
-        }
+        if (isImageModified) {
+            //기존에 있는 이미지는 삭제한다
+            if (menuFolder.getImgUrl() != null) {
+                awsS3Service.deleteFileAsync(menuFolder.getImgUrl());
+                menuFolder.updateImg(null);
+            }
 
-        menuFolder.update(menuFolderDto, null);
+            //추가할 이미지가 있으면 추가한다
+            if (menuFolderDto.getMenuFolderImg() != null) {
+                String imgUrl = awsS3Service.uploadFileAsync(menuFolderDto.getMenuFolderImg());
+
+                menuFolder.updateImg(imgUrl);
+            }
+        }
+        menuFolder.update(menuFolderDto);
         List<MenuMenuFolder> menuMenuFolders = menuMenuFolderService.findAllByMenuFolderId(menuFolderId);
         return UpdateMenuFolderResponse.of(menuFolder, menuMenuFolders);
     }
