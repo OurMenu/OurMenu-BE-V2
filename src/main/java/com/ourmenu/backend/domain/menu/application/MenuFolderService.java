@@ -52,10 +52,13 @@ public class MenuFolderService {
         menuFolderRepository.delete(menuFolder);
         int maxIndex = menuFolderRepository.findMaxIndex();
 
-        if (menuFolderId != maxIndex) {
-            menuFolderRepository.decrementIndexes(userId, (int) (menuFolderId + 1), maxIndex);
+        if (menuFolder.getIndex() != maxIndex) {
+            menuFolderRepository.decrementIndexes(userId, (menuFolder.getIndex() + 1), maxIndex);
         }
-        awsS3Service.deleteFileAsync(menuFolder.getImgUrl());
+
+        if (menuFolder.getImgUrl() != null) {
+            awsS3Service.deleteFileAsync(menuFolder.getImgUrl());
+        }
     }
 
     @Transactional
