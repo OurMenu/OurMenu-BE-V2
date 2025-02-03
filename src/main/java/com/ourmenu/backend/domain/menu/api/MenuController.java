@@ -9,6 +9,7 @@ import com.ourmenu.backend.domain.menu.dto.MenuDto;
 import com.ourmenu.backend.domain.menu.dto.MenuFilterDto;
 import com.ourmenu.backend.domain.menu.dto.SaveMenuRequest;
 import com.ourmenu.backend.domain.menu.dto.SaveMenuResponse;
+import com.ourmenu.backend.domain.menu.util.PriceUtil;
 import com.ourmenu.backend.domain.search.application.SearchService;
 import com.ourmenu.backend.domain.search.dto.SimpleSearchDto;
 import com.ourmenu.backend.domain.user.domain.CustomUserDetails;
@@ -78,6 +79,8 @@ public class MenuController {
             @RequestParam(value = "size") int size,
             @RequestParam(value = "sortOrder") SortOrder sortOrder,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
+        minPrice = PriceUtil.convertMinPrice(minPrice);
+        maxPrice = PriceUtil.convertMaxPrice(maxPrice);
         MenuFilterDto menuFilterDto = MenuFilterDto.from(tags, minPrice, maxPrice, page, size, sortOrder);
 
         List<GetSimpleMenuResponse> response = menuService.findMenusByCriteriaPageAndSort(userDetails.getId(),
