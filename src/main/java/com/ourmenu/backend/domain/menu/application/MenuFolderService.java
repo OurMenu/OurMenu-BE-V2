@@ -11,6 +11,7 @@ import com.ourmenu.backend.domain.menu.exception.ForbiddenMenuFolderException;
 import com.ourmenu.backend.domain.menu.exception.NotFoundMenuFolderException;
 import com.ourmenu.backend.domain.menu.exception.OutOfBoundCustomIndexException;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,7 +32,10 @@ public class MenuFolderService {
      */
     @Transactional
     public SaveMenuFolderResponse saveMenuFolder(MenuFolderDto menuFolderDto) {
-        String menuFolderImgUrl = awsS3Service.uploadFileAsync(menuFolderDto.getMenuFolderImg());
+        String menuFolderImgUrl = Optional.ofNullable(menuFolderDto.getMenuFolderImg())
+                .map(awsS3Service::uploadFileAsync)
+                .orElse(null);
+
         MenuFolder menuFolder = saveMenuFolder(menuFolderDto, menuFolderImgUrl);
         return SaveMenuFolderResponse.of(menuFolder, menuFolderDto.getMenuIds());
     }
