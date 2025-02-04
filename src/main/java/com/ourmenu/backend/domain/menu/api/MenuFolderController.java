@@ -59,7 +59,7 @@ public class MenuFolderController {
                                                                   @AuthenticationPrincipal CustomUserDetails userDetails) {
         MenuFolderDto menuFolderDto = MenuFolderDto.of(request, request.getMenuFolderImg(), userDetails.getId());
         UpdateMenuFolderResponse updateMenuFolderResponse = menuFolderService.updateMenuFolder(userDetails.getId(),
-                menuFolderId, menuFolderDto);
+                menuFolderId, menuFolderDto, request.getIsImageModified());
         return ApiUtil.success(updateMenuFolderResponse);
     }
 
