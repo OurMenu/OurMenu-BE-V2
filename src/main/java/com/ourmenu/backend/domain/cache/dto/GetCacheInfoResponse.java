@@ -15,14 +15,18 @@ public class GetCacheInfoResponse {
     private List<SimpleMenuPinResponse> menuPins;
     private List<SimpleHomeImgResponse> homeImgs;
 
+    private List<SimpleTagImgResponse> tags;
+
     public static GetCacheInfoResponse of(List<SimpleMenuFolderIconResponse> simpleMenuFolderIconResponses,
                                           List<SimpleMenuPinResponse> simpleMenuPinResponses,
-                                          List<SimpleHomeImgResponse> homeImgs
+                                          List<SimpleHomeImgResponse> homeImgs,
+                                          List<SimpleTagImgResponse> tags
     ) {
         return GetCacheInfoResponse.builder()
                 .menuFolderIcons(simpleMenuFolderIconResponses)
                 .menuPins(simpleMenuPinResponses)
                 .homeImgs(homeImgs)
+                .tags(tags)
                 .build();
     }
 }

@@ -7,7 +7,9 @@ import com.ourmenu.backend.domain.cache.dto.GetCacheInfoResponse;
 import com.ourmenu.backend.domain.cache.dto.SimpleHomeImgResponse;
 import com.ourmenu.backend.domain.cache.dto.SimpleMenuFolderIconResponse;
 import com.ourmenu.backend.domain.cache.dto.SimpleMenuPinResponse;
+import com.ourmenu.backend.domain.cache.dto.SimpleTagImgResponse;
 import com.ourmenu.backend.domain.cache.util.UrlConvertor;
+import com.ourmenu.backend.domain.tag.domain.Tag;
 import java.util.Arrays;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -23,8 +25,9 @@ public class CacheService {
         List<SimpleMenuFolderIconResponse> menuFolderIconInfo = getMenuFolderIconInfo();
         List<SimpleMenuPinResponse> menuPinInfo = getMenuPinInfo();
         List<SimpleHomeImgResponse> homeImgInfo = getHomeImgInfo();
+        List<SimpleTagImgResponse> tagInfo = getTagImgInfo();
 
-        return GetCacheInfoResponse.of(menuFolderIconInfo, menuPinInfo, homeImgInfo);
+        return GetCacheInfoResponse.of(menuFolderIconInfo, menuPinInfo, homeImgInfo, tagInfo);
     }
 
     private List<SimpleMenuFolderIconResponse> getMenuFolderIconInfo() {
@@ -48,9 +51,21 @@ public class CacheService {
     private List<SimpleHomeImgResponse> getHomeImgInfo() {
         return Arrays.stream(HomeImg.values())
                 .map(homeImg -> {
-                    String homeImgUrl = urlConvertor.getHomeImgUrl(homeImg);
-                    return SimpleHomeImgResponse.of(homeImg, homeImgUrl);
-                })
+                            String homeImgUrl = urlConvertor.getHomeImgUrl(homeImg);
+                            return SimpleHomeImgResponse.of(homeImg, homeImgUrl);
+                        }
+                )
+                .toList();
+    }
+
+    private List<SimpleTagImgResponse> getTagImgInfo() {
+        return Arrays.stream(Tag.values())
+                .map(tag -> {
+                            String orangeTagImgUrl = urlConvertor.getOrangeTagImgUrl(tag);
+                            String whiteTagImgUrl = urlConvertor.getWhiteTagImgUrl(tag);
+                            return SimpleTagImgResponse.of(tag, orangeTagImgUrl, whiteTagImgUrl);
+                        }
+                )
                 .toList();
     }
 }
