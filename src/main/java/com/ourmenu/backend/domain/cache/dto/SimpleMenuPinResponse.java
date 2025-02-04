@@ -12,12 +12,17 @@ import lombok.Getter;
 public class SimpleMenuPinResponse {
 
     private MenuPin menuPin;
-    private String menuPinUrl;
+    private String menuPinMapImgUrl;
+    private String menuPinAddImgUrl;
+    private String menuPinAddDisableImgUrl;
 
-    public static SimpleMenuPinResponse of(MenuPin menuPin, String menuPinUrl) {
+    public static SimpleMenuPinResponse of(MenuPin menuPin, String menuPinMapImgUrl, String menuPinAddImgUrl,
+                                           String menuPinAddDisableImgUrl) {
         return SimpleMenuPinResponse.builder()
                 .menuPin(menuPin)
-                .menuPinUrl(menuPinUrl)
+                .menuPinMapImgUrl(menuPinMapImgUrl)
+                .menuPinAddImgUrl(menuPinAddImgUrl)
+                .menuPinAddDisableImgUrl(menuPinAddDisableImgUrl)
                 .build();
     }
 }

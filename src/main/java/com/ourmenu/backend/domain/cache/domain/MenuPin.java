@@ -2,7 +2,7 @@ package com.ourmenu.backend.domain.cache.domain;
 
 public enum MenuPin {
 
-    BAKERY("빵", "bakery"),
+    BREAD("빵", "bread"),
     BBQ("비비큐", "bbq"),
     CAKE("케익", "cake"),
     COFFEE("커피", "coffee"),

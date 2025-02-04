@@ -42,8 +42,11 @@ public class CacheService {
     private List<SimpleMenuPinResponse> getMenuPinInfo() {
         return Arrays.stream(MenuPin.values())
                 .map(menuPin -> {
-                    String menuPinUrl = urlConvertor.getMenuPinUrl(menuPin);
-                    return SimpleMenuPinResponse.of(menuPin, menuPinUrl);
+                    String menuPinMapUrl = urlConvertor.getMenuPinMapUrl(menuPin);
+                    String menuPinAddUrl = urlConvertor.getMenuPinAddUrl(menuPin);
+                    String menuPinMapAddDiable = urlConvertor.getMenuPinMapAddDiable(menuPin);
+                    return SimpleMenuPinResponse.of(menuPin, menuPinMapUrl, menuPinAddUrl,
+                            menuPinMapAddDiable);
                 })
                 .toList();
     }

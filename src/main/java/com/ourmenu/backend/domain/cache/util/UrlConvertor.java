@@ -13,12 +13,20 @@ public class UrlConvertor {
     @Value("${spring.cloud.aws.credentials.default.bucket.url}")
     private String url;
 
-    public String getMenuPinUrl(MenuPin pin) {
-        return url + "/menu-pin/" + pin.getImgUrl() + ".svg";
+    public String getMenuPinMapUrl(MenuPin pin) {
+        return url + "/menu-pins/" + pin.getImgUrl() + "_map.svg";
+    }
+
+    public String getMenuPinAddUrl(MenuPin pin) {
+        return url + "/menu-pins/" + pin.getImgUrl() + "_add.svg";
+    }
+
+    public String getMenuPinMapAddDiable(MenuPin pin) {
+        return url + "/menu-pins/" + pin.getImgUrl() + "_map_disable.svg";
     }
 
     public String getMenuFolderUrl(MenuFolderIcon icon) {
-        return url + "/menu-folder-icon/" + icon.getImgUrl() + ".svg";
+        return url + "/menu-folder-icons/" + icon.getImgUrl() + ".svg";
     }
 
     public String getHomeImgUrl(HomeImg homeImg) {
