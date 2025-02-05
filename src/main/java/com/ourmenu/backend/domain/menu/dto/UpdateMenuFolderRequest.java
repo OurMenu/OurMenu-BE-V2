@@ -10,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class UpdateMenuFolderRequest {
 
     private MultipartFile menuFolderImg;
+    private Boolean isImageModified;
     private String menuFolderTitle;
     private String menuFolderIcon;
     private List<Long> menuIds;

@@ -41,7 +41,7 @@ public class MenuFolder extends BaseEntity {
     @NotNull
     private Long userId;
 
-    public void update(MenuFolderDto menuFolderDto, String imgUrl) {
+    public void update(MenuFolderDto menuFolderDto) {
         String title = menuFolderDto.getMenuFolderTitle();
         if (title != null) {
             this.title = title;
@@ -51,10 +51,10 @@ public class MenuFolder extends BaseEntity {
         if (icon != null) {
             this.icon = icon;
         }
+    }
 
-        if (imgUrl != null) {
-            this.imgUrl = imgUrl;
-        }
+    public void updateImg(String imgUrl) {
+        this.imgUrl = imgUrl;
     }
 
     public void updateIndex(int index) {
