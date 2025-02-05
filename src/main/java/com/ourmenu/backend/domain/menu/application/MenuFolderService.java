@@ -10,7 +10,7 @@ import com.ourmenu.backend.domain.menu.dto.UpdateMenuFolderResponse;
 import com.ourmenu.backend.domain.menu.exception.ForbiddenMenuFolderException;
 import com.ourmenu.backend.domain.menu.exception.NotFoundMenuFolderException;
 import com.ourmenu.backend.domain.menu.exception.OutOfBoundCustomIndexException;
-import com.ourmenu.backend.domain.menu.util.DefaultImgConvertor;
+import com.ourmenu.backend.domain.menu.util.DefaultImgConverter;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,7 +23,7 @@ public class MenuFolderService {
     private final AwsS3Service awsS3Service;
     private final MenuFolderRepository menuFolderRepository;
     private final MenuMenuFolderService menuMenuFolderService;
-    private final DefaultImgConvertor defaultImgConvertor;
+    private final DefaultImgConverter defaultImgConvertor;
 
     /**
      * 메뉴 폴더 저장
