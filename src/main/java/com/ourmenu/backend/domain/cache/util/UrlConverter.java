@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
-public class UrlConvertor {
+public class UrlConverter {
 
     @Value("${spring.cloud.aws.credentials.default.bucket.url}")
     private String url;
