@@ -20,14 +20,20 @@ public class GetMenuFolderResponse {
     private List<Long> menuIds;
     private int index;
 
-    public static GetMenuFolderResponse of(MenuFolder menuFolder, List<MenuMenuFolder> menuFolders) {
+    public static GetMenuFolderResponse of(MenuFolder menuFolder, List<MenuMenuFolder> menuFolders,
+                                           String defaultMenuFolderImgUrl) {
+        String menuFolderImgUrl = menuFolder.getImgUrl();
+        if (menuFolderImgUrl == null) {
+            menuFolderImgUrl = defaultMenuFolderImgUrl;
+        }
+
         List<Long> menuIds = menuFolders.stream()
                 .map(menuMenuFolder -> menuMenuFolder.getMenu().getId())
                 .toList();
         return GetMenuFolderResponse.builder()
                 .menuFolderId(menuFolder.getId())
                 .menuFolderTitle(menuFolder.getTitle())
-                .menuFolderUrl(menuFolder.getImgUrl())
+                .menuFolderUrl(menuFolderImgUrl)
                 .menuFolderIcon(menuFolder.getIcon())
                 .menuIds(menuIds)
                 .index(menuFolder.getIndex())

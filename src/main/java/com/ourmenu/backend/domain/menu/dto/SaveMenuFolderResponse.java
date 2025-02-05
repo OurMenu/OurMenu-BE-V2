@@ -19,11 +19,17 @@ public class SaveMenuFolderResponse {
     private List<Long> menuIds;
     private int index;
 
-    public static SaveMenuFolderResponse of(MenuFolder menuFolder, List<Long> menuIds) {
+    public static SaveMenuFolderResponse of(MenuFolder menuFolder, List<Long> menuIds,
+                                            String defaultMenuFolderImgUrl) {
+        String menuFolderImgUrl = menuFolder.getImgUrl();
+        if (menuFolderImgUrl == null) {
+            menuFolderImgUrl = defaultMenuFolderImgUrl;
+        }
+
         return SaveMenuFolderResponse.builder()
                 .menuFolderId(menuFolder.getId())
                 .menuFolderTitle(menuFolder.getTitle())
-                .menuFolderUrl(menuFolder.getImgUrl())
+                .menuFolderUrl(menuFolderImgUrl)
                 .menuFolderIcon(menuFolder.getIcon())
                 .menuIds(menuIds)
                 .index(menuFolder.getIndex())
