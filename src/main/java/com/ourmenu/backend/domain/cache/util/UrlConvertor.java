@@ -18,11 +18,17 @@ public class UrlConvertor {
     }
 
     public String getMenuPinAddUrl(MenuPin pin) {
+        if (isETCMenuPin(pin)) {
+            return null;
+        }
         return url + "/menu-pins/" + pin.getImgUrl() + "_add.svg";
     }
 
     public String getMenuPinMapAddDiable(MenuPin pin) {
-        return url + "/menu-pins/" + pin.getImgUrl() + "_map_disable.svg";
+        if (isETCMenuPin(pin)) {
+            return null;
+        }
+        return url + "/menu-pins/" + pin.getImgUrl() + "_add_disable.svg";
     }
 
     public String getMenuFolderUrl(MenuFolderIcon icon) {
@@ -30,7 +36,7 @@ public class UrlConvertor {
     }
 
     public String getHomeImgUrl(HomeImg homeImg) {
-        return url + "/home/" + homeImg.getImgUrl() + ".svg";
+        return url + "/homes/" + homeImg.getImgUrl() + ".svg";
     }
 
     public String getOrangeTagImgUrl(Tag tag) {
@@ -39,5 +45,10 @@ public class UrlConvertor {
 
     public String getWhiteTagImgUrl(Tag tag) {
         return url + "/tags/" + tag.getImgUrl() + "_white.svg";
+    }
+
+    private boolean isETCMenuPin(MenuPin pin) {
+        return pin.equals(MenuPin.TWO) || pin.equals(MenuPin.THREE) || pin.equals(MenuPin.FOUR) || pin.equals(
+                MenuPin.FIVE);
     }
 }

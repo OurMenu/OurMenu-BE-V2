@@ -8,7 +8,6 @@ public enum MenuPin {
     COFFEE("커피", "coffee"),
     CUTLERY("수저", "cutlery"),
     DOT("점(기본)", "dot"),
-    ETC("기타", "etc"),
     FISH("물고기", "fish"),
     HAMBURGER("햄버거", "hamburger"),
     KOREA("한국", "korea"),
@@ -21,7 +20,11 @@ public enum MenuPin {
     SKEWER("꼬치", "skewer"),
     STAR("별", "star"),
     SUSHI("초밥", "sushi"),
-    TROPICAL("열대", "tropical");
+    TROPICAL("열대", "tropical"),
+    TWO("2", "two"),
+    THREE("3", "three"),
+    FOUR("4", "four"),
+    FIVE("5", "five");
 
     private String name;
     private String imgUrl;
