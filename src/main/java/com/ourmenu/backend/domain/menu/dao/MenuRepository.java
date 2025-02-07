@@ -74,8 +74,7 @@ public interface MenuRepository extends JpaRepository<Menu, Long> {
 
     @Query("SELECT m FROM Menu m JOIN m.store s " +
             "WHERE m.userId = :userId " +
-            "AND m.price BETWEEN COALESCE(:minPrice, 0) AND COALESCE(:maxPrice, 2147483647) " +
-            "ORDER BY m.createdAt DESC")
+            "AND m.price BETWEEN COALESCE(:minPrice, 0) AND COALESCE(:maxPrice, 2147483647) ")
     Page<Menu> findByUserId(
             @Param("userId") Long userId,
             @Param("minPrice") Long minPrice,
