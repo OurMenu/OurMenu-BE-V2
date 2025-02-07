@@ -48,9 +48,9 @@ public class MenuTagService {
      * @return
      */
     @Transactional
-    public List<String> findTagNames(Long menuId) {
+    public List<Tag> findTagNames(Long menuId) {
         return menuTagRepository.findMenuTagsByMenuId(menuId).stream()
-                .map(menuTag -> menuTag.getTag().getTagName())
+                .map(menuTag -> menuTag.getTag())
                 .toList();
     }
 }

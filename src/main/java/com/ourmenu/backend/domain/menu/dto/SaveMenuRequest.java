@@ -26,6 +26,9 @@ public class SaveMenuRequest {
     private boolean isCrawled;
     private List<Tag> tags;
 
+    /**
+     * request 에 null 들어오는 경우에 대해서 request 초기화 swagger 를 위한 메서드
+     */
     public void initList() {
         if (menuFolderImgs == null) {
             menuFolderImgs = new ArrayList<>();

@@ -47,6 +47,7 @@ public class MenuFolderController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<SaveMenuFolderResponse> saveMenuFolder(@ModelAttribute SaveMenuFolderRequest request,
                                                               @AuthenticationPrincipal CustomUserDetails userDetails) {
+        request.initList();
         MenuFolderDto menuFolderDto = MenuFolderDto.of(request, request.getMenuFolderImg(), userDetails.getId());
         SaveMenuFolderResponse response = menuFolderService.saveMenuFolder(menuFolderDto);
         return ApiUtil.success(response);
