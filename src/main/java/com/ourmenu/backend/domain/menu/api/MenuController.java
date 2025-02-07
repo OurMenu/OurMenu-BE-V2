@@ -73,7 +73,7 @@ public class MenuController {
     @Operation(summary = "메뉴 리스트 조회", description = "메뉴 리스트를 조회한다. 필터를 사용할 수 있다")
     @GetMapping("/menus")
     public ApiResponse<List<GetSimpleMenuResponse>> getMenus(
-            @RequestParam("tags") List<com.ourmenu.backend.domain.tag.domain.Tag> tags,
+            @RequestParam(value = "tags", required = false) List<com.ourmenu.backend.domain.tag.domain.Tag> tags,
             @RequestParam(value = "minPrice", required = false) Long minPrice,
             @RequestParam(value = "maxPrice", required = false) Long maxPrice,
             @RequestParam(value = "page", defaultValue = "0") int page,

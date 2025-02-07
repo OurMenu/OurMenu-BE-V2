@@ -52,7 +52,7 @@ public class MenuImgService {
         return menuImgRepository.findAllByMenuId(menuId).stream()
                 .map(MenuImg::getImgUrl)
                 .findFirst()
-                .orElse("default.jpg");
+                .orElse(defaultImgConverter.getDefaultMenuImgUrl());
     }
 
     /**

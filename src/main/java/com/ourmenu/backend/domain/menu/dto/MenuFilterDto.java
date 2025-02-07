@@ -2,6 +2,7 @@ package com.ourmenu.backend.domain.menu.dto;
 
 import com.ourmenu.backend.domain.menu.domain.SortOrder;
 import com.ourmenu.backend.domain.tag.domain.Tag;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -34,6 +35,9 @@ public class MenuFilterDto {
 
     public static MenuFilterDto from(List<Tag> tags, Long minPrice, Long maxPrice, int page, int size,
                                      SortOrder sortOrder) {
+        if (tags == null) {
+            tags = new ArrayList<>();
+        }
         Pageable pageable = PageRequest.of(page, size, Sort.by(sortOrder.getDirection(), sortOrder.getField()));
         return MenuFilterDto.builder()
                 .tags(tags)
