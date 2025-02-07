@@ -1,5 +1,6 @@
 package com.ourmenu.backend.domain.menu.dto;
 
+import com.ourmenu.backend.domain.cache.domain.MenuFolderIcon;
 import com.ourmenu.backend.domain.menu.domain.Menu;
 import com.ourmenu.backend.domain.menu.domain.MenuFolder;
 import java.util.List;
@@ -30,7 +31,7 @@ public class GetMenuResponse {
     private static class SimpleMenuFolder {
         private Long menuFolderId;
         private String menuFolderTitle;
-        private String menuFolderIcon;
+        private MenuFolderIcon menuFolderIcon;
     }
 
     public static GetMenuResponse of(Menu menu, List<String> imgUrls, List<String> tagNames,

@@ -1,5 +1,6 @@
 package com.ourmenu.backend.domain.menu.dto;
 
+import com.ourmenu.backend.domain.cache.domain.MenuFolderIcon;
 import com.ourmenu.backend.domain.menu.domain.MenuFolder;
 import java.util.List;
 import lombok.AccessLevel;
@@ -15,7 +16,7 @@ public class SaveMenuFolderResponse {
     private Long menuFolderId;
     private String menuFolderTitle;
     private String menuFolderUrl;
-    private String menuFolderIcon;
+    private MenuFolderIcon menuFolderIcon;
     private List<Long> menuIds;
     private int index;
 
