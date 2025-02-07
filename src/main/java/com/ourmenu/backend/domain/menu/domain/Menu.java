@@ -1,5 +1,6 @@
 package com.ourmenu.backend.domain.menu.domain;
 
+import com.ourmenu.backend.domain.cache.domain.MenuPin;
 import com.ourmenu.backend.domain.store.domain.Store;
 import com.ourmenu.backend.global.domain.BaseEntity;
 import jakarta.persistence.Entity;
@@ -32,7 +33,7 @@ public class Menu extends BaseEntity {
     @NotNull
     private Integer price;
 
-    private String pin;
+    private MenuPin pin;
 
     private String memoTitle;
 

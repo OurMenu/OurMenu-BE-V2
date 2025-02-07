@@ -1,5 +1,6 @@
 package com.ourmenu.backend.domain.menu.dto;
 
+import com.ourmenu.backend.domain.cache.domain.MenuPin;
 import com.ourmenu.backend.domain.menu.domain.Menu;
 import com.ourmenu.backend.domain.menu.domain.MenuImg;
 import com.ourmenu.backend.domain.menu.domain.MenuMenuFolder;
@@ -22,7 +23,7 @@ public class SaveMenuResponse {
     private int menuPrice;
     private String menuMemoTitle;
     private String menuMemoContent;
-    private String menuPin;
+    private MenuPin menuPin;
     private List<Long> menuFolderIds;
     private boolean isCrawled;
     private List<String> tags;

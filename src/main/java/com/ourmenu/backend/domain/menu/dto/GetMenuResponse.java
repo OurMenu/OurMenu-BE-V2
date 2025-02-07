@@ -1,6 +1,7 @@
 package com.ourmenu.backend.domain.menu.dto;
 
 import com.ourmenu.backend.domain.cache.domain.MenuFolderIcon;
+import com.ourmenu.backend.domain.cache.domain.MenuPin;
 import com.ourmenu.backend.domain.menu.domain.Menu;
 import com.ourmenu.backend.domain.menu.domain.MenuFolder;
 import java.util.List;
@@ -17,7 +18,7 @@ public class GetMenuResponse {
     private Long menuId;
     private String menuTitle;
     private int menuPrice;
-    private String menuPin;
+    private MenuPin menuPin;
     private String storeTitle;
     private String storeAddress;
     private List<String> tags;
