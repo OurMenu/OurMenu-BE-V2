@@ -6,6 +6,8 @@ import com.ourmenu.backend.domain.user.domain.RefreshToken;
 import com.ourmenu.backend.domain.user.domain.SignInType;
 import com.ourmenu.backend.domain.user.domain.User;
 import com.ourmenu.backend.domain.user.dto.response.TokenDto;
+import com.ourmenu.backend.global.exception.ErrorCode;
+import com.ourmenu.backend.global.exception.ErrorResponse;
 import com.ourmenu.backend.global.response.util.ApiUtil;
 import com.ourmenu.backend.global.util.JwtTokenProvider;
 import jakarta.servlet.http.HttpServletRequest;
@@ -38,7 +40,7 @@ public class CustomOAuth2UserSuccessHandler extends SimpleUrlAuthenticationSucce
         String accessToken = extractAccessToken(request);
 
         if (email == null || accessToken == null) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "필수 정보가 없습니다.");
+            ApiUtil.sendErrorResponse(response, ApiUtil.error(ErrorResponse.of(ErrorCode.BAD_REQUEST)));
             return;
         }
 
