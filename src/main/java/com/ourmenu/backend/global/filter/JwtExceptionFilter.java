@@ -1,10 +1,8 @@
 package com.ourmenu.backend.global.filter;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ourmenu.backend.domain.user.exception.TokenExpiredExcpetion;
 import com.ourmenu.backend.global.exception.ErrorCode;
 import com.ourmenu.backend.global.exception.ErrorResponse;
-import com.ourmenu.backend.global.response.ApiResponse;
 import com.ourmenu.backend.global.response.util.ApiUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -28,20 +26,12 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
             chain.doFilter(request, response);
         } catch (Exception e) {
             if(e instanceof TokenExpiredExcpetion) {
-                setResponse(response, ApiUtil.error(ErrorResponse.of(ErrorCode.TOKEN_EXPIRED)));
+                ApiUtil.sendErrorResponse(response, ApiUtil.error(ErrorResponse.of(ErrorCode.TOKEN_EXPIRED)));
             }
             else {
-                setResponse(response, ApiUtil.error(ErrorResponse.of(ErrorCode.INVALID_TOKEN)));
+                ApiUtil.sendErrorResponse(response, ApiUtil.error(ErrorResponse.of(ErrorCode.INVALID_TOKEN)));
             }
         }
-    }
-
-    private void setResponse(HttpServletResponse response, ApiResponse<?> errorMessage) throws RuntimeException, IOException {
-        response.setContentType("application/json;charset=UTF-8");
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        String result = objectMapper.writeValueAsString(errorMessage);
-        response.getWriter().print(result);
     }
 
 }

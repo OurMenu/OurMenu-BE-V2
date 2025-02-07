@@ -1,7 +1,11 @@
 package com.ourmenu.backend.global.response.util;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ourmenu.backend.global.exception.ErrorResponse;
 import com.ourmenu.backend.global.response.ApiResponse;
+import jakarta.servlet.http.HttpServletResponse;
+
+import java.io.IOException;
 
 public class ApiUtil {
 
@@ -18,5 +22,21 @@ public class ApiUtil {
 
     public static ApiResponse<Void> successOnly() {
         return new ApiResponse<>(true, null, null);
+    }
+
+    public static void sendSuccessResponse(HttpServletResponse response, ApiResponse<?> successMessage) throws RuntimeException, IOException {
+        response.setContentType("application/json;charset=UTF-8");
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String result = objectMapper.writeValueAsString(successMessage);
+        response.getWriter().print(result);
+    }
+
+    public static void sendErrorResponse(HttpServletResponse response, ApiResponse<?> errorMessage) throws RuntimeException, IOException {
+        response.setContentType("application/json;charset=UTF-8");
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String result = objectMapper.writeValueAsString(errorMessage);
+        response.getWriter().print(result);
     }
 }
