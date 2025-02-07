@@ -2,6 +2,7 @@ package com.ourmenu.backend.domain.menu.application;
 
 import com.ourmenu.backend.domain.menu.dao.MenuImgRepository;
 import com.ourmenu.backend.domain.menu.domain.MenuImg;
+import com.ourmenu.backend.domain.menu.util.DefaultImgConverter;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,22 +15,18 @@ public class MenuImgService {
 
     private final MenuImgRepository menuImgRepository;
     private final AwsS3Service awsS3Service;
+    private final DefaultImgConverter defaultImgConverter;
 
     @Transactional
     public List<MenuImg> saveMenuImgs(Long menuId, List<MultipartFile> multipartFiles) {
-        return multipartFiles.stream()
+        List<MenuImg> menuImgs = multipartFiles.stream()
                 .map(awsS3Service::uploadFileAsync)
                 .map(imgUrl -> this.saveMenuImg(menuId, imgUrl))
                 .toList();
-    }
-
-
-    private MenuImg saveMenuImg(Long menuId, String imgUrl) {
-        MenuImg menuImg = MenuImg.builder()
-                .menuId(menuId)
-                .imgUrl(imgUrl)
-                .build();
-        return menuImgRepository.save(menuImg);
+        if (menuImgs.size() == 0) {
+            return List.of(createDefaultMenuImg());
+        }
+        return menuImgs;
     }
 
     /**
@@ -69,5 +66,25 @@ public class MenuImgService {
         return menuImgRepository.findAllByMenuId(menuId).stream()
                 .map(MenuImg::getImgUrl)
                 .toList();
+    }
+
+    private MenuImg saveMenuImg(Long menuId, String imgUrl) {
+        MenuImg menuImg = MenuImg.builder()
+                .menuId(menuId)
+                .imgUrl(imgUrl)
+                .build();
+        return menuImgRepository.save(menuImg);
+    }
+
+    /**
+     * 기본 이미지 생성
+     *
+     * @return
+     */
+    private MenuImg createDefaultMenuImg() {
+        return MenuImg.builder()
+                .menuId(null)
+                .imgUrl(defaultImgConverter.getDefaultMenuImgUrl())
+                .build();
     }
 }
