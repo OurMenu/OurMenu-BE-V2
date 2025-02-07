@@ -3,6 +3,7 @@ package com.ourmenu.backend.domain.menu.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ourmenu.backend.domain.cache.domain.MenuPin;
 import com.ourmenu.backend.domain.tag.domain.Tag;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,7 +21,20 @@ public class SaveMenuRequest {
     private String menuMemoContent;
     private List<Long> menuFolderIds;
     private String storeId;
+
     @JsonProperty("isCrawled")
     private boolean isCrawled;
     private List<Tag> tags;
+
+    public void initList() {
+        if (menuFolderImgs == null) {
+            menuFolderImgs = new ArrayList<>();
+        }
+        if (menuFolderIds == null) {
+            menuFolderIds = new ArrayList<>();
+        }
+        if (tags == null) {
+            tags = new ArrayList<>();
+        }
+    }
 }

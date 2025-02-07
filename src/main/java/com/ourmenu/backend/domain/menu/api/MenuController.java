@@ -43,6 +43,7 @@ public class MenuController {
     @PostMapping(path = "/menu", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<SaveMenuResponse> saveMenu(@ModelAttribute SaveMenuRequest request,
                                                   @AuthenticationPrincipal CustomUserDetails userDetails) {
+        request.initList();
         SimpleSearchDto simpleSearchDto = searchService.getSearchDto(request.isCrawled(), request.getStoreId());
         MenuDto menuDto = MenuDto.of(request, request.getMenuFolderImgs(), userDetails, simpleSearchDto);
         SaveMenuResponse response = menuService.saveMenu(menuDto);
