@@ -56,16 +56,20 @@ public class MenuImgService {
     }
 
     /**
-     * 메뉴 이미지 조회
+     * 메뉴 이미지 조회 없으면 기본 이미지 반환
      *
      * @param menuId
      * @return
      */
     @Transactional
     public List<String> findImgUrls(Long menuId) {
-        return menuImgRepository.findAllByMenuId(menuId).stream()
+        List<String> menuImgs = menuImgRepository.findAllByMenuId(menuId).stream()
                 .map(MenuImg::getImgUrl)
                 .toList();
+        if (menuImgs.size() == 0) {
+            return List.of(createDefaultMenuImg().getImgUrl());
+        }
+        return menuImgs;
     }
 
     private MenuImg saveMenuImg(Long menuId, String imgUrl) {
