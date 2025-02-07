@@ -1,6 +1,8 @@
 package com.ourmenu.backend.global.config;
 
+import com.ourmenu.backend.domain.user.application.CustomOAuth2UserService;
 import com.ourmenu.backend.domain.user.dao.RefreshTokenRepository;
+import com.ourmenu.backend.domain.user.handler.CustomOAuth2UserSuccessHandler;
 import com.ourmenu.backend.global.filter.JwtAuthenticationFilter;
 import com.ourmenu.backend.global.filter.JwtExceptionFilter;
 import com.ourmenu.backend.global.util.JwtTokenProvider;
@@ -26,6 +28,8 @@ public class SecurityConfig {
     private final JwtTokenProvider jwtTokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
     private final JwtExceptionFilter jwtExceptionFilter;
+    private final CustomOAuth2UserService customOAuth2UserService;
+    private final CustomOAuth2UserSuccessHandler customOAuth2UserSuccessHandler;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -40,6 +44,13 @@ public class SecurityConfig {
                         .requestMatchers("/api/users/sign-up", "/api/users/sign-in", "/api/users/reissue-token").permitAll()
                         .requestMatchers("/api/emails/**").permitAll()
                         .anyRequest().authenticated())
+                .oauth2Login(oauth -> oauth
+                        .authorizationEndpoint(authorization ->
+                                authorization.baseUri("/oauth2/authorization"))
+                        .redirectionEndpoint(redirection ->
+                                redirection.baseUri("/oauth/kakao/login"))
+                        .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
+                        .successHandler(customOAuth2UserSuccessHandler))
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(jwtExceptionFilter, JwtAuthenticationFilter.class)
                 .build();
