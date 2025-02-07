@@ -7,6 +7,9 @@ public class PriceUtil {
     }
 
     public static Long convertMinPrice(Long minPrice) {
+        if (minPrice == null) {
+            return null;
+        }
         if (minPrice.equals(5000L)) {
             return null;
         }
@@ -14,6 +17,9 @@ public class PriceUtil {
     }
 
     public static Long convertMaxPrice(Long maxPrice) {
+        if (maxPrice == null) {
+            return null;
+        }
         if (maxPrice.equals(50000L)) {
             return null;
         }

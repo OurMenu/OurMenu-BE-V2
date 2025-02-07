@@ -43,6 +43,7 @@ public class MenuController {
     @PostMapping(path = "/menu", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ApiResponse<SaveMenuResponse> saveMenu(@ModelAttribute SaveMenuRequest request,
                                                   @AuthenticationPrincipal CustomUserDetails userDetails) {
+        request.initList();
         SimpleSearchDto simpleSearchDto = searchService.getSearchDto(request.isCrawled(), request.getStoreId());
         MenuDto menuDto = MenuDto.of(request, request.getMenuFolderImgs(), userDetails, simpleSearchDto);
         SaveMenuResponse response = menuService.saveMenu(menuDto);
@@ -72,7 +73,7 @@ public class MenuController {
     @Operation(summary = "메뉴 리스트 조회", description = "메뉴 리스트를 조회한다. 필터를 사용할 수 있다")
     @GetMapping("/menus")
     public ApiResponse<List<GetSimpleMenuResponse>> getMenus(
-            @RequestParam("tags") List<com.ourmenu.backend.domain.tag.domain.Tag> tags,
+            @RequestParam(value = "tags", required = false) List<com.ourmenu.backend.domain.tag.domain.Tag> tags,
             @RequestParam(value = "minPrice", required = false) Long minPrice,
             @RequestParam(value = "maxPrice", required = false) Long maxPrice,
             @RequestParam(value = "page", defaultValue = "0") int page,

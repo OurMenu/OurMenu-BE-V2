@@ -204,9 +204,9 @@ public class MenuService {
         Menu menu = menuRepository.findByIdWithStore(userId, menuId)
                 .orElseThrow(NotFoundMenuException::new);
         List<String> imgUrls = menuImgService.findImgUrls(menuId);
-        List<String> tagNames = menuTagService.findTagNames(menuId);
+        List<Tag> tags = menuTagService.findTagNames(menuId);
         List<MenuFolder> menuFolders = menuFolderService.findAllByMenuId(menuId);
-        return GetMenuResponse.of(menu, imgUrls, tagNames, menuFolders);
+        return GetMenuResponse.of(menu, imgUrls, tags, menuFolders);
     }
 
     private List<Tag> saveTags(List<Tag> tags, Long menuId) {

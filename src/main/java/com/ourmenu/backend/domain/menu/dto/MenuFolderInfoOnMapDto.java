@@ -1,5 +1,6 @@
 package com.ourmenu.backend.domain.menu.dto;
 
+import com.ourmenu.backend.domain.cache.domain.MenuFolderIcon;
 import com.ourmenu.backend.domain.menu.domain.MenuFolder;
 import lombok.Builder;
 import lombok.Getter;
@@ -9,10 +10,10 @@ import lombok.Getter;
 public class MenuFolderInfoOnMapDto {
 
     private String menuFolderTitle;
-    private String menuFolderIcon;
+    private MenuFolderIcon menuFolderIcon;
     private int menuFolderCount;
 
-    public static MenuFolderInfoOnMapDto of(MenuFolder menuFolder, int count){
+    public static MenuFolderInfoOnMapDto of(MenuFolder menuFolder, int count) {
         return MenuFolderInfoOnMapDto.builder()
                 .menuFolderTitle(menuFolder.getTitle())
                 .menuFolderIcon(menuFolder.getIcon())

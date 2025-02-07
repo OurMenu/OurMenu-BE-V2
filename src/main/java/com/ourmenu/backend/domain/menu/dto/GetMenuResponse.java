@@ -1,7 +1,10 @@
 package com.ourmenu.backend.domain.menu.dto;
 
+import com.ourmenu.backend.domain.cache.domain.MenuFolderIcon;
+import com.ourmenu.backend.domain.cache.domain.MenuPin;
 import com.ourmenu.backend.domain.menu.domain.Menu;
 import com.ourmenu.backend.domain.menu.domain.MenuFolder;
+import com.ourmenu.backend.domain.tag.domain.Tag;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -16,10 +19,10 @@ public class GetMenuResponse {
     private Long menuId;
     private String menuTitle;
     private int menuPrice;
-    private String menuPin;
+    private MenuPin menuPin;
     private String storeTitle;
     private String storeAddress;
-    private List<String> tags;
+    private List<Tag> tags;
     private List<String> menuImgUrls;
 
     private List<SimpleMenuFolder> menuFolders;
@@ -30,10 +33,10 @@ public class GetMenuResponse {
     private static class SimpleMenuFolder {
         private Long menuFolderId;
         private String menuFolderTitle;
-        private String menuFolderIcon;
+        private MenuFolderIcon menuFolderIcon;
     }
 
-    public static GetMenuResponse of(Menu menu, List<String> imgUrls, List<String> tagNames,
+    public static GetMenuResponse of(Menu menu, List<String> imgUrls, List<Tag> tags,
                                      List<MenuFolder> menuFolders) {
         List<SimpleMenuFolder> simpleMenuFolders = menuFolders.stream()
                 .map(menuFolder -> SimpleMenuFolder.builder()
@@ -49,7 +52,7 @@ public class GetMenuResponse {
                 .menuPin(menu.getPin())
                 .storeAddress(menu.getStore().getAddress())
                 .storeTitle(menu.getStore().getTitle())
-                .tags(tagNames)
+                .tags(tags)
                 .menuImgUrls(imgUrls)
                 .menuFolders(simpleMenuFolders)
                 .build();

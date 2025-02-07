@@ -1,5 +1,6 @@
 package com.ourmenu.backend.domain.menu.dto;
 
+import com.ourmenu.backend.domain.cache.domain.MenuFolderIcon;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -14,7 +15,7 @@ public class MenuFolderDto {
 
     private MultipartFile menuFolderImg;
     private String menuFolderTitle;
-    private String menuFolderIcon;
+    private MenuFolderIcon menuFolderIcon;
     private List<Long> menuIds;
     private Long userId;
 
