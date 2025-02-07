@@ -35,7 +35,7 @@ public class MenuFolderController {
 
     private final MenuFolderService menuFolderService;
 
-    @Operation(summary = "메뉴판 등록", description = "메뉴판 리스트를 조회한다.")
+    @Operation(summary = "메뉴판 조회", description = "메뉴판 리스트를 조회한다.")
     @GetMapping
     public ApiResponse<List<GetMenuFolderResponse>> getMenuFolder(
             @AuthenticationPrincipal CustomUserDetails userDetails) {
