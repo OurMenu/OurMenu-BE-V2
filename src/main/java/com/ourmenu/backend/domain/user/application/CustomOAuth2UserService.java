@@ -2,6 +2,7 @@ package com.ourmenu.backend.domain.user.application;
 
 import com.ourmenu.backend.domain.user.dao.UserRepository;
 import com.ourmenu.backend.domain.user.domain.OAuth2Attribute;
+import com.ourmenu.backend.domain.user.domain.SignInType;
 import com.ourmenu.backend.domain.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -44,7 +45,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
         userAttribute.put("exist", false);
 
-        if (user.isPresent()) {
+        if (user.isPresent() && user.get().getSignInType().equals(SignInType.KAKAO)) {
             userAttribute.put("exist", true);
         }
 
