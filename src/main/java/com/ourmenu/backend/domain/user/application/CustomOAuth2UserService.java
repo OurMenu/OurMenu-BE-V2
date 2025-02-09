@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.Map;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -39,15 +38,6 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
         OAuth2Attribute oAuth2Attribute = OAuth2Attribute.of(registrationId, userNameAttributeName, oAuth2User.getAttributes());
 
         Map<String, Object> userAttribute = oAuth2Attribute.convertToMap();
-
-        String email = (String) userAttribute.get("email");
-        Optional<User> user = userRepository.findByEmail(email);
-
-        userAttribute.put("exist", false);
-
-        if (user.isPresent() && user.get().getSignInType().equals(SignInType.KAKAO)) {
-            userAttribute.put("exist", true);
-        }
 
         return new DefaultOAuth2User(
                     Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")),

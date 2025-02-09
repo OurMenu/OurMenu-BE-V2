@@ -96,6 +96,24 @@ public class JwtTokenProvider {
     }
 
     /**
+     * User의 email을 입력받아 AccessToken 및 RefreshToken 생성 및 해당 정보 반환
+     * @param email User의 Email, User 존재 여부
+     * @return JWT 정보 및 User 존재 여부를 DTO로 반환
+     */
+    public TokenDto createOAuthToken(Boolean isExist, String email) {
+        Date now = new Date();
+
+        String accessToken = createToken(email, "Access");
+
+        String refreshToken = createToken(email, "Refresh");
+
+        Instant refreshTokenExpiredAt = Instant.now().plus(30, ChronoUnit.DAYS);
+
+        return TokenDto.of(isExist, accessToken, refreshToken, refreshTokenExpiredAt);
+    }
+
+
+    /**
      * 해당 Email에 입력받은 Type의 JWT Token을 생성
      * @param email User의 Email
      * @param type Token의 종류

@@ -44,10 +44,14 @@ public class CustomOAuth2UserSuccessHandler extends SimpleUrlAuthenticationSucce
             return;
         }
 
+        // 기존 사용자 확인
         Optional<User> existingUser = userRepository.findByEmail(email);
+        boolean isExist = existingUser.isPresent() && existingUser.get().getSignInType().equals(SignInType.KAKAO);
+
+        // 기존 사용자가 없으면 회원가입
         User user = existingUser.orElseGet(() -> registerKakaoUser(email));
 
-        TokenDto tokenDto = jwtTokenProvider.createAllToken(user.getEmail());
+        TokenDto tokenDto = jwtTokenProvider.createOAuthToken(isExist, user.getEmail());
         RefreshToken refreshToken = new RefreshToken(tokenDto.getRefreshToken(), user.getEmail());
 
         refreshTokenRepository.save(refreshToken);
