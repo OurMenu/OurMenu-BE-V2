@@ -10,7 +10,9 @@ import com.ourmenu.backend.domain.menu.dto.UpdateMenuFolderResponse;
 import com.ourmenu.backend.domain.menu.exception.ForbiddenMenuFolderException;
 import com.ourmenu.backend.domain.menu.exception.NotFoundMenuFolderException;
 import com.ourmenu.backend.domain.menu.exception.OutOfBoundCustomIndexException;
+import com.ourmenu.backend.domain.menu.util.DefaultImgConverter;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +24,7 @@ public class MenuFolderService {
     private final AwsS3Service awsS3Service;
     private final MenuFolderRepository menuFolderRepository;
     private final MenuMenuFolderService menuMenuFolderService;
+    private final DefaultImgConverter defaultImgConvertor;
 
     /**
      * 메뉴 폴더 저장
@@ -31,41 +34,63 @@ public class MenuFolderService {
      */
     @Transactional
     public SaveMenuFolderResponse saveMenuFolder(MenuFolderDto menuFolderDto) {
-        String menuFolderImgUrl = awsS3Service.uploadFileAsync(menuFolderDto.getMenuFolderImg());
+        String menuFolderImgUrl = Optional.ofNullable(menuFolderDto.getMenuFolderImg())
+                .map(awsS3Service::uploadFileAsync)
+                .orElse(null);
+
         MenuFolder menuFolder = saveMenuFolder(menuFolderDto, menuFolderImgUrl);
-        return SaveMenuFolderResponse.of(menuFolder, menuFolderDto.getMenuIds());
+        return SaveMenuFolderResponse.of(menuFolder, menuFolderDto.getMenuIds(),
+                defaultImgConvertor.getDefaultMenuFolderImgUrl());
     }
 
+    /**
+     * 메뉴판 삭제 (인덱스 조정)
+     *
+     * @param userId
+     * @param menuFolderId
+     */
     @Transactional
     public void deleteMenuFolder(Long userId, Long menuFolderId) {
         MenuFolder menuFolder = findOne(userId, menuFolderId);
         menuFolderRepository.delete(menuFolder);
         int maxIndex = menuFolderRepository.findMaxIndex();
 
-        if (menuFolderId != maxIndex) {
-            menuFolderRepository.decrementIndexes(userId, (int) (menuFolderId + 1), maxIndex);
+        if (menuFolder.getIndex() != maxIndex) {
+            menuFolderRepository.decrementIndexes(userId, (menuFolder.getIndex() + 1), maxIndex);
         }
-        awsS3Service.deleteFileAsync(menuFolder.getImgUrl());
+
+        if (menuFolder.getImgUrl() != null) {
+            awsS3Service.deleteFileAsync(menuFolder.getImgUrl());
+        }
     }
 
     @Transactional
-    public UpdateMenuFolderResponse updateMenuFolder(Long userId, Long menuFolderId, MenuFolderDto menuFolderDto) {
+    public UpdateMenuFolderResponse updateMenuFolder(Long userId, Long menuFolderId, MenuFolderDto menuFolderDto,
+                                                     Boolean isImageModified) {
 
         MenuFolder menuFolder = findOne(userId, menuFolderId);
         if (menuFolderDto.getMenuIds() != null) {
             menuMenuFolderService.updateMenuMenuFolder(userId, menuFolderId, menuFolderDto.getMenuIds());
         }
 
-        if (menuFolderDto.getMenuFolderImg() != null) {
-            String imgUrl = awsS3Service.uploadFileAsync(menuFolderDto.getMenuFolderImg());
-            menuFolder.update(menuFolderDto, imgUrl);
-            List<MenuMenuFolder> menuMenuFolders = menuMenuFolderService.findAllByMenuFolderId(menuFolderId);
-            return UpdateMenuFolderResponse.of(menuFolder, menuMenuFolders);
-        }
+        if (isImageModified) {
+            //기존에 있는 이미지는 삭제한다
+            if (menuFolder.getImgUrl() != null) {
+                awsS3Service.deleteFileAsync(menuFolder.getImgUrl());
+                menuFolder.updateImg(null);
+            }
 
-        menuFolder.update(menuFolderDto, null);
+            //추가할 이미지가 있으면 추가한다
+            if (menuFolderDto.getMenuFolderImg() != null) {
+                String imgUrl = awsS3Service.uploadFileAsync(menuFolderDto.getMenuFolderImg());
+
+                menuFolder.updateImg(imgUrl);
+            }
+        }
+        menuFolder.update(menuFolderDto);
         List<MenuMenuFolder> menuMenuFolders = menuMenuFolderService.findAllByMenuFolderId(menuFolderId);
-        return UpdateMenuFolderResponse.of(menuFolder, menuMenuFolders);
+        return UpdateMenuFolderResponse.of(menuFolder, menuMenuFolders,
+                defaultImgConvertor.getDefaultMenuFolderImgUrl());
     }
 
     /**
@@ -95,7 +120,8 @@ public class MenuFolderService {
 
         findMenuFolder.updateIndex(index);
         List<MenuMenuFolder> menuMenuFolders = menuMenuFolderService.findAllByMenuFolderId(menuFolderId);
-        return UpdateMenuFolderResponse.of(findMenuFolder, menuMenuFolders);
+        return UpdateMenuFolderResponse.of(findMenuFolder, menuMenuFolders,
+                defaultImgConvertor.getDefaultMenuFolderImgUrl());
     }
 
 
@@ -113,8 +139,14 @@ public class MenuFolderService {
                 .map(menuFolder -> {
                     List<MenuMenuFolder> menuMenuFolders = menuMenuFolderService.findAllByMenuFolderId(
                             menuFolder.getId());
-                    return GetMenuFolderResponse.of(menuFolder, menuMenuFolders);
+                    return GetMenuFolderResponse.of(menuFolder, menuMenuFolders,
+                            defaultImgConvertor.getDefaultMenuFolderImgUrl());
                 }).toList();
+    }
+
+    @Transactional
+    public List<MenuFolder> findAllByMenuId(Long menuId) {
+        return menuFolderRepository.findMenuFoldersByMenuId(menuId);
     }
 
     /**

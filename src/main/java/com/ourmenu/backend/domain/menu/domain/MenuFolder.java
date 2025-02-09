@@ -1,5 +1,6 @@
 package com.ourmenu.backend.domain.menu.domain;
 
+import com.ourmenu.backend.domain.cache.domain.MenuFolderIcon;
 import com.ourmenu.backend.domain.menu.dto.MenuFolderDto;
 import com.ourmenu.backend.global.domain.BaseEntity;
 import jakarta.persistence.Column;
@@ -32,7 +33,7 @@ public class MenuFolder extends BaseEntity {
 
     private String imgUrl;
 
-    private String icon;
+    private MenuFolderIcon icon;
 
     @NotNull
     @Column(name = "custom_index")
@@ -41,20 +42,20 @@ public class MenuFolder extends BaseEntity {
     @NotNull
     private Long userId;
 
-    public void update(MenuFolderDto menuFolderDto, String imgUrl) {
+    public void update(MenuFolderDto menuFolderDto) {
         String title = menuFolderDto.getMenuFolderTitle();
         if (title != null) {
             this.title = title;
         }
 
-        String icon = menuFolderDto.getMenuFolderIcon();
+        MenuFolderIcon icon = menuFolderDto.getMenuFolderIcon();
         if (icon != null) {
             this.icon = icon;
         }
+    }
 
-        if (imgUrl != null) {
-            this.imgUrl = imgUrl;
-        }
+    public void updateImg(String imgUrl) {
+        this.imgUrl = imgUrl;
     }
 
     public void updateIndex(int index) {

@@ -2,9 +2,16 @@ package com.ourmenu.backend.domain.menu.application;
 
 import com.ourmenu.backend.domain.menu.dao.MenuRepository;
 import com.ourmenu.backend.domain.menu.domain.Menu;
+import com.ourmenu.backend.domain.menu.domain.MenuFolder;
 import com.ourmenu.backend.domain.menu.domain.MenuImg;
 import com.ourmenu.backend.domain.menu.domain.MenuMenuFolder;
+import com.ourmenu.backend.domain.menu.domain.SortOrder;
+import com.ourmenu.backend.domain.menu.dto.GetMenuFolderMenuResponse;
+import com.ourmenu.backend.domain.menu.dto.GetMenuResponse;
+import com.ourmenu.backend.domain.menu.dto.GetSimpleMenuResponse;
 import com.ourmenu.backend.domain.menu.dto.MenuDto;
+import com.ourmenu.backend.domain.menu.dto.MenuFilterDto;
+import com.ourmenu.backend.domain.menu.dto.MenuSimpleDto;
 import com.ourmenu.backend.domain.menu.dto.SaveMenuResponse;
 import com.ourmenu.backend.domain.menu.exception.ForbiddenMenuException;
 import com.ourmenu.backend.domain.menu.exception.NotFoundMenuException;
@@ -12,6 +19,7 @@ import com.ourmenu.backend.domain.store.application.StoreService;
 import com.ourmenu.backend.domain.store.domain.Store;
 import com.ourmenu.backend.domain.tag.application.MenuTagService;
 import com.ourmenu.backend.domain.tag.domain.Tag;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,6 +34,7 @@ public class MenuService {
     private final MenuTagService menuTagService;
     private final StoreService storeService;
     private final MenuImgService menuImgService;
+    private final MenuFolderService menuFolderService;
 
     /**
      * 메뉴 저장(메뉴 사진, 메뉴판, 태그 의존 엔티티 생성
@@ -81,6 +90,125 @@ public class MenuService {
         storeService.deleteStore(menu.getStore());
     }
 
+    /**
+     * 유저 메뉴판 메뉴 조회 정렬 기준에 따른 적절한 메소드를 호출
+     *
+     * @param userId
+     * @param menuFolderId
+     * @return
+     */
+    @Transactional
+    public List<GetMenuFolderMenuResponse> findMenusByMenuFolder(Long userId, Long menuFolderId,
+                                                                 MenuFilterDto menuFilterDto) {
+        List<MenuSimpleDto> findMenuSimpleDto = new ArrayList<>();
+        SortOrder sortOrder = menuFilterDto.getSortOrder();
+        if (sortOrder.equals(SortOrder.TITLE_ASC)) {
+            findMenuSimpleDto.addAll(menuRepository.findByMenuFolderIdOrderByTitleAsc(userId, menuFolderId));
+        }
+        if (sortOrder.equals(SortOrder.CREATED_AT_DESC)) {
+            findMenuSimpleDto.addAll(menuRepository.findByMenuFolderIdOrderByCreatedAtDesc(userId, menuFolderId));
+        }
+        if (sortOrder.equals(SortOrder.PRICE_ASC)) {
+            findMenuSimpleDto.addAll(menuRepository.findByMenuFolderIdOrderByPriceAsc(userId, menuFolderId));
+        }
+        return findMenuSimpleDto.stream()
+                .map(menuSimpleDto -> {
+                    String imgUrl = menuImgService.findUniqueImg(menuSimpleDto.getMenuId());
+                    return GetMenuFolderMenuResponse.of(menuSimpleDto, imgUrl);
+                })
+                .toList();
+    }
+
+    /**
+     * 전체 메뉴 조회 태그 검색 포함 유무로 함수 분기
+     *
+     * @param userId
+     * @param menuFilterDto
+     * @return
+     */
+    @Transactional
+    public List<GetSimpleMenuResponse> findMenusByCriteriaPageAndSort(Long userId, MenuFilterDto menuFilterDto) {
+        if (menuFilterDto.getTags().isEmpty()) {
+            return findMenusByPricePageAndSort(userId, menuFilterDto);
+        }
+
+        return findMenusByTagsAndPricePageAndSort(userId, menuFilterDto);
+    }
+
+    /**
+     * 유저 메뉴 전체 조회 tag가 있는 경우
+     *
+     * @param userId
+     * @param menuFilterDto
+     * @return
+     */
+    private List<GetSimpleMenuResponse> findMenusByTagsAndPricePageAndSort(Long userId, MenuFilterDto menuFilterDto) {
+
+        List<MenuSimpleDto> menuSimpleDtos = new ArrayList<>();
+        SortOrder sortOrder = menuFilterDto.getSortOrder();
+        List<String> tags = menuFilterDto.getTags().stream()
+                .map(Tag::getTagEnum)
+                .toList();
+        Long size = (long) tags.size();
+
+        if (sortOrder.equals(SortOrder.TITLE_ASC)) {
+            menuSimpleDtos.addAll(menuRepository.findByTagNameAndPriceRangeOrderByTitleAsc(userId, tags, size,
+                    menuFilterDto.getMinPrice(), menuFilterDto.getMaxPrice(), menuFilterDto.getPageable()
+            ));
+        }
+        if (sortOrder.equals(SortOrder.CREATED_AT_DESC)) {
+            menuSimpleDtos.addAll(menuRepository.findByTagNameAndPriceRangeOrderByCreatedByDesc(userId, tags, size,
+                    menuFilterDto.getMinPrice(), menuFilterDto.getMaxPrice(), menuFilterDto.getPageable()
+            ));
+        }
+        if (sortOrder.equals(SortOrder.PRICE_ASC)) {
+            menuSimpleDtos.addAll(menuRepository.findByTagNameAndPriceRangeOrderByPriceAsc(userId, tags, size,
+                    menuFilterDto.getMinPrice(), menuFilterDto.getMaxPrice(), menuFilterDto.getPageable()
+            ));
+        }
+
+        return menuSimpleDtos.stream()
+                .map(menuSimpleDto -> {
+                            String imgUrl = menuImgService.findUniqueImg(menuSimpleDto.getMenuId());
+                            return GetSimpleMenuResponse.of(menuSimpleDto, imgUrl);
+                        }
+                ).toList();
+    }
+
+    /**
+     * 유저 메뉴 전체 조회 태그가 없는 경우
+     *
+     * @param userId
+     * @param menuFilterDto
+     * @return
+     */
+    private List<GetSimpleMenuResponse> findMenusByPricePageAndSort(Long userId, MenuFilterDto menuFilterDto) {
+        return menuRepository.findByUserId(userId, menuFilterDto.getMinPrice(), menuFilterDto.getMaxPrice(),
+                        menuFilterDto.getPageable()).stream()
+                .map(menu -> {
+                            String imgUrl = menuImgService.findUniqueImg(menu.getId());
+                            return GetSimpleMenuResponse.of(menu, imgUrl);
+                        }
+                ).toList();
+    }
+
+    /**
+     * 메뉴판 상세 정보 조회
+     *
+     * @param userId
+     * @param menuId
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public GetMenuResponse findMenu(Long userId, Long menuId) {
+        Menu menu = menuRepository.findByIdWithStore(userId, menuId)
+                .orElseThrow(NotFoundMenuException::new);
+        List<String> imgUrls = menuImgService.findImgUrls(menuId);
+        List<Tag> tags = menuTagService.findTagNames(menuId);
+        List<MenuFolder> menuFolders = menuFolderService.findAllByMenuId(menuId);
+        return GetMenuResponse.of(menu, imgUrls, tags, menuFolders);
+    }
+
     private List<Tag> saveTags(List<Tag> tags, Long menuId) {
         return tags.stream().map(
                 tag -> menuTagService.saveTag(menuId, tag)
@@ -95,5 +223,4 @@ public class MenuService {
         }
         return menu;
     }
-
 }

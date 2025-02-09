@@ -1,7 +1,11 @@
 package com.ourmenu.backend.domain.user.dto.request;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
-import jakarta.validation.constraints.NotBlank;
-
-public record PasswordRequest(@NotBlank String password,@NotBlank String newPassword) {
+@Getter
+@NoArgsConstructor
+public class PasswordRequest {
+    String password;
+    String newPassword;
 }
