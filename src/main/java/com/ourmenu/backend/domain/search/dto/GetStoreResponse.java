@@ -28,6 +28,7 @@ public class GetStoreResponse {
                 .toList();
         List<String> imgUrls = searchableStore.getStoreImgs().stream()
                 .map(UrlUtil::parseStoreImgUrl)
+                .limit(3)
                 .toList();
         return GetStoreResponse.builder()
                 .storeId(searchableStore.getStoreId())

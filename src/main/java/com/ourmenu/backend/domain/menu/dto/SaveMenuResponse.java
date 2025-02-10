@@ -1,5 +1,6 @@
 package com.ourmenu.backend.domain.menu.dto;
 
+import com.ourmenu.backend.domain.cache.domain.MenuPin;
 import com.ourmenu.backend.domain.menu.domain.Menu;
 import com.ourmenu.backend.domain.menu.domain.MenuImg;
 import com.ourmenu.backend.domain.menu.domain.MenuMenuFolder;
@@ -22,10 +23,10 @@ public class SaveMenuResponse {
     private int menuPrice;
     private String menuMemoTitle;
     private String menuMemoContent;
-    private String menuPin;
+    private MenuPin menuPin;
     private List<Long> menuFolderIds;
     private boolean isCrawled;
-    private List<String> tags;
+    private List<Tag> tags;
     private String storeTitle;
     private String storeAddress;
     private Double storeMapX;
@@ -36,7 +37,6 @@ public class SaveMenuResponse {
                                       List<MenuMenuFolder> menuMenuFolders, List<Tag> tags) {
         List<String> menuImgUrls = menuImgs.stream().map(MenuImg::getImgUrl).toList();
         List<Long> menuFolderIds = menuMenuFolders.stream().map(MenuMenuFolder::getFolderId).toList();
-        List<String> tagIds = tags.stream().map(Tag::getTagName).toList();
         return SaveMenuResponse.builder()
                 .menuId(menu.getId())
                 .menuTitle(menu.getTitle())
@@ -46,7 +46,7 @@ public class SaveMenuResponse {
                 .menuPin(menu.getPin())
                 .menuFolderIds(menuFolderIds)
                 .isCrawled(menu.getIsCrawled())
-                .tags(tagIds)
+                .tags(tags)
                 .storeTitle(store.getTitle())
                 .storeAddress(store.getAddress())
                 .storeMapX(map.getMapX())
