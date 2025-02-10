@@ -13,13 +13,18 @@ import com.ourmenu.backend.domain.user.dto.response.TokenDto;
 import com.ourmenu.backend.domain.user.dto.response.UserDto;
 import com.ourmenu.backend.domain.user.exception.*;
 import com.ourmenu.backend.global.util.JwtTokenProvider;
+import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +41,19 @@ public class UserService {
     private final JwtTokenProvider jwtTokenProvider;
     private final MealTimeRepository mealTimeRepository;
 
+    private WebClient webClient;
+
+    @Value("${KAKAO_ADMIN_KEY}")
+    private String adminKey;
+
+    @PostConstruct
+    public void init() {
+        this.webClient = WebClient.builder()
+                .baseUrl("https://kapi.kakao.com")
+                .defaultHeader(HttpHeaders.AUTHORIZATION, "KakaoAK " + adminKey) // Admin Key 사용
+                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+                .build();
+    }
 
     /**
      * 이메일 중복 검사, 비밀번호 암호화 및 User 객체를 생성 후 DB에 저장
@@ -206,6 +224,24 @@ public class UserService {
 
             refreshTokenRepository.findRefreshTokenByEmail(email)
                     .ifPresent(refreshTokenRepository::delete);
+        }
+    }
+
+    @Transactional
+    public void unlinkKakaoAccount(String kakaoUserId, String email) {
+        try {
+            webClient.post()
+                    .uri("/v1/user/unlink") // 올바른 Unlink API 경로
+                    .header(HttpHeaders.AUTHORIZATION, "KakaoAK " + adminKey) // Admin Key 인증
+                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+                    .bodyValue("target_id_type=user_id&target_id=" + kakaoUserId) // x-www-form-urlencoded 형식
+                    .retrieve()
+                    .bodyToMono(Void.class)
+                    .block(); // 동기 실행
+
+            userRepository.deleteByEmail(email);
+        } catch (Exception e) {
+            throw new RuntimeException("카카오 연결 해제 실패");
         }
     }
 }

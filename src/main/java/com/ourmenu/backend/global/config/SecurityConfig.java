@@ -43,6 +43,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/api/users/sign-up", "/api/users/sign-in", "/api/users/reissue-token").permitAll()
                         .requestMatchers("/api/emails/**").permitAll()
+                        .requestMatchers("/api/users/unlink").permitAll()
                         .anyRequest().authenticated())
                 .oauth2Login(oauth -> oauth
                         .authorizationEndpoint(authorization ->

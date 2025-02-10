@@ -77,4 +77,10 @@ public class UserController {
         TokenDto response = userService.reissueToken(reissueToken);
         return ApiUtil.success(response);
     }
+
+    @PostMapping("/unlink")
+    private ApiResponse<Void> kakaoUnlink(@RequestParam String kakaoUserId, @RequestParam String email){
+        userService.unlinkKakaoAccount(kakaoUserId, email);
+        return ApiUtil.successOnly();
+    }
 }
