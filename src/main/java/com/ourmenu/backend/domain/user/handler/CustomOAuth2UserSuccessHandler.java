@@ -46,7 +46,14 @@ public class CustomOAuth2UserSuccessHandler extends SimpleUrlAuthenticationSucce
 
         // 기존 사용자 확인
         Optional<User> existingUser = userRepository.findByEmail(email);
-        boolean isExist = existingUser.isPresent() && existingUser.get().getSignInType().equals(SignInType.KAKAO);
+
+        if (existingUser.isPresent() && existingUser.get().getSignInType().equals(SignInType.EMAIL)){
+            ApiUtil.sendErrorResponse(response, ApiUtil.error(ErrorResponse.of(ErrorCode.DUPLICATE_EMAIL)));
+            return;
+        }
+
+        // 기존 사용자가 Kakao 로그인인지 확인
+        boolean isExist = existingUser.map(user -> user.getSignInType().equals(SignInType.KAKAO)).orElse(false);
 
         // 기존 사용자가 없으면 회원가입
         User user = existingUser.orElseGet(() -> registerKakaoUser(email));
