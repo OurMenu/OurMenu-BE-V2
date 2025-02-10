@@ -2,10 +2,7 @@ package com.ourmenu.backend.domain.user.api;
 
 import com.ourmenu.backend.domain.user.application.UserService;
 import com.ourmenu.backend.domain.user.domain.CustomUserDetails;
-import com.ourmenu.backend.domain.user.dto.request.MealTimeRequest;
-import com.ourmenu.backend.domain.user.dto.request.PasswordRequest;
-import com.ourmenu.backend.domain.user.dto.request.SignInRequest;
-import com.ourmenu.backend.domain.user.dto.request.SignUpRequest;
+import com.ourmenu.backend.domain.user.dto.request.*;
 import com.ourmenu.backend.domain.user.dto.response.ReissueToken;
 import com.ourmenu.backend.domain.user.dto.response.TokenDto;
 import com.ourmenu.backend.domain.user.dto.response.UserDto;
@@ -86,8 +83,8 @@ public class UserController {
     }
 
     @PostMapping("/unlink")
-    private ApiResponse<Void> kakaoUnlink(@RequestParam String kakaoUserId, @RequestParam String email){
-        userService.unlinkKakaoAccount(kakaoUserId, email);
+    private ApiResponse<Void> kakaoUnlink(@RequestBody OAuthUnlinkRequest request){
+        userService.unlinkKakaoAccount(request);
         return ApiUtil.successOnly();
     }
 }

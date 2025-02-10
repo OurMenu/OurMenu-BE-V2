@@ -5,6 +5,7 @@ import com.ourmenu.backend.domain.user.dao.RefreshTokenRepository;
 import com.ourmenu.backend.domain.user.dao.UserRepository;
 import com.ourmenu.backend.domain.user.domain.*;
 import com.ourmenu.backend.domain.user.dto.request.MealTimeRequest;
+import com.ourmenu.backend.domain.user.dto.request.OAuthUnlinkRequest;
 import com.ourmenu.backend.domain.user.dto.request.PasswordRequest;
 import com.ourmenu.backend.domain.user.dto.request.SignInRequest;
 import com.ourmenu.backend.domain.user.dto.request.SignUpRequest;
@@ -228,18 +229,18 @@ public class UserService {
     }
 
     @Transactional
-    public void unlinkKakaoAccount(String kakaoUserId, String email) {
+    public void unlinkKakaoAccount(OAuthUnlinkRequest request) {
         try {
             webClient.post()
                     .uri("/v1/user/unlink") // 올바른 Unlink API 경로
                     .header(HttpHeaders.AUTHORIZATION, "KakaoAK " + adminKey) // Admin Key 인증
                     .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-                    .bodyValue("target_id_type=user_id&target_id=" + kakaoUserId) // x-www-form-urlencoded 형식
+                    .bodyValue("target_id_type=user_id&target_id=" + request.getKakaoUserId()) // x-www-form-urlencoded 형식
                     .retrieve()
                     .bodyToMono(Void.class)
                     .block(); // 동기 실행
 
-            userRepository.deleteByEmail(email);
+            userRepository.deleteByEmail(request.getEmail());
         } catch (Exception e) {
             throw new RuntimeException("카카오 연결 해제 실패");
         }
