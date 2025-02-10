@@ -79,7 +79,7 @@ public class JwtTokenProvider {
     }
 
     /**
-     * User의 email을 입력받아 AccessToken 및 RefreshToken 생성 및 해당 정보 반환
+     * AccessToken 및 RefreshToken 생성
      * @param email User의 Email
      * @return JWT 정보를 DTO로 반환
      */
@@ -96,7 +96,7 @@ public class JwtTokenProvider {
     }
 
     /**
-     * User의 email을 입력받아 AccessToken 및 RefreshToken 생성 및 해당 정보 반환
+     * AccessToken, RefreshToken 생성(OAuth)
      * @param email User의 Email, User 존재 여부
      * @return JWT 정보 및 User 존재 여부를 DTO로 반환
      */
