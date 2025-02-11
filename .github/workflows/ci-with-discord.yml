@@ -63,6 +63,9 @@ jobs:
           S3_SECRET_KEY: ${{ secrets.S3_SECRET_KEY }}
           KAKAO_API_KEY: ${{ secrets.KAKAO_API_KEY }}
           DEFAULT_BUCKET_URL: ${{ secrets.DEFAULT_BUCKET_URL }}
+          KAKAO_ADMIN_KEY: ${{ secrets.KAKAO_ADMIN_KEY}}
+          CLIENT_ID: ${{ secrets.CLIENT_ID}}
+          CLIENT_SECRET: ${{ secrets.CLIENT_SECRET}}
         run: ./gradlew build --stacktrace
 
       # Test 후 Report 생성
