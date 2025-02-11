@@ -114,17 +114,6 @@ public class MapService {
         return getMenuInfo(menu);
     }
 
-    public List<MenuInfoOnMapDto> findMenuByStoreIdOnMap(Long storeId, Long userId) {
-        List<Menu> menus = menuRepository.findByUserIdAndStoreId(userId, storeId);
-        List<MenuInfoOnMapDto> menuInfoOnMapDtos = new ArrayList<>();
-
-        for (Menu menu : menus) {
-            menuInfoOnMapDtos.add(getMenuInfo(menu));
-        }
-
-        return menuInfoOnMapDtos;
-    }
-
     private MenuInfoOnMapDto getMenuInfo(Menu menu) {
         List<MenuTag> menuTags = menuTagRepository.findMenuTagsByMenuId(menu.getId());
         List<MenuImg> menuImgs = menuImgRepository.findAllByMenuId(menu.getId());
