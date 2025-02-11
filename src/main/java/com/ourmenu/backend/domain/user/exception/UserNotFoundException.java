@@ -7,6 +7,6 @@ import com.ourmenu.backend.global.exception.ErrorCode;
 public class UserNotFoundException extends CustomException {
 
     public UserNotFoundException(){
-        super(ErrorCode.USER_NOT_FOUND);
+        super(ErrorCode.NOT_FOUND_USER);
     }
 }
