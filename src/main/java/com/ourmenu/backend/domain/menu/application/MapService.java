@@ -47,6 +47,7 @@ public class MapService {
 
     /**
      * 유저의 Menu를 가져와 mapId가 같은 Menu들을 Map 형식으로 그룹핑 후 response 반환
+     *
      * @param userId
      * @return
      */
@@ -63,6 +64,12 @@ public class MapService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     *
+     * @param mapId
+     * @param userId
+     * @return
+     */
     public List<MenuInfoOnMapDto> findMenuOnMap(Long mapId, Long userId) {
         Map map = mapRepository.findMapById(mapId)
                 .orElseThrow(NotFoundMapException::new);
@@ -83,6 +90,14 @@ public class MapService {
         return menuInfoOnMapDtos;
     }
 
+    /**
+     * 검색한 이름을 포함하는 메뉴들을 반환
+     *
+     * @param title
+     * @param userId
+     * @return
+     */
+
     public List<MapSearchDto> findSearchResultOnMap(String title, Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(UserNotFoundException::new);
@@ -96,6 +111,13 @@ public class MapService {
                 .toList();
     }
 
+    /**
+     * 유저의 지도 화면에서의 검색 기록을 최신순으로 반환
+     *
+     * @param userId
+     * @return
+     */
+
     public List<MapSearchHistoryDto> findSearchHistoryOnMap(Long userId) {
         Pageable pageable = PageRequest.of(0, 10);
 
@@ -107,12 +129,27 @@ public class MapService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * 유저가 가지고 있는 메뉴를 지도 화면에서 상세 조회
+     *
+     * @param menuId
+     * @param userId
+     * @return
+     */
+
     @Transactional
     public MenuInfoOnMapDto findMenuByMenuIdOnMap(Long menuId, Long userId) {
         Menu menu = menuRepository.findByIdAndUserId(menuId, userId);
         saveOwnedMenuSearchHistory(userId, menu);
         return getMenuInfo(menu);
     }
+
+    /**
+     * 조회하고자 하는 메뉴 정보 불러오기
+     *
+     * @param menu
+     * @return
+     */
 
     private MenuInfoOnMapDto getMenuInfo(Menu menu) {
         List<MenuTag> menuTags = menuTagRepository.findMenuTagsByMenuId(menu.getId());
@@ -128,6 +165,12 @@ public class MapService {
         return MenuInfoOnMapDto.of(menu, menuTags, menuImgs, menuFolderInfo);
     }
 
+    /**
+     * 유저의 검색 기록 저장
+     *
+     * @param userId
+     * @param menu
+     */
     private void saveOwnedMenuSearchHistory(Long userId, Menu menu) {
         OwnedMenuSearch ownedMenuSearch = OwnedMenuSearch.builder()
                 .menuTitle(menu.getTitle())
