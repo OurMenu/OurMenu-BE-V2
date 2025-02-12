@@ -74,20 +74,10 @@ public class MapService {
         Map map = mapRepository.findMapById(mapId)
                 .orElseThrow(NotFoundMapException::new);
 
-        List<Store> stores = map.getStores();
-        List<Menu> menuList = new ArrayList<>();
-        List<MenuInfoOnMapDto> menuInfoOnMapDtos = new ArrayList<>();
-
-        for (Store store : stores) {
-            List<Menu> findMenuList = menuRepository.findMenusByStoreIdAndUserId(store.getId(), userId);
-            menuList.addAll(findMenuList);
-        }
-
-        for (Menu menu : menuList) {
-            menuInfoOnMapDtos.add(getMenuInfo(menu));
-        }
-
-        return menuInfoOnMapDtos;
+        return map.getStores().stream()
+                .flatMap(store -> menuRepository.findMenusByStoreIdAndUserId(store.getId(), userId).stream())
+                .map(this::getMenuInfo)
+                .collect(Collectors.toList());
     }
 
     /**
