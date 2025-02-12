@@ -41,7 +41,10 @@ public enum ErrorCode {
 
     // kakao OpenAPI
     EXCEEDED_DAILY_QUOTA(HttpStatus.INTERNAL_SERVER_ERROR, "K500", "카카오맵에서 찾을 수 없습니다"),
-    NOT_FOUND_STORE_IN_KAKAO(HttpStatus.INTERNAL_SERVER_ERROR, "K500", "카카오맵에서 찾을 수 없습니다");
+    NOT_FOUND_STORE_IN_KAKAO(HttpStatus.INTERNAL_SERVER_ERROR, "K500", "카카오맵에서 찾을 수 없습니다"),
+
+    // 지도
+    NOT_FOUND_MAP(HttpStatus.NOT_FOUND, "P404", "찾을 수 없는 위치 정보입니다.");
 
     private final HttpStatus httpStatus;
 

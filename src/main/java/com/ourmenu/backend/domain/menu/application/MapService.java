@@ -65,7 +65,7 @@ public class MapService {
 
     public List<MenuInfoOnMapDto> findMenuOnMap(Long mapId, Long userId) {
         Map map = mapRepository.findMapById(mapId)
-                .orElseThrow(RuntimeException::new);    //예외처리 수정 필요
+                .orElseThrow(NotFoundMapException::new);
 
         List<Store> stores = map.getStores();
         List<Menu> menuList = new ArrayList<>();
