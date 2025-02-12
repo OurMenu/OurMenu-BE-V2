@@ -52,7 +52,8 @@ public class MapService {
      * @return
      */
     public List<MenuOnMapDto> findMenusOnMap(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        User user = userRepository.findById(userId)
+                .orElseThrow(NotFoundUserException::new);
         List<Menu> menus = menuRepository.findMenusByUserId(userId);
         
         java.util.Map<Map, List<Menu>> menuMaps = menus.stream()
@@ -90,7 +91,7 @@ public class MapService {
 
     public List<MapSearchDto> findSearchResultOnMap(String title, Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(UserNotFoundException::new);
+                .orElseThrow(NotFoundUserException::new);
 
         List<Menu> menus = menuRepository.findMenusByUserId(userId);
 
@@ -109,6 +110,9 @@ public class MapService {
      */
 
     public List<MapSearchHistoryDto> findSearchHistoryOnMap(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(NotFoundUserException::new);
+
         Pageable pageable = PageRequest.of(0, 10);
 
         Page<OwnedMenuSearch> searchHistoryPage = ownedMenuSearchRepository
@@ -129,7 +133,12 @@ public class MapService {
 
     @Transactional
     public MenuInfoOnMapDto findMenuByMenuIdOnMap(Long menuId, Long userId) {
-        Menu menu = menuRepository.findByIdAndUserId(menuId, userId);
+        User user = userRepository.findById(userId)
+                .orElseThrow(NotFoundUserException::new);
+
+        Menu menu = menuRepository.findByIdAndUserId(menuId, userId)
+                .orElseThrow(NotFoundMenuException::new);
+
         saveOwnedMenuSearchHistory(userId, menu);
         return getMenuInfo(menu);
     }
