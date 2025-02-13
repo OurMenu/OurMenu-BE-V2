@@ -4,20 +4,24 @@ import com.ourmenu.backend.domain.menu.dao.MenuFolderRepository;
 import com.ourmenu.backend.domain.menu.dao.MenuImgRepository;
 import com.ourmenu.backend.domain.menu.domain.MenuFolder;
 import com.ourmenu.backend.domain.menu.domain.MenuImg;
-import com.ourmenu.backend.domain.menu.dto.*;
 import com.ourmenu.backend.domain.menu.dao.MenuRepository;
 import com.ourmenu.backend.domain.menu.domain.Menu;
+import com.ourmenu.backend.domain.menu.dto.MapSearchDto;
+import com.ourmenu.backend.domain.menu.dto.MapSearchHistoryDto;
+import com.ourmenu.backend.domain.menu.dto.MenuFolderInfoOnMapDto;
+import com.ourmenu.backend.domain.menu.dto.MenuInfoOnMapDto;
+import com.ourmenu.backend.domain.menu.dto.MenuOnMapDto;
+import com.ourmenu.backend.domain.menu.exception.NotFoundMapException;
+import com.ourmenu.backend.domain.menu.exception.NotFoundMenuException;
 import com.ourmenu.backend.domain.search.dao.OwnedMenuSearchRepository;
 import com.ourmenu.backend.domain.search.domain.OwnedMenuSearch;
 import com.ourmenu.backend.domain.store.dao.MapRepository;
-import com.ourmenu.backend.domain.store.dao.StoreRepository;
 import com.ourmenu.backend.domain.store.domain.Map;
-import com.ourmenu.backend.domain.store.domain.Store;
 import com.ourmenu.backend.domain.tag.dao.MenuTagRepository;
 import com.ourmenu.backend.domain.tag.domain.MenuTag;
 import com.ourmenu.backend.domain.user.dao.UserRepository;
 import com.ourmenu.backend.domain.user.domain.User;
-import com.ourmenu.backend.domain.user.exception.UserNotFoundException;
+import com.ourmenu.backend.domain.user.exception.NotFoundUserException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -26,7 +30,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -38,7 +41,6 @@ public class MapService {
 
     private final MenuRepository menuRepository;
     private final UserRepository userRepository;
-    private final StoreRepository storeRepository;
     private final MapRepository mapRepository;
     private final MenuTagRepository menuTagRepository;
     private final MenuImgRepository menuImgRepository;
@@ -156,8 +158,8 @@ public class MapService {
         List<MenuFolder> menuFolders = menuFolderRepository.findMenuFoldersByMenuId(menu.getId());
 
         MenuFolder latestMenuFolder = menuFolders.stream()
-                .max(Comparator.comparing(MenuFolder::getCreatedAt)) // createdAt으로 정렬
-                .orElseThrow(RuntimeException::new);        //예외처리 수정 필요
+                .max(Comparator.comparing(MenuFolder::getCreatedAt))
+                .orElseThrow(RuntimeException::new);
 
         MenuFolderInfoOnMapDto menuFolderInfo = MenuFolderInfoOnMapDto.of(latestMenuFolder, menuFolders.size());
 
