@@ -157,11 +157,13 @@ public class MapService {
         List<MenuImg> menuImgs = menuImgRepository.findAllByMenuId(menu.getId());
         List<MenuFolder> menuFolders = menuFolderRepository.findMenuFoldersByMenuId(menu.getId());
 
-        MenuFolder latestMenuFolder = menuFolders.stream()
-                .max(Comparator.comparing(MenuFolder::getCreatedAt))
-                .orElseThrow(RuntimeException::new);
+        MenuFolderInfoOnMapDto menuFolderInfo = MenuFolderInfoOnMapDto.empty();
 
-        MenuFolderInfoOnMapDto menuFolderInfo = MenuFolderInfoOnMapDto.of(latestMenuFolder, menuFolders.size());
+        if (!menuFolders.isEmpty()) {
+            MenuFolder latestMenuFolder = menuFolders.stream()
+                    .max(Comparator.comparing(MenuFolder::getCreatedAt)).get();
+            menuFolderInfo = MenuFolderInfoOnMapDto.of(latestMenuFolder, menuFolders.size());
+        }
 
         return MenuInfoOnMapDto.of(menu, menuTags, menuImgs, menuFolderInfo);
     }
