@@ -1,6 +1,6 @@
 package com.ourmenu.backend.global.filter;
 
-import com.ourmenu.backend.domain.user.exception.TokenExpiredExcpetion;
+import com.ourmenu.backend.domain.user.exception.TokenExpiredException;
 import com.ourmenu.backend.global.exception.ErrorCode;
 import com.ourmenu.backend.global.exception.ErrorResponse;
 import com.ourmenu.backend.global.response.util.ApiUtil;
@@ -25,7 +25,7 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
         try {
             chain.doFilter(request, response);
         } catch (Exception e) {
-            if(e instanceof TokenExpiredExcpetion) {
+            if(e instanceof TokenExpiredException) {
                 ApiUtil.sendErrorResponse(response, ApiUtil.error(ErrorResponse.of(ErrorCode.TOKEN_EXPIRED)));
             }
             else {

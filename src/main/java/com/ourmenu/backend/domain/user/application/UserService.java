@@ -193,7 +193,7 @@ public class UserService {
         }
 
         if (!jwtTokenProvider.validateToken(refreshToken)) {
-            throw new TokenExpiredExcpetion();
+            throw new TokenExpiredException();
         }
 
         RefreshToken storedToken = refreshTokenRepository.findRefreshTokenByEmail(email)

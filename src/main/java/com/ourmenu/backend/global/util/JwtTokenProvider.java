@@ -5,7 +5,7 @@ import com.ourmenu.backend.domain.user.dao.RefreshTokenRepository;
 import com.ourmenu.backend.domain.user.domain.RefreshToken;
 import com.ourmenu.backend.domain.user.dto.response.TokenDto;
 import com.ourmenu.backend.domain.user.exception.InvalidTokenException;
-import com.ourmenu.backend.domain.user.exception.TokenExpiredExcpetion;
+import com.ourmenu.backend.domain.user.exception.TokenExpiredException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jws;
@@ -157,7 +157,7 @@ public class JwtTokenProvider {
             Jws<Claims> claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
         } catch (ExpiredJwtException e) {
-            throw new TokenExpiredExcpetion();
+            throw new TokenExpiredException();
         } catch (JwtException e) {
             throw new InvalidTokenException();
         }
