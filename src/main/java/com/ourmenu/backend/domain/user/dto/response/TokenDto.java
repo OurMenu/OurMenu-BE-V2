@@ -14,14 +14,14 @@ public class TokenDto {
     private String grantType;
     private String accessToken;
     private String refreshToken;
-    private String refreshTokenExpiredAt;
+    private Instant refreshTokenExpiredAt;
 
     public static TokenDto of(String accessToken, String refreshToken, Instant refreshTokenExpiredAt){
         return TokenDto.builder()
                 .grantType("Bearer")
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
-                .refreshTokenExpiredAt(refreshTokenExpiredAt.toString())
+                .refreshTokenExpiredAt(refreshTokenExpiredAt)
                 .build();
     }
 
@@ -31,7 +31,7 @@ public class TokenDto {
                 .grantType("Bearer")
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
-                .refreshTokenExpiredAt(refreshTokenExpiredAt.toString())
+                .refreshTokenExpiredAt(refreshTokenExpiredAt)
                 .build();
     }
 }

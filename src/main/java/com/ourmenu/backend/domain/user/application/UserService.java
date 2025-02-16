@@ -212,7 +212,7 @@ public class UserService {
                 .grantType("Bearer")
                 .accessToken(newAccessToken)
                 .refreshToken(newRefreshToken)
-                .refreshTokenExpiredAt(jwtTokenProvider.getExpiredAt(newRefreshToken).toString())
+                .refreshTokenExpiredAt(jwtTokenProvider.getExpiredAt(newRefreshToken))
                 .build();
     }
 

@@ -227,14 +227,16 @@ public class JwtTokenProvider {
      * @param token JWT 토큰 값
      * @return 만료 시간 (Date)
      */
-    public Date getExpiredAt(String token) {
+    public Instant getExpiredAt(String token) {
         try {
-            return Jwts.parserBuilder()
+            Date expiration =  Jwts.parserBuilder()
                     .setSigningKey(key)
                     .build()
                     .parseClaimsJws(token)
                     .getBody()
-                    .getExpiration(); // Claims에서 만료 시간 추출
+                    .getExpiration();
+
+            return expiration.toInstant();
         } catch (Exception e) {
             throw new InvalidTokenException();
         }
