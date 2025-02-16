@@ -24,19 +24,11 @@ public class ApiUtil {
         return new ApiResponse<>(true, null, null);
     }
 
-    public static void sendSuccessResponse(HttpServletResponse response, ApiResponse<?> successMessage) throws RuntimeException, IOException {
+    public static void sendResponse(HttpServletResponse response, ApiResponse<?> successMessage) throws RuntimeException, IOException {
         response.setContentType("application/json;charset=UTF-8");
 
         ObjectMapper objectMapper = new ObjectMapper();
         String result = objectMapper.writeValueAsString(successMessage);
-        response.getWriter().print(result);
-    }
-
-    public static void sendErrorResponse(HttpServletResponse response, ApiResponse<?> errorMessage) throws RuntimeException, IOException {
-        response.setContentType("application/json;charset=UTF-8");
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        String result = objectMapper.writeValueAsString(errorMessage);
         response.getWriter().print(result);
     }
 }

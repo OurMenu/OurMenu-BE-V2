@@ -40,7 +40,7 @@ public class CustomOAuth2UserSuccessHandler extends SimpleUrlAuthenticationSucce
         String accessToken = extractAccessToken(request);
 
         if (email == null || accessToken == null) {
-            ApiUtil.sendErrorResponse(response, ApiUtil.error(ErrorResponse.of(ErrorCode.BAD_REQUEST)));
+            ApiUtil.sendResponse(response, ApiUtil.error(ErrorResponse.of(ErrorCode.BAD_REQUEST)));
             return;
         }
 
@@ -48,7 +48,7 @@ public class CustomOAuth2UserSuccessHandler extends SimpleUrlAuthenticationSucce
         Optional<User> existingUser = userRepository.findByEmail(email);
 
         if (existingUser.isPresent() && existingUser.get().getSignInType().equals(SignInType.EMAIL)){
-            ApiUtil.sendErrorResponse(response, ApiUtil.error(ErrorResponse.of(ErrorCode.DUPLICATE_EMAIL)));
+            ApiUtil.sendResponse(response, ApiUtil.error(ErrorResponse.of(ErrorCode.DUPLICATE_EMAIL)));
             return;
         }
 
@@ -63,7 +63,7 @@ public class CustomOAuth2UserSuccessHandler extends SimpleUrlAuthenticationSucce
 
         refreshTokenRepository.save(refreshToken);
 
-        ApiUtil.sendSuccessResponse(response, ApiUtil.success(tokenDto));
+        ApiUtil.sendResponse(response, ApiUtil.success(tokenDto));
     }
 
     private String extractAccessToken(HttpServletRequest request) {
