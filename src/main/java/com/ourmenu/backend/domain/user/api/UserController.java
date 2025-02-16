@@ -86,6 +86,7 @@ public class UserController {
         return ApiUtil.success(response);
     }
 
+    @Operation(summary = "카카오 연결 해제", description = "카카오 계정 연결을 해제한다.(백엔드 테스트 용도)")
     @PostMapping("/unlink")
     private ApiResponse<Void> kakaoUnlink(@RequestBody OAuthUnlinkRequest request){
         userService.unlinkKakaoAccount(request);
