@@ -18,7 +18,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
-
 import java.io.IOException;
 import java.util.Optional;
 
@@ -37,12 +36,6 @@ public class CustomOAuth2UserSuccessHandler extends SimpleUrlAuthenticationSucce
         OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
         String email = oAuth2User.getAttribute("email");
         String provider = oAuth2User.getAttribute("provider");
-        String accessToken = extractAccessToken(request);
-
-        if (email == null || accessToken == null) {
-            ApiUtil.sendResponse(response, ApiUtil.error(ErrorResponse.of(ErrorCode.BAD_REQUEST)));
-            return;
-        }
 
         // 기존 사용자 확인
         Optional<User> existingUser = userRepository.findByEmail(email);
@@ -64,10 +57,6 @@ public class CustomOAuth2UserSuccessHandler extends SimpleUrlAuthenticationSucce
         refreshTokenRepository.save(refreshToken);
 
         ApiUtil.sendResponse(response, ApiUtil.success(tokenDto));
-    }
-
-    private String extractAccessToken(HttpServletRequest request) {
-        return request.getParameter("code");
     }
 
     private User registerKakaoUser(String email) {

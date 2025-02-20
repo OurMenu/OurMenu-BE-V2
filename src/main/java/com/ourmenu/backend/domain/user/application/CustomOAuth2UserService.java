@@ -2,8 +2,6 @@ package com.ourmenu.backend.domain.user.application;
 
 import com.ourmenu.backend.domain.user.dao.UserRepository;
 import com.ourmenu.backend.domain.user.domain.OAuth2Attribute;
-import com.ourmenu.backend.domain.user.domain.SignInType;
-import com.ourmenu.backend.domain.user.domain.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -14,7 +12,6 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
-
 import java.util.Collections;
 import java.util.Map;
 
@@ -41,7 +38,9 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 
         return new DefaultOAuth2User(
                     Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")),
-                    userAttribute, "email");
+                    userAttribute,
+                "email"
+        );
 
     }
 }

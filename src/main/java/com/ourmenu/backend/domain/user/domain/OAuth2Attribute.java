@@ -4,8 +4,6 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
-
-import java.util.HashMap;
 import java.util.Map;
 
 @ToString
@@ -20,7 +18,6 @@ public class OAuth2Attribute {
     public static OAuth2Attribute ofKakao(String provider, String attributeKey,
                                            Map<String, Object> attributes) {
         Map<String, Object> kakaoAccount = (Map<String, Object>) attributes.get("kakao_account");
-        Map<String, Object> kakaoProfile = (Map<String, Object>) kakaoAccount.get("profile");
 
         return OAuth2Attribute.builder()
                 .email((String) kakaoAccount.get("email"))
