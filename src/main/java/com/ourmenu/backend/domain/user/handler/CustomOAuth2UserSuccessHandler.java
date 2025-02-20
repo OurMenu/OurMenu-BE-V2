@@ -71,10 +71,9 @@ public class CustomOAuth2UserSuccessHandler extends SimpleUrlAuthenticationSucce
     }
 
     private User registerKakaoUser(String email) {
-        User newUser = User.builder()
+        return userRepository.save(User.builder()
                 .email(email)
                 .signInType(SignInType.KAKAO)
-                .build();
-        return userRepository.save(newUser);
+                .build());
     }
 }
