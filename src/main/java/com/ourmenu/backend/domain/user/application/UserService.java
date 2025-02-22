@@ -53,7 +53,7 @@ public class UserService {
         User user = User.builder()
                 .email(emailSignUpRequest.getEmail())
                 .password(encodedPassword)
-                .signInType(SignInType.valueOf(emailSignUpRequest.getSignInType()))
+                .signInType(SignInType.EMAIL)
                 .build();
         User savedUser = userRepository.save(user);
 

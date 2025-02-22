@@ -8,5 +8,4 @@ import lombok.NoArgsConstructor;
 public class EmailSignInRequest {
     private String email;
     private String password;
-    private String signInType;
 }

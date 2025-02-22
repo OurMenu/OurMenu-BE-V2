@@ -11,5 +11,4 @@ public class EmailSignUpRequest {
     private String email;
     private String password;
     private ArrayList<Integer> mealTime;
-    private String signInType;
 }
