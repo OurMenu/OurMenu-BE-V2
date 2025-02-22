@@ -189,12 +189,10 @@ public class UserService {
             refreshTokenRepository.save(storedToken);
         }
 
-        return TokenDto.builder()
-                .grantType("Bearer")
-                .accessToken(newAccessToken)
-                .refreshToken(newRefreshToken)
-                .refreshTokenExpiredAt(jwtTokenProvider.getExpiredAt(newRefreshToken).toInstant())
-                .build();
+        return TokenDto.of(newAccessToken,
+                newRefreshToken,
+                jwtTokenProvider.getExpiredAt(newRefreshToken).toInstant()
+        );
     }
 
     public void signOut(HttpServletRequest request, Long userId){
