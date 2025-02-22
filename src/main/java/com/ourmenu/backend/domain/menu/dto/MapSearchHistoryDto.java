@@ -17,7 +17,6 @@ public class MapSearchHistoryDto {
     private String menuTitle;
     private String storeTitle;
     private String storeAddress;
-    private LocalDateTime modifiedAt;
 
     public static MapSearchHistoryDto from(OwnedMenuSearch ownedMenuSearch){
         return MapSearchHistoryDto.builder()
@@ -25,7 +24,6 @@ public class MapSearchHistoryDto {
                 .menuTitle(ownedMenuSearch.getMenuTitle())
                 .storeTitle(ownedMenuSearch.getStoreTitle())
                 .storeAddress(ownedMenuSearch.getStoreAddress())
-                .modifiedAt(ownedMenuSearch.getModifiedAt())
                 .build();
     }
 }
