@@ -176,6 +176,7 @@ public class MapService {
      */
     private void saveOwnedMenuSearchHistory(Long userId, Menu menu) {
         OwnedMenuSearch ownedMenuSearch = OwnedMenuSearch.builder()
+                .menuId(menu.getId())
                 .menuTitle(menu.getTitle())
                 .storeTitle(menu.getStore().getTitle())
                 .storeAddress(menu.getStore().getAddress())
