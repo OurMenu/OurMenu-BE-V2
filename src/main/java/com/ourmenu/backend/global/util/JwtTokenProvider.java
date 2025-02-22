@@ -206,7 +206,7 @@ public class JwtTokenProvider {
                     .build()
                     .parseClaimsJws(token)
                     .getBody()
-                    .getExpiration(); // Claims에서 만료 시간 추출
+                    .getExpiration();
         } catch (Exception e) {
             throw new InvalidTokenException();
         }
