@@ -6,9 +6,9 @@ import com.ourmenu.backend.domain.user.dao.UserRepository;
 import com.ourmenu.backend.domain.user.domain.*;
 import com.ourmenu.backend.domain.user.dto.request.MealTimeRequest;
 import com.ourmenu.backend.domain.user.dto.request.PasswordRequest;
-import com.ourmenu.backend.domain.user.dto.request.SignInRequest;
-import com.ourmenu.backend.domain.user.dto.request.SignUpRequest;
-import com.ourmenu.backend.domain.user.dto.response.ReissueToken;
+import com.ourmenu.backend.domain.user.dto.request.EmailSignInRequest;
+import com.ourmenu.backend.domain.user.dto.request.EmailSignUpRequest;
+import com.ourmenu.backend.domain.user.dto.response.ReissueRequest;
 import com.ourmenu.backend.domain.user.dto.response.TokenDto;
 import com.ourmenu.backend.domain.user.dto.response.UserDto;
 import com.ourmenu.backend.domain.user.exception.*;
@@ -39,26 +39,26 @@ public class UserService {
 
     /**
      * 이메일 중복 검사, 비밀번호 암호화 및 User 객체를 생성 후 DB에 저장
-     * @param signUpRequest User의 Email, Password, SignInType, MealTime 정보를 가진 Request
+     * @param emailSignUpRequest User의 Email, Password, SignInType, MealTime 정보를 가진 Request
      * @return 회원가입 완료
      */
-    public void signUp(SignUpRequest signUpRequest) {
+    public void signUp(EmailSignUpRequest emailSignUpRequest) {
 
-        if(userRepository.findByEmail(signUpRequest.getEmail()).isPresent()){
+        if(userRepository.findByEmail(emailSignUpRequest.getEmail()).isPresent()){
             throw new DuplicateEmailException();
         }
 
-        String encodedPassword = passwordEncoder.encode(signUpRequest.getPassword());
+        String encodedPassword = passwordEncoder.encode(emailSignUpRequest.getPassword());
 
         User user = User.builder()
-                .email(signUpRequest.getEmail())
+                .email(emailSignUpRequest.getEmail())
                 .password(encodedPassword)
-                .signInType(SignInType.valueOf(signUpRequest.getSignInType()))
+                .signInType(SignInType.valueOf(emailSignUpRequest.getSignInType()))
                 .build();
         User savedUser = userRepository.save(user);
 
         List<MealTime> mealTimes = new ArrayList<>();
-        for (Integer mealTime : signUpRequest.getMealTime()) {
+        for (Integer mealTime : emailSignUpRequest.getMealTime()) {
             MealTime newMealTime = MealTime.builder()
                     .userId(savedUser.getId())
                     .mealTime(mealTime)
@@ -77,28 +77,28 @@ public class UserService {
 
     /**
      * 로그인 로직 및 로그인 성공시 RefreshToken 갱신 후 JWT 정보 반환
-     * @param signInRequest User의 Email, Password, SignInType정보를 가진 Request
+     * @param emailSignInRequest User의 Email, Password, SignInType정보를 가진 Request
      * @param response HTTP Response
      * @return Token 정보
      */
-    public TokenDto signIn(SignInRequest signInRequest, HttpServletResponse response) {
+    public TokenDto signIn(EmailSignInRequest emailSignInRequest, HttpServletResponse response) {
 
-        User user = userRepository.findByEmail(signInRequest.getEmail()).orElseThrow(
+        User user = userRepository.findByEmail(emailSignInRequest.getEmail()).orElseThrow(
                 UserNotFoundException::new
         );
 
-        if(!passwordEncoder.matches(signInRequest.getPassword(), user.getPassword())) {
+        if(!passwordEncoder.matches(emailSignInRequest.getPassword(), user.getPassword())) {
             throw new NotMatchPasswordException();
         }
 
-        TokenDto tokenDto = jwtTokenProvider.createAllToken(signInRequest.getEmail());
+        TokenDto tokenDto = jwtTokenProvider.createAllToken(emailSignInRequest.getEmail());
 
-        Optional<RefreshToken> refreshToken = refreshTokenRepository.findRefreshTokenByEmail(signInRequest.getEmail());
+        Optional<RefreshToken> refreshToken = refreshTokenRepository.findRefreshTokenByEmail(emailSignInRequest.getEmail());
 
         if(refreshToken.isPresent()) {
             refreshTokenRepository.save(refreshToken.get().updateToken(tokenDto.getRefreshToken()));
         }else {
-            RefreshToken newToken = new RefreshToken(tokenDto.getRefreshToken(), signInRequest.getEmail());
+            RefreshToken newToken = new RefreshToken(tokenDto.getRefreshToken(), emailSignInRequest.getEmail());
             refreshTokenRepository.save(newToken);
         }
 
@@ -165,8 +165,8 @@ public class UserService {
         return UserDto.of(user, mealTimes);
     }
 
-    public TokenDto reissueToken(ReissueToken reissueToken) {
-        String refreshToken = reissueToken.getRefreshToken();
+    public TokenDto reissueToken(ReissueRequest reissueRequest) {
+        String refreshToken = reissueRequest.getRefreshToken();
         String email = jwtTokenProvider.getEmailFromToken(refreshToken);
 
         if (email.isEmpty()){
@@ -181,7 +181,7 @@ public class UserService {
                 .orElseThrow(NotMatchTokenException::new);
 
         String newAccessToken = jwtTokenProvider.createToken(email, "Access");
-        String newRefreshToken = reissueToken.getRefreshToken();
+        String newRefreshToken = reissueRequest.getRefreshToken();
 
         if (jwtTokenProvider.validateToken(refreshToken)) {
             newRefreshToken = jwtTokenProvider.createToken(email, "Refresh");
