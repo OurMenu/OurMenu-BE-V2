@@ -194,16 +194,6 @@ public class JwtTokenProvider {
     }
 
     /**
-     * Response의 Header에 RefreshToken값을 설정
-     *
-     * @param response     HTTP Response
-     * @param refreshToken RefreshToken값
-     */
-    public void setHeaderRefreshToken(HttpServletResponse response, String refreshToken) {
-        response.setHeader(REFRESH_TOKEN, refreshToken);
-    }
-
-    /**
      * 토큰의 만료 시간을 반환하는 메서드
      *
      * @param token JWT 토큰 값

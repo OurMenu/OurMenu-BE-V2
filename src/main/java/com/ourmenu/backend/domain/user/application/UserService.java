@@ -108,13 +108,12 @@ public class UserService {
     }
 
     /**
-     * Response Header에 AccessToken 값과 RefreshToken 값을 설정
+     * Response Header에 AccessToken 값 반환
      * @param response HTTP Response
      * @param tokenDto JWT Token 정보
      */
     private void setHeader(HttpServletResponse response, TokenDto tokenDto) {
         response.addHeader(JwtTokenProvider.ACCESS_TOKEN, tokenDto.getAccessToken());
-        response.addHeader(JwtTokenProvider.REFRESH_TOKEN, tokenDto.getRefreshToken());
     }
 
     public void changePassword(PasswordRequest request, CustomUserDetails userDetails) {
