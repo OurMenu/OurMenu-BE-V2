@@ -134,8 +134,6 @@ public class UserService {
 
     @Transactional
     public void changeMealTime(MealTimeRequest request, CustomUserDetails userDetails) {
-        log.debug("{}", userDetails.getId());
-
         mealTimeRepository.deleteAllByUserId(userDetails.getId());
 
         ArrayList<Integer> newMealTimes = request.getMealTime();
