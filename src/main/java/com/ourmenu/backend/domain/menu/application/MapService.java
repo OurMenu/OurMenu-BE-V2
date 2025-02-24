@@ -48,7 +48,7 @@ public class MapService {
     private final OwnedMenuSearchRepository ownedMenuSearchRepository;
 
     /**
-     * 유저의 Menu를 가져와 mapId가 같은 Menu들을 Map 형식으로 그룹핑 후 response 반환
+     * 유저가 보유한 메뉴들을 가져와 위치가 같은 메뉴들은 그룹핑하여 조회
      *
      * @param userId
      * @return
@@ -68,6 +68,7 @@ public class MapService {
     }
 
     /**
+     *  지도 화면에서의 같은 위치에 존재하는 메뉴들 조회
      *
      * @param mapId
      * @param userId
@@ -84,13 +85,12 @@ public class MapService {
     }
 
     /**
-     * 검색한 이름을 포함하는 메뉴들을 반환
+     * 검색한 이름을 포함하는 메뉴 조회
      *
      * @param title
      * @param userId
      * @return
      */
-
     public List<MapSearchDto> findSearchResultOnMap(String title, Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(NotFoundUserException::new);
@@ -105,12 +105,11 @@ public class MapService {
     }
 
     /**
-     * 유저의 지도 화면에서의 검색 기록을 최신순으로 반환
+     * 유저의 지도 화면에서의 검색 기록을 최신순으로 조회
      *
      * @param userId
      * @return
      */
-
     public List<MapSearchHistoryDto> findSearchHistoryOnMap(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(NotFoundUserException::new);
@@ -132,7 +131,6 @@ public class MapService {
      * @param userId
      * @return
      */
-
     @Transactional
     public MenuInfoOnMapDto findMenuByMenuIdOnMap(Long menuId, Long userId) {
         User user = userRepository.findById(userId)
@@ -151,7 +149,6 @@ public class MapService {
      * @param menu
      * @return
      */
-
     private MenuInfoOnMapDto getMenuInfo(Menu menu) {
         List<MenuTag> menuTags = menuTagRepository.findMenuTagsByMenuId(menu.getId());
         List<MenuImg> menuImgs = menuImgRepository.findAllByMenuId(menu.getId());
