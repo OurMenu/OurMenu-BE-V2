@@ -37,4 +37,10 @@ public enum Question {
         Random random = new Random();
         return questions[random.nextInt(questions.length)];
     }
+
+    public void validateQuestionAnswer(Answer answer) {
+        if (!(answer.equals(answer1) || answer.equals(answer2))) {
+            throw new RuntimeException("질문과 관련 없는 대답입니다");
+        }
+    }
 }

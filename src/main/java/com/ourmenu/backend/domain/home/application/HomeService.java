@@ -17,7 +17,7 @@ public class HomeService {
     private final HomeQuestionAnswerRepository homeQuestionAnswerRepository;
 
     /**
-     * 홈 질문 응답 값을 갱신, 저장한다.
+     * 홈 질문 응답 값을 저장한다. 질문에 관련 없는 응답이면 에러를 반환한다.
      *
      * @param request
      */
@@ -26,14 +26,13 @@ public class HomeService {
 
         Optional<HomeQuestionAnswer> optionalHomeQuestionAnswer = homeQuestionAnswerRepository.findByUserId(userId);
 
-        if (optionalHomeQuestionAnswer.isPresent()) {
-            deleteHomeAnswerMenu(optionalHomeQuestionAnswer.get());
+        if (optionalHomeQuestionAnswer.isEmpty()) {
+            throw new RuntimeException("아직 질문을 생성하지 않았습니다");
         }
-        HomeQuestionAnswer homeAnswer = HomeQuestionAnswer.builder()
-                .answer(request.getAnswer())
-                .userId(userId)
-                .build();
-        homeQuestionAnswerRepository.save(homeAnswer);
+
+        HomeQuestionAnswer homeQuestionAnswer = optionalHomeQuestionAnswer.get();
+        homeQuestionAnswer.getQuestion().validateQuestionAnswer(request.getAnswer());
+        homeQuestionAnswer.update(request.getAnswer());
     }
 
     /**
@@ -55,7 +54,7 @@ public class HomeService {
             HomeQuestionAnswer saveHomeQuestionAnswer = homeQuestionAnswerRepository.save(homeQuestionAnswer);
             return SaveAndGetQuestionRequest.from(saveHomeQuestionAnswer);
         }
-        
+
         HomeQuestionAnswer homeQuestionAnswer = optionalHomeQuestionAnswer.get();
         homeQuestionAnswer.update(randomQuestion);
         return SaveAndGetQuestionRequest.from(homeQuestionAnswer);

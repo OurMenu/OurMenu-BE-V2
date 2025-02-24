@@ -34,4 +34,8 @@ public class HomeQuestionAnswer {
     public void update(Question question) {
         this.question = question;
     }
+
+    public void update(Answer answer) {
+        this.answer = answer;
+    }
 }

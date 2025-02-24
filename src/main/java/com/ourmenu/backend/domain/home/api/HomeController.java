@@ -31,7 +31,8 @@ public class HomeController {
         return ApiUtil.success(response);
     }
 
-    @PostMapping
+    @Operation(summary = "질문 응답 저장", description = "질문에 대한 응답을 저장한다.")
+    @PostMapping("/questions/answers")
     public ApiResponse<Void> saveQuestionAnswer(@RequestBody SaveAnswerRequest request,
                                                 @AuthenticationPrincipal CustomUserDetails userDetails) {
         homeService.updateQuestionAnswer(request, userDetails.getId());
