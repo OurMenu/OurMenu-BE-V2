@@ -10,6 +10,7 @@ import static com.ourmenu.backend.domain.home.domain.Answer.SUNNY;
 import static com.ourmenu.backend.domain.home.domain.Answer.SWEET;
 import static com.ourmenu.backend.domain.home.domain.Answer.WINTER;
 
+import com.ourmenu.backend.domain.home.exception.InvalidAnswerException;
 import java.util.Random;
 import lombok.Getter;
 
@@ -40,7 +41,7 @@ public enum Question {
 
     public void validateQuestionAnswer(Answer answer) {
         if (!(answer.equals(answer1) || answer.equals(answer2))) {
-            throw new RuntimeException("질문과 관련 없는 대답입니다");
+            throw new InvalidAnswerException();
         }
     }
 }

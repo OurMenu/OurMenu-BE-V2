@@ -5,6 +5,7 @@ import com.ourmenu.backend.domain.home.domain.HomeQuestionAnswer;
 import com.ourmenu.backend.domain.home.domain.Question;
 import com.ourmenu.backend.domain.home.dto.SaveAndGetQuestionRequest;
 import com.ourmenu.backend.domain.home.dto.SaveAnswerRequest;
+import com.ourmenu.backend.domain.home.exception.NotFoundQuestionException;
 import jakarta.transaction.Transactional;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +28,7 @@ public class HomeService {
         Optional<HomeQuestionAnswer> optionalHomeQuestionAnswer = homeQuestionAnswerRepository.findByUserId(userId);
 
         if (optionalHomeQuestionAnswer.isEmpty()) {
-            throw new RuntimeException("아직 질문을 생성하지 않았습니다");
+            throw new NotFoundQuestionException();
         }
 
         HomeQuestionAnswer homeQuestionAnswer = optionalHomeQuestionAnswer.get();
