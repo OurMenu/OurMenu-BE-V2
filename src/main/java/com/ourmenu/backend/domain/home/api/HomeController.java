@@ -38,4 +38,11 @@ public class HomeController {
         homeService.updateQuestionAnswer(request, userDetails.getId());
         return ApiUtil.successOnly();
     }
+
+    @Operation(summary = "홈 추천 메뉴 조회", description = "추천 메뉴를 조회한다.")
+    public ApiResponse<Void> getHomeMenus() {
+
+        homeService.updateQuestionAnswer()
+        return ApiUtil.successOnly();
+    }
 }
