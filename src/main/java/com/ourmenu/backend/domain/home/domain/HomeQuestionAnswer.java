@@ -30,4 +30,8 @@ public class HomeQuestionAnswer {
     private Answer answer;
 
     private Long userId;
+
+    public void update(Question question) {
+        this.question = question;
+    }
 }

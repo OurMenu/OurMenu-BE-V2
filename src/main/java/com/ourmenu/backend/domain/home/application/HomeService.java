@@ -37,19 +37,28 @@ public class HomeService {
     }
 
     /**
-     * 홈 질문을 생성 및 저장한다.
+     * 홈 질문을 갱신, 저장한다. 이미 질문이 있는 경우 갱신하고, 그렇지 않으면 생성한다.
      *
      * @param userId
      * @return
      */
     @Transactional
-    public SaveAndGetQuestionRequest saveQuestionAnswer(Long userId) {
+    public SaveAndGetQuestionRequest updateQuestionAnswer(Long userId) {
+        Optional<HomeQuestionAnswer> optionalHomeQuestionAnswer = homeQuestionAnswerRepository.findByUserId(userId);
         Question randomQuestion = Question.getRandomQuestion();
-        HomeQuestionAnswer homeQuestionAnswer = HomeQuestionAnswer.builder()
-                .question(randomQuestion)
-                .build();
-        HomeQuestionAnswer saveHomeQuestionAnswer = homeQuestionAnswerRepository.save(homeQuestionAnswer);
-        return SaveAndGetQuestionRequest.from(saveHomeQuestionAnswer);
+
+        if (optionalHomeQuestionAnswer.isEmpty()) {
+            HomeQuestionAnswer homeQuestionAnswer = HomeQuestionAnswer.builder()
+                    .question(randomQuestion)
+                    .userId(userId)
+                    .build();
+            HomeQuestionAnswer saveHomeQuestionAnswer = homeQuestionAnswerRepository.save(homeQuestionAnswer);
+            return SaveAndGetQuestionRequest.from(saveHomeQuestionAnswer);
+        }
+        
+        HomeQuestionAnswer homeQuestionAnswer = optionalHomeQuestionAnswer.get();
+        homeQuestionAnswer.update(randomQuestion);
+        return SaveAndGetQuestionRequest.from(homeQuestionAnswer);
     }
 
     private void deleteHomeAnswerMenu(HomeQuestionAnswer homeQuestionAnswer) {

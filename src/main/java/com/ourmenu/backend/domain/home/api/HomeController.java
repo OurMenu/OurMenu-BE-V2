@@ -6,6 +6,7 @@ import com.ourmenu.backend.domain.home.dto.SaveAnswerRequest;
 import com.ourmenu.backend.domain.user.domain.CustomUserDetails;
 import com.ourmenu.backend.global.response.ApiResponse;
 import com.ourmenu.backend.global.response.util.ApiUtil;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -22,10 +23,11 @@ public class HomeController {
 
     private final HomeService homeService;
 
-    @PostMapping
+    @Operation(summary = "질문 생성", description = "새로운 질문을 생성한다.")
+    @PostMapping("/questions")
     public ApiResponse<SaveAndGetQuestionRequest> saveAndGetQuestion(
             @AuthenticationPrincipal CustomUserDetails userDetails) {
-        SaveAndGetQuestionRequest response = homeService.saveQuestionAnswer(userDetails.getId());
+        SaveAndGetQuestionRequest response = homeService.updateQuestionAnswer(userDetails.getId());
         return ApiUtil.success(response);
     }
 
