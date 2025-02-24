@@ -58,12 +58,6 @@ public class MapController {
         return ApiUtil.success(response);
     }
 
-//    @GetMapping("/{storeId}")
-//    public ApiResponse<List<MenuInfoOnMapDto>> findMenuInfoByStoreId(@PathVariable Long storeId, @AuthenticationPrincipal CustomUserDetails userDetails){
-//        List<MenuInfoOnMapDto> response = mapService.findMenuByStoreIdOnMap(storeId, userDetails.getId());
-//        return ApiUtil.success(response);
-//    }
-
     @Operation(summary = "지도 검색 기록 조회", description = "지도에서 식당 검색 기록을 조회한다.")
     @GetMapping("/maps/search-history")
     public ApiResponse<List<MapSearchHistoryDto>> findSearchHistoryOnMap(

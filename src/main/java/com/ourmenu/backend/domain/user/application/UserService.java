@@ -84,7 +84,7 @@ public class UserService {
     public TokenDto signIn(EmailSignInRequest emailSignInRequest, HttpServletResponse response) {
 
         User user = userRepository.findByEmail(emailSignInRequest.getEmail()).orElseThrow(
-                UserNotFoundException::new
+                NotFoundUserException::new
         );
 
         if(!passwordEncoder.matches(emailSignInRequest.getPassword(), user.getPassword())) {
@@ -125,7 +125,7 @@ public class UserService {
         }
 
         User user = userRepository.findById(userDetails.getId())
-                .orElseThrow(UserNotFoundException::new);
+                .orElseThrow(NotFoundUserException::new);
 
         String newPassword = passwordEncoder.encode(request.getNewPassword());
         user.changePassword(newPassword);
@@ -156,7 +156,7 @@ public class UserService {
 
     public UserDto getUserInfo(CustomUserDetails userDetails) {
         User user = userRepository.findById(userDetails.getId())
-                .orElseThrow(UserNotFoundException::new);
+                .orElseThrow(NotFoundUserException::new);
 
         List<MealTime> mealTimes = mealTimeRepository.findAllByUserId(userDetails.getId());
 

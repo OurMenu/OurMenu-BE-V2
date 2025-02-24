@@ -4,29 +4,33 @@ import com.ourmenu.backend.domain.menu.dao.MenuFolderRepository;
 import com.ourmenu.backend.domain.menu.dao.MenuImgRepository;
 import com.ourmenu.backend.domain.menu.domain.MenuFolder;
 import com.ourmenu.backend.domain.menu.domain.MenuImg;
-import com.ourmenu.backend.domain.menu.dto.*;
 import com.ourmenu.backend.domain.menu.dao.MenuRepository;
 import com.ourmenu.backend.domain.menu.domain.Menu;
+import com.ourmenu.backend.domain.menu.dto.MapSearchDto;
+import com.ourmenu.backend.domain.menu.dto.MapSearchHistoryDto;
+import com.ourmenu.backend.domain.menu.dto.MenuFolderInfoOnMapDto;
+import com.ourmenu.backend.domain.menu.dto.MenuInfoOnMapDto;
+import com.ourmenu.backend.domain.menu.dto.MenuOnMapDto;
+import com.ourmenu.backend.domain.menu.exception.NotFoundMapException;
+import com.ourmenu.backend.domain.menu.exception.NotFoundMenuException;
 import com.ourmenu.backend.domain.search.dao.OwnedMenuSearchRepository;
 import com.ourmenu.backend.domain.search.domain.OwnedMenuSearch;
 import com.ourmenu.backend.domain.store.dao.MapRepository;
-import com.ourmenu.backend.domain.store.dao.StoreRepository;
 import com.ourmenu.backend.domain.store.domain.Map;
-import com.ourmenu.backend.domain.store.domain.Store;
 import com.ourmenu.backend.domain.tag.dao.MenuTagRepository;
 import com.ourmenu.backend.domain.tag.domain.MenuTag;
 import com.ourmenu.backend.domain.user.dao.UserRepository;
 import com.ourmenu.backend.domain.user.domain.User;
-import com.ourmenu.backend.domain.user.exception.UserNotFoundException;
+import com.ourmenu.backend.domain.user.exception.NotFoundUserException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -38,7 +42,6 @@ public class MapService {
 
     private final MenuRepository menuRepository;
     private final UserRepository userRepository;
-    private final StoreRepository storeRepository;
     private final MapRepository mapRepository;
     private final MenuTagRepository menuTagRepository;
     private final MenuImgRepository menuImgRepository;
@@ -46,12 +49,14 @@ public class MapService {
     private final OwnedMenuSearchRepository ownedMenuSearchRepository;
 
     /**
-     * 유저의 Menu를 가져와 mapId가 같은 Menu들을 Map 형식으로 그룹핑 후 response 반환
+     * 유저가 보유한 메뉴들을 가져와 위치가 같은 메뉴들은 그룹핑하여 조회
+     *
      * @param userId
      * @return
      */
     public List<MenuOnMapDto> findMenusOnMap(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
+        User user = userRepository.findById(userId)
+                .orElseThrow(NotFoundUserException::new);
         List<Menu> menus = menuRepository.findMenusByUserId(userId);
         
         java.util.Map<Map, List<Menu>> menuMaps = menus.stream()
@@ -63,29 +68,33 @@ public class MapService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     *  지도 화면에서의 같은 위치에 존재하는 메뉴들 조회
+     *
+     * @param mapId
+     * @param userId
+     * @return
+     */
     public List<MenuInfoOnMapDto> findMenuOnMap(Long mapId, Long userId) {
         Map map = mapRepository.findMapById(mapId)
-                .orElseThrow(RuntimeException::new);    //예외처리 수정 필요
+                .orElseThrow(NotFoundMapException::new);
 
-        List<Store> stores = map.getStores();
-        List<Menu> menuList = new ArrayList<>();
-        List<MenuInfoOnMapDto> menuInfoOnMapDtos = new ArrayList<>();
-
-        for (Store store : stores) {
-            List<Menu> findMenuList = menuRepository.findMenusByStoreIdAndUserId(store.getId(), userId);
-            menuList.addAll(findMenuList);
-        }
-
-        for (Menu menu : menuList) {
-            menuInfoOnMapDtos.add(getMenuInfo(menu));
-        }
-
-        return menuInfoOnMapDtos;
+        return map.getStores().stream()
+                .flatMap(store -> menuRepository.findMenusByStoreIdAndUserId(store.getId(), userId).stream())
+                .map(this::getMenuInfo)
+                .collect(Collectors.toList());
     }
 
+    /**
+     * 검색한 이름을 포함하는 메뉴 조회
+     *
+     * @param title
+     * @param userId
+     * @return
+     */
     public List<MapSearchDto> findSearchResultOnMap(String title, Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(UserNotFoundException::new);
+                .orElseThrow(NotFoundUserException::new);
 
         List<Menu> menus = menuRepository.findMenusByUserId(userId);
 
@@ -96,51 +105,80 @@ public class MapService {
                 .toList();
     }
 
+    /**
+     * 유저의 지도 화면에서의 검색 기록을 최신순으로 조회
+     *
+     * @param userId
+     * @return
+     */
     public List<MapSearchHistoryDto> findSearchHistoryOnMap(Long userId) {
-        Pageable pageable = PageRequest.of(0, 10);
+        User user = userRepository.findById(userId)
+                .orElseThrow(NotFoundUserException::new);
+
+        Pageable pageable = PageRequest.of(
+                0,
+                10,
+                Sort.by(Sort.Direction.DESC, "modifiedAt")
+        );
 
         Page<OwnedMenuSearch> searchHistoryPage = ownedMenuSearchRepository
-                .findByUserIdOrderByModifiedAtDesc(userId, pageable);
+                .findByUserId(userId, pageable);
 
         return searchHistoryPage.stream()
                 .map(MapSearchHistoryDto::from)
                 .collect(Collectors.toList());
     }
 
+    /**
+     * 유저가 가지고 있는 메뉴를 지도 화면에서 상세 조회
+     *
+     * @param menuId
+     * @param userId
+     * @return
+     */
     @Transactional
     public MenuInfoOnMapDto findMenuByMenuIdOnMap(Long menuId, Long userId) {
-        Menu menu = menuRepository.findByIdAndUserId(menuId, userId);
+        User user = userRepository.findById(userId)
+                .orElseThrow(NotFoundUserException::new);
+
+        Menu menu = menuRepository.findByIdAndUserId(menuId, userId)
+                .orElseThrow(NotFoundMenuException::new);
+
         saveOwnedMenuSearchHistory(userId, menu);
         return getMenuInfo(menu);
     }
 
-    public List<MenuInfoOnMapDto> findMenuByStoreIdOnMap(Long storeId, Long userId) {
-        List<Menu> menus = menuRepository.findByUserIdAndStoreId(userId, storeId);
-        List<MenuInfoOnMapDto> menuInfoOnMapDtos = new ArrayList<>();
-
-        for (Menu menu : menus) {
-            menuInfoOnMapDtos.add(getMenuInfo(menu));
-        }
-
-        return menuInfoOnMapDtos;
-    }
-
+    /**
+     * 조회하고자 하는 메뉴 정보 불러오기
+     *
+     * @param menu
+     * @return
+     */
     private MenuInfoOnMapDto getMenuInfo(Menu menu) {
         List<MenuTag> menuTags = menuTagRepository.findMenuTagsByMenuId(menu.getId());
         List<MenuImg> menuImgs = menuImgRepository.findAllByMenuId(menu.getId());
         List<MenuFolder> menuFolders = menuFolderRepository.findMenuFoldersByMenuId(menu.getId());
 
-        MenuFolder latestMenuFolder = menuFolders.stream()
-                .max(Comparator.comparing(MenuFolder::getCreatedAt)) // createdAt으로 정렬
-                .orElseThrow(RuntimeException::new);        //예외처리 수정 필요
+        MenuFolderInfoOnMapDto menuFolderInfo = MenuFolderInfoOnMapDto.empty();
 
-        MenuFolderInfoOnMapDto menuFolderInfo = MenuFolderInfoOnMapDto.of(latestMenuFolder, menuFolders.size());
+        if (!menuFolders.isEmpty()) {
+            MenuFolder latestMenuFolder = menuFolders.stream()
+                    .max(Comparator.comparing(MenuFolder::getCreatedAt)).get();
+            menuFolderInfo = MenuFolderInfoOnMapDto.of(latestMenuFolder, menuFolders.size());
+        }
 
         return MenuInfoOnMapDto.of(menu, menuTags, menuImgs, menuFolderInfo);
     }
 
+    /**
+     * 유저의 검색 기록 저장
+     *
+     * @param userId
+     * @param menu
+     */
     private void saveOwnedMenuSearchHistory(Long userId, Menu menu) {
         OwnedMenuSearch ownedMenuSearch = OwnedMenuSearch.builder()
+                .menuId(menu.getId())
                 .menuTitle(menu.getTitle())
                 .storeTitle(menu.getStore().getTitle())
                 .storeAddress(menu.getStore().getAddress())

@@ -11,14 +11,12 @@ import com.ourmenu.backend.domain.user.dto.response.TemporaryPasswordResponse;
 import com.ourmenu.backend.domain.user.exception.ConfirmCodeNotFoundException;
 import com.ourmenu.backend.domain.user.exception.NotMatchConfirmCodeException;
 import com.ourmenu.backend.domain.user.exception.SendCodeFailureException;
-import com.ourmenu.backend.domain.user.exception.UserNotFoundException;
+import com.ourmenu.backend.domain.user.exception.NotFoundUserException;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
@@ -85,7 +83,7 @@ public class EmailService {
         String email = request.getEmail();
         String temporaryPassword = generateRandomCode(8);
         User user = userRepository.findByEmail(email)
-                .orElseThrow(UserNotFoundException::new);
+                .orElseThrow(NotFoundUserException::new);
 
         user.changePassword(temporaryPassword);
         userRepository.save(user);
