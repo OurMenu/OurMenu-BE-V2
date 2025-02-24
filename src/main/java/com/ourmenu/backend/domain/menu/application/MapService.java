@@ -27,6 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -114,10 +115,14 @@ public class MapService {
         User user = userRepository.findById(userId)
                 .orElseThrow(NotFoundUserException::new);
 
-        Pageable pageable = PageRequest.of(0, 10);
+        Pageable pageable = PageRequest.of(
+                0,
+                10,
+                Sort.by(Sort.Direction.DESC, "modifiedAt")
+        );
 
         Page<OwnedMenuSearch> searchHistoryPage = ownedMenuSearchRepository
-                .findByUserIdOrderByModifiedAtDesc(userId, pageable);
+                .findByUserId(userId, pageable);
 
         return searchHistoryPage.stream()
                 .map(MapSearchHistoryDto::from)
