@@ -42,7 +42,7 @@ public class MenuDto {
                 .menuMemoContent(request.getMenuMemoContent())
                 .menuPin(request.getMenuPin())
                 .menuFolderIds(request.getMenuFolderIds())
-                .isCrawled(request.isCrawled())
+                .isCrawled(request.getIsCrawled())
                 .tags(request.getTags())
                 .storeTitle(simpleSearchDto.getStoreTitle())
                 .storeAddress(simpleSearchDto.getStoreAddress())
