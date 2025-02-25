@@ -7,7 +7,6 @@ import com.ourmenu.backend.domain.user.dto.request.MealTimeRequest;
 import com.ourmenu.backend.domain.user.exception.InvalidMealTimeCountException;
 import com.ourmenu.backend.domain.user.util.TimeUtil;
 import java.time.LocalDateTime;
-import java.util.Comparator;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,15 +22,21 @@ public class MealTimeService {
      * 다음 질문 생성 시간을 현재 시간 기준으로 조회한다.
      *
      * @param userId
-     * @return
+     * @return 다음 갱신 시간 까지의 차이 분단위 반환
      */
     public long getNextUpdateMinute(Long userId) {
-        List<MealTime> mealTimes = mealTimeRepository.findAllByUserId(userId)
-                .stream()
-                .sorted(Comparator.comparing(MealTime::getMealTime))
-                .toList();
 
-        return 0;
+        LocalDateTime time = mealTimeRepository.findAllByUserId(userId)
+                .stream()
+                .map(MealTime::getMealTime)
+                .filter(TimeUtil::isUpcoming)
+                .findFirst()
+                .map(TimeUtil::plusUpComingGap)
+                .orElseGet(TimeUtil::getStartTime);
+        System.out.println("time = " + time);
+        System.out.println("TimeUtil.getTimeDifference(time) = " + TimeUtil.getTimeDifference(time));
+        ;
+        return TimeUtil.getTimeDifference(time);
     }
 
     /**
