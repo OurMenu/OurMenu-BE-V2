@@ -2,7 +2,7 @@ package com.ourmenu.backend.domain.user.dto.response;
 
 import com.ourmenu.backend.domain.user.domain.MealTime;
 import com.ourmenu.backend.domain.user.domain.User;
-import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.Builder;
@@ -14,7 +14,7 @@ public class UserDto {
 
     private String email;
     private String signInType;
-    private List<LocalDateTime> mealTime;
+    private List<LocalTime> mealTime;
 
     public static UserDto of(User user, List<MealTime> mealTimes) {
         return UserDto.builder()

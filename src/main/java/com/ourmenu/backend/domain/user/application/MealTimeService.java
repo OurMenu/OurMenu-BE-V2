@@ -6,7 +6,7 @@ import com.ourmenu.backend.domain.user.domain.MealTime;
 import com.ourmenu.backend.domain.user.dto.request.MealTimeRequest;
 import com.ourmenu.backend.domain.user.exception.InvalidMealTimeCountException;
 import com.ourmenu.backend.domain.user.util.TimeUtil;
-import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,17 +26,21 @@ public class MealTimeService {
      */
     public long getNextUpdateMinute(Long userId) {
 
-        LocalDateTime time = mealTimeRepository.findAllByUserId(userId)
+        LocalTime time = mealTimeRepository.findAllByUserId(userId)
                 .stream()
                 .map(MealTime::getMealTime)
-                .filter(TimeUtil::isUpcoming)
+                .map(TimeUtil::minusUpComingGap)
+                .filter(TimeUtil::isAfter)
                 .findFirst()
-                .map(TimeUtil::plusUpComingGap)
-                .orElseGet(TimeUtil::getStartTime);
-        System.out.println("time = " + time);
-        System.out.println("TimeUtil.getTimeDifference(time) = " + TimeUtil.getTimeDifference(time));
-        ;
-        return TimeUtil.getTimeDifference(time);
+                .orElse(getFirstMealTime(userId));
+
+        long timeDifference = TimeUtil.getTimeDifference(time);
+        if (timeDifference < 0) {
+            System.out.println("timeDifference = " + timeDifference);
+            return TimeUtil.getTimeDifferenceDayAfter(time);
+        }
+        System.out.println("timeDifference = " + timeDifference);
+        return timeDifference;
     }
 
     /**
@@ -72,6 +76,21 @@ public class MealTimeService {
     }
 
     /**
+     * 첫번째 식사시간을 반환한다. 사전에 정의한 시간차만크 뺀다.
+     *
+     * @param userId
+     * @return
+     */
+    private LocalTime getFirstMealTime(Long userId) {
+        return mealTimeRepository.findAllByUserId(userId)
+                .stream()
+                .findFirst()
+                .map(MealTime::getMealTime)
+                .map(TimeUtil::minusUpComingGap)
+                .orElseThrow(RuntimeException::new);
+    }
+
+    /**
      * 식시시간을 시간 타입을 변환하여 저장한다.
      *
      * @param timeInteger
@@ -79,7 +98,7 @@ public class MealTimeService {
      * @return
      */
     private MealTime saveMealTime(int timeInteger, Long userId) {
-        LocalDateTime time = TimeUtil.of(timeInteger);
+        LocalTime time = TimeUtil.of(timeInteger);
         MealTime mealTime = MealTime.builder()
                 .userId(userId)
                 .mealTime(time)
