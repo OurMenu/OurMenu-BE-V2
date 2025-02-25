@@ -1,5 +1,6 @@
 package com.ourmenu.backend.domain.menu.application;
 
+import com.ourmenu.backend.domain.home.dto.GetRecommendMenu;
 import com.ourmenu.backend.domain.menu.dao.MenuRepository;
 import com.ourmenu.backend.domain.menu.domain.Menu;
 import com.ourmenu.backend.domain.menu.domain.MenuFolder;
@@ -22,6 +23,7 @@ import com.ourmenu.backend.domain.tag.domain.Tag;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -207,6 +209,17 @@ public class MenuService {
         List<Tag> tags = menuTagService.findTagNames(menuId);
         List<MenuFolder> menuFolders = menuFolderService.findAllByMenuId(menuId);
         return GetMenuResponse.of(menu, imgUrls, tags, menuFolders);
+    }
+
+    //TODO 질문에 따라, 태그에 따라 오버 라이딩해야한다.
+    public List<GetRecommendMenu> findRecommendMenu(Long userId) {
+        List<Menu> menus = menuRepository.findByUserId(userId, null, null, PageRequest.of(0, 10))
+                .stream()
+                .toList();
+        return menus
+                .stream()
+                .map(GetRecommendMenu::from)
+                .toList();
     }
 
     private List<Tag> saveTags(List<Tag> tags, Long menuId) {
