@@ -1,6 +1,7 @@
 package com.ourmenu.backend.domain.home.api;
 
 import com.ourmenu.backend.domain.home.application.HomeService;
+import com.ourmenu.backend.domain.home.dto.GetHomeRecommendResponse;
 import com.ourmenu.backend.domain.home.dto.SaveAndGetQuestionRequest;
 import com.ourmenu.backend.domain.home.dto.SaveAnswerRequest;
 import com.ourmenu.backend.domain.user.domain.CustomUserDetails;
@@ -10,6 +11,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,9 +42,10 @@ public class HomeController {
     }
 
     @Operation(summary = "홈 추천 메뉴 조회", description = "추천 메뉴를 조회한다.")
-    public ApiResponse<Void> getHomeMenus() {
+    @GetMapping
+    public ApiResponse<GetHomeRecommendResponse> getHomeMenus(@AuthenticationPrincipal CustomUserDetails userDetails) {
 
-        //homeService.updateQuestionAnswer()
-        return ApiUtil.successOnly();
+        GetHomeRecommendResponse response = homeService.getRecommendMenus(userDetails.getId());
+        return ApiUtil.success(response);
     }
 }

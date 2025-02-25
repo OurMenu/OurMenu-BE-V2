@@ -1,11 +1,12 @@
 package com.ourmenu.backend.domain.user.api;
 
+import com.ourmenu.backend.domain.user.application.MealTimeService;
 import com.ourmenu.backend.domain.user.application.UserService;
 import com.ourmenu.backend.domain.user.domain.CustomUserDetails;
-import com.ourmenu.backend.domain.user.dto.request.MealTimeRequest;
-import com.ourmenu.backend.domain.user.dto.request.PasswordRequest;
 import com.ourmenu.backend.domain.user.dto.request.EmailSignInRequest;
 import com.ourmenu.backend.domain.user.dto.request.EmailSignUpRequest;
+import com.ourmenu.backend.domain.user.dto.request.MealTimeRequest;
+import com.ourmenu.backend.domain.user.dto.request.PasswordRequest;
 import com.ourmenu.backend.domain.user.dto.response.ReissueRequest;
 import com.ourmenu.backend.domain.user.dto.response.TokenDto;
 import com.ourmenu.backend.domain.user.dto.response.UserDto;
@@ -32,6 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
 
     private final UserService userService;
+    private final MealTimeService mealTimeService;
 
     @Operation(summary = "이메일 회원가입", description = "이메일 회원가입한다")
     @PostMapping("/sign-up")
@@ -59,7 +61,7 @@ public class UserController {
     @PatchMapping("/meal-time")
     private ApiResponse<Void> changeMealTime(@Valid @RequestBody MealTimeRequest request,
                                              @AuthenticationPrincipal CustomUserDetails userDetails) {
-        userService.changeMealTime(request, userDetails);
+        mealTimeService.changeMealTime(request, userDetails);
         return ApiUtil.successOnly();
     }
 
