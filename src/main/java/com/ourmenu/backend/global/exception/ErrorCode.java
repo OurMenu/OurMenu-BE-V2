@@ -48,8 +48,8 @@ public enum ErrorCode {
 
     // 홈
     INVALID_ANSWER(HttpStatus.UNAUTHORIZED, "H401", "질문과 관련 없는 대답입니다"),
-    NOT_FOUND_QUESTION(HttpStatus.NOT_FOUND, "H404", "아직 질문을 생성하지 않았습니다");
-
+    NOT_FOUND_QUESTION(HttpStatus.NOT_FOUND, "H404", "아직 질문을 생성하지 않았습니다"),
+    RECREATE_QUESTION(HttpStatus.BAD_REQUEST, "H400", "질문 및 응답을 갱신해야합니다");
 
     private final HttpStatus httpStatus;
 

@@ -8,6 +8,7 @@ import com.ourmenu.backend.domain.home.dto.GetRecommendMenu;
 import com.ourmenu.backend.domain.home.dto.SaveAndGetQuestionRequest;
 import com.ourmenu.backend.domain.home.dto.SaveAnswerRequest;
 import com.ourmenu.backend.domain.home.exception.NotFoundQuestionException;
+import com.ourmenu.backend.domain.home.exception.RecreateQuestionException;
 import com.ourmenu.backend.domain.menu.application.MenuService;
 import com.ourmenu.backend.domain.user.application.MealTimeService;
 import jakarta.transaction.Transactional;
@@ -26,7 +27,7 @@ public class HomeService {
     private final MealTimeService mealTimeService;
 
     /**
-     * 홈 질문 응답 값을 저장한다. 질문에 관련 없는 응답이면 에러를 반환한다.
+     * 홈 질문 응답 값을 저장 및 추천 메뉴를 캐싱한다. 질문에 관련 없는 응답이면 에러를 반환한다.
      *
      * @param request
      */
@@ -42,6 +43,8 @@ public class HomeService {
         HomeQuestionAnswer homeQuestionAnswer = optionalHomeQuestionAnswer.get();
         homeQuestionAnswer.getQuestion().validateQuestionAnswer(request.getAnswer());
         homeQuestionAnswer.update(request.getAnswer());
+
+        setRecommendMenus(userId);
     }
 
     /**
@@ -69,6 +72,11 @@ public class HomeService {
         return SaveAndGetQuestionRequest.from(homeQuestionAnswer);
     }
 
+    private void setRecommendMenus(Long userId) {
+        List<GetRecommendMenu> recommendMenu = menuService.findRecommendMenu(userId);
+        long nextUpdateMinute = mealTimeService.getNextUpdateMinute(userId);
+        recommendMenuCacheService.cacheStoreResponse(userId, recommendMenu, nextUpdateMinute);
+    }
 
     /**
      * 추천 메뉴 조회 및 저장한다. 홈메뉴 추천 캐시가 없다면 추가한다.
@@ -80,11 +88,8 @@ public class HomeService {
         List<GetRecommendMenu> getHomeRecommendMenus = recommendMenuCacheService.getStoreResponse(userId);
 
         if (getHomeRecommendMenus == null) {
-            getHomeRecommendMenus = menuService.findRecommendMenu(userId);
-            long nextUpdateMinute = mealTimeService.getNextUpdateMinute(userId);
-            recommendMenuCacheService.cacheStoreResponse(userId, getHomeRecommendMenus, nextUpdateMinute);
+            throw new RecreateQuestionException();
         }
-
         return GetHomeRecommendResponse.of(getHomeRecommendMenus, null, null);
     }
 }
