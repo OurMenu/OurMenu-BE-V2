@@ -72,12 +72,6 @@ public class HomeService {
         return SaveAndGetQuestionRequest.from(homeQuestionAnswer);
     }
 
-    private void setRecommendMenus(Long userId) {
-        List<GetRecommendMenu> recommendMenu = menuService.findRecommendMenu(userId);
-        long nextUpdateMinute = mealTimeService.getNextUpdateMinute(userId);
-        recommendMenuCacheService.cacheStoreResponse(userId, recommendMenu, nextUpdateMinute);
-    }
-
     /**
      * 추천 메뉴 조회 및 저장한다. 홈메뉴 추천 캐시가 없다면 추가한다.
      *
@@ -85,11 +79,35 @@ public class HomeService {
      * @return
      */
     public GetHomeRecommendResponse getRecommendMenus(Long userId) {
-        List<GetRecommendMenu> getHomeRecommendMenus = recommendMenuCacheService.getStoreResponse(userId);
+        List<GetRecommendMenu> questionRecommendMenus = getQuestionRecommendMenus(userId);
 
-        if (getHomeRecommendMenus == null) {
+        return GetHomeRecommendResponse.of(questionRecommendMenus, null, null);
+    }
+
+    /**
+     * 홈 질문 추천 메뉴 조회
+     *
+     * @param userId
+     * @return
+     * @throws RecreateQuestionException 질문에 대한 응답을 생성안한 경우, 질문 과 응답 갱신이 필요한 경우
+     */
+    private List<GetRecommendMenu> getQuestionRecommendMenus(Long userId) {
+        List<GetRecommendMenu> getRecommendMenus = recommendMenuCacheService.getStoreResponse(userId);
+
+        if (getRecommendMenus == null) {
             throw new RecreateQuestionException();
         }
-        return GetHomeRecommendResponse.of(getHomeRecommendMenus, null, null);
+        return getRecommendMenus;
+    }
+
+    /**
+     * 홈 질문 추천 메뉴 저장
+     *
+     * @param userId
+     */
+    private void setRecommendMenus(Long userId) {
+        List<GetRecommendMenu> recommendMenu = menuService.findRecommendMenu(userId);
+        long nextUpdateMinute = mealTimeService.getNextUpdateMinute(userId);
+        recommendMenuCacheService.cacheStoreResponse(userId, recommendMenu, nextUpdateMinute);
     }
 }
