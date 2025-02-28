@@ -10,11 +10,13 @@ import com.ourmenu.backend.domain.home.dto.SaveAnswerRequest;
 import com.ourmenu.backend.domain.home.exception.NotFoundQuestionException;
 import com.ourmenu.backend.domain.home.exception.RecreateQuestionException;
 import com.ourmenu.backend.domain.menu.application.MenuService;
+import com.ourmenu.backend.domain.tag.domain.Tag;
 import com.ourmenu.backend.domain.user.application.MealTimeService;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -80,8 +82,10 @@ public class HomeService {
      */
     public GetHomeRecommendResponse getRecommendMenus(Long userId) {
         List<GetRecommendMenu> questionRecommendMenus = getQuestionRecommendMenus(userId);
+        List<GetRecommendMenu> tagRecommendMenus = getTagRecommendMenus();
+        List<GetRecommendMenu> randomRecommendMenus = getRandomRecommendMenu();
 
-        return GetHomeRecommendResponse.of(questionRecommendMenus, null, null);
+        return GetHomeRecommendResponse.of(questionRecommendMenus, tagRecommendMenus, randomRecommendMenus);
     }
 
     /**
@@ -101,13 +105,27 @@ public class HomeService {
     }
 
     /**
-     * 홈 질문 추천 메뉴 저장
+     * 홈 질문 추천 메뉴 저장 최대 5개를 저장한다.
      *
      * @param userId
      */
     private void setRecommendMenus(Long userId) {
-        List<GetRecommendMenu> recommendMenu = menuService.findRecommendMenu(userId);
+        List<GetRecommendMenu> recommendMenu = menuService.findRecommendMenu(userId, PageRequest.of(0, 5));
         long nextUpdateMinute = mealTimeService.getNextUpdateMinute(userId);
         recommendMenuCacheService.cacheStoreResponse(userId, recommendMenu, nextUpdateMinute);
+    }
+
+    /**
+     * 랜덤 태그 추천 메뉴를 최대 7개 조회한다.
+     *
+     * @return
+     */
+    private List<GetRecommendMenu> getTagRecommendMenus() {
+        Tag randomTag = Tag.getRandomTag();
+        return menuService.findTagRecommendMenu(randomTag, PageRequest.of(0, 7));
+    }
+
+    private List<GetRecommendMenu> getRandomRecommendMenu() {
+        return menuService.findRandomRecommendMenu(7);
     }
 }

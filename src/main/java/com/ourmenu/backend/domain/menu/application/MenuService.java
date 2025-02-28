@@ -211,14 +211,61 @@ public class MenuService {
         return GetMenuResponse.of(menu, imgUrls, tags, menuFolders);
     }
 
-    //TODO 질문에 따라, 태그에 따라 오버 라이딩해야한다.
-    public List<GetRecommendMenu> findRecommendMenu(Long userId) {
-        List<Menu> menus = menuRepository.findByUserId(userId, null, null, PageRequest.of(0, 10))
+
+    /**
+     * 질문, 응답 추천 메뉴 조회(임시 용)
+     *
+     * @param userId
+     * @return
+     */
+    public List<GetRecommendMenu> findRecommendMenu(Long userId, PageRequest pageRequest) {
+        List<Menu> menus = menuRepository.findByUserId(userId, null, null, pageRequest)
                 .stream()
                 .toList();
         return menus
                 .stream()
-                .map(GetRecommendMenu::from)
+                .map(
+                        menu -> {
+                            String imgUrl = menuImgService.findUniqueImg(menu.getId());
+                            return GetRecommendMenu.of(menu, imgUrl);
+                        }
+                )
+                .toList();
+    }
+
+    /**
+     * 태그에 해당 하는 메뉴를 조죄한다.
+     *
+     * @param tag 태그
+     * @return
+     */
+    public List<GetRecommendMenu> findTagRecommendMenu(Tag tag, PageRequest pageRequest) {
+        List<MenuSimpleDto> menuSimpleDtos = menuRepository.findByTag(tag, pageRequest);
+        return menuSimpleDtos.stream()
+                .map(
+                        menuSimpleDto -> {
+                            String imgUrl = menuImgService.findUniqueImg(menuSimpleDto.getMenuId());
+                            return GetRecommendMenu.of(menuSimpleDto, imgUrl);
+                        }
+                )
+                .toList();
+    }
+
+    /**
+     * 랜덤 추천 메뉴를 조회한다.
+     *
+     * @param limit 갯수
+     * @return
+     */
+    public List<GetRecommendMenu> findRandomRecommendMenu(int limit) {
+        List<MenuSimpleDto> menuSimpleDtos = menuRepository.findByRandom(limit);
+        return menuSimpleDtos.stream()
+                .map(
+                        menuSimpleDto -> {
+                            String imgUrl = menuImgService.findUniqueImg(menuSimpleDto.getMenuId());
+                            return GetRecommendMenu.of(menuSimpleDto, imgUrl);
+                        }
+                )
                 .toList();
     }
 
