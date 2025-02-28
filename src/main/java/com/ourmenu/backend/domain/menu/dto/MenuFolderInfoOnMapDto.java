@@ -20,4 +20,12 @@ public class MenuFolderInfoOnMapDto {
                 .menuFolderCount(count)
                 .build();
     }
+
+    public static MenuFolderInfoOnMapDto empty() {
+        return MenuFolderInfoOnMapDto.builder()
+                .menuFolderTitle("")
+                .menuFolderIcon(null)
+                .menuFolderCount(0)
+                .build();
+    }
 }

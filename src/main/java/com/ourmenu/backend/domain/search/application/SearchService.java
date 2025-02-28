@@ -194,11 +194,20 @@ public class SearchService {
     }
 
     /**
-     * 메뉴 검색 기록 저장 유저가 소유하지 않은 메뉴 정보
+     * 메뉴 검색 기록 저장 및 업데이트 유저가 소유하지 않은 메뉴 정보
      *
      * @param getStoreResponse
      */
     private void saveSearchHistory(Long userId, GetStoreResponse getStoreResponse) {
+        Optional<NotOwnedMenuSearch> findNotOwnedMenuSearchOptional = notOwnedMenuSearchRepository.findByUserIdAndTitle(
+                userId,
+                getStoreResponse.getStoreTitle());
+
+        if (findNotOwnedMenuSearchOptional.isPresent()) {
+            NotOwnedMenuSearch findNotOwnedMenuSearch = findNotOwnedMenuSearchOptional.get();
+            findNotOwnedMenuSearch.updateModifiedAt();
+            return;
+        }
         NotOwnedMenuSearch notOwnedMenuSearch = NotOwnedMenuSearch.builder()
                 .title(getStoreResponse.getStoreTitle())
                 .address(getStoreResponse.getStoreAddress())

@@ -28,15 +28,9 @@ public class SwaggerConfig {
                                 .type(Type.APIKEY)
                                 .in(In.HEADER)
                         )
-                        .addSecuritySchemes("refresh token", new SecurityScheme()
-                                .name("Refresh-Token")
-                                .type(Type.APIKEY)
-                                .in(In.HEADER)
-                        )
                 )
                 .addSecurityItem(new SecurityRequirement()
                         .addList("access token")
-                        .addList("refresh token")
                 );
     }
 }

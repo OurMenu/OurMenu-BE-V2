@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 
 @Getter
-public class ReissueToken {
+public class ReissueRequest {
 
     @NotBlank
     private String refreshToken;

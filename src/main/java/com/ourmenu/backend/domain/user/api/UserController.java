@@ -4,9 +4,9 @@ import com.ourmenu.backend.domain.user.application.UserService;
 import com.ourmenu.backend.domain.user.domain.CustomUserDetails;
 import com.ourmenu.backend.domain.user.dto.request.MealTimeRequest;
 import com.ourmenu.backend.domain.user.dto.request.PasswordRequest;
-import com.ourmenu.backend.domain.user.dto.request.SignInRequest;
-import com.ourmenu.backend.domain.user.dto.request.SignUpRequest;
-import com.ourmenu.backend.domain.user.dto.response.ReissueToken;
+import com.ourmenu.backend.domain.user.dto.request.EmailSignInRequest;
+import com.ourmenu.backend.domain.user.dto.request.EmailSignUpRequest;
+import com.ourmenu.backend.domain.user.dto.response.ReissueRequest;
 import com.ourmenu.backend.domain.user.dto.response.TokenDto;
 import com.ourmenu.backend.domain.user.dto.response.UserDto;
 import com.ourmenu.backend.global.response.ApiResponse;
@@ -35,14 +35,14 @@ public class UserController {
 
     @Operation(summary = "이메일 회원가입", description = "이메일 회원가입한다")
     @PostMapping("/sign-up")
-    private ApiResponse<Void> signUp(@Valid @RequestBody SignUpRequest signUpRequest) {
-        userService.signUp(signUpRequest);
+    private ApiResponse<Void> signUp(@Valid @RequestBody EmailSignUpRequest emailSignUpRequest) {
+        userService.signUp(emailSignUpRequest);
         return ApiUtil.successOnly();
     }
 
     @Operation(summary = "이메일 로그인", description = "이메일 로그인한다.")
     @PostMapping("/sign-in")
-    private ApiResponse<TokenDto> signIn(@Valid @RequestBody SignInRequest request, HttpServletResponse response) {
+    private ApiResponse<TokenDto> signIn(@Valid @RequestBody EmailSignInRequest request, HttpServletResponse response) {
         TokenDto tokenDto = userService.signIn(request, response);
         return ApiUtil.success(tokenDto);
     }
@@ -80,8 +80,8 @@ public class UserController {
 
     @Operation(summary = "토큰 갱신", description = "refresh 토큰을 갱신한다.")
     @PostMapping("/reissue-token")
-    private ApiResponse<TokenDto> reissueToken(@Valid @RequestBody ReissueToken reissueToken) {
-        TokenDto response = userService.reissueToken(reissueToken);
+    private ApiResponse<TokenDto> reissueToken(@Valid @RequestBody ReissueRequest reissueRequest) {
+        TokenDto response = userService.reissueToken(reissueRequest);
         return ApiUtil.success(response);
     }
 }

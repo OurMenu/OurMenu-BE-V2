@@ -1,6 +1,5 @@
 package com.ourmenu.backend.domain.menu.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ourmenu.backend.domain.cache.domain.MenuPin;
 import com.ourmenu.backend.domain.tag.domain.Tag;
 import java.util.ArrayList;
@@ -21,9 +20,7 @@ public class SaveMenuRequest {
     private String menuMemoContent;
     private List<Long> menuFolderIds;
     private String storeId;
-
-    @JsonProperty("isCrawled")
-    private boolean isCrawled;
+    private Boolean isCrawled;
     private List<Tag> tags;
 
     /**
