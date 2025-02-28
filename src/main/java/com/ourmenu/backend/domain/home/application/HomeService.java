@@ -1,6 +1,7 @@
 package com.ourmenu.backend.domain.home.application;
 
 import com.ourmenu.backend.domain.home.dao.HomeQuestionAnswerRepository;
+import com.ourmenu.backend.domain.home.domain.Answer;
 import com.ourmenu.backend.domain.home.domain.HomeQuestionAnswer;
 import com.ourmenu.backend.domain.home.domain.Question;
 import com.ourmenu.backend.domain.home.dto.GetHomeRecommendResponse;
@@ -46,7 +47,7 @@ public class HomeService {
         homeQuestionAnswer.getQuestion().validateQuestionAnswer(request.getAnswer());
         homeQuestionAnswer.update(request.getAnswer());
 
-        setRecommendMenus(userId);
+        setRecommendMenus(userId, homeQuestionAnswer.getAnswer());
     }
 
     /**
@@ -109,8 +110,9 @@ public class HomeService {
      *
      * @param userId
      */
-    private void setRecommendMenus(Long userId) {
-        List<GetRecommendMenu> recommendMenu = menuService.findRecommendMenu(userId, PageRequest.of(0, 5));
+    private void setRecommendMenus(Long userId, Answer answer) {
+        Tag tag = answer.getTag();
+        List<GetRecommendMenu> recommendMenu = menuService.findRecommendMenu(userId, tag, PageRequest.of(0, 5));
         long nextUpdateMinute = mealTimeService.getNextUpdateMinute(userId);
         recommendMenuCacheService.cacheStoreResponse(userId, recommendMenu, nextUpdateMinute);
     }

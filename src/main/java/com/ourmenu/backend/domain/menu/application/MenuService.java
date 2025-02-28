@@ -218,16 +218,14 @@ public class MenuService {
      * @param userId
      * @return
      */
-    public List<GetRecommendMenu> findRecommendMenu(Long userId, PageRequest pageRequest) {
-        List<Menu> menus = menuRepository.findByUserId(userId, null, null, pageRequest)
-                .stream()
-                .toList();
+    public List<GetRecommendMenu> findRecommendMenu(Long userId, Tag tag, PageRequest pageRequest) {
+        List<MenuSimpleDto> menus = menuRepository.findByUserIdAndTag(userId, tag.getTagEnum(), pageRequest);
         return menus
                 .stream()
                 .map(
-                        menu -> {
-                            String imgUrl = menuImgService.findUniqueImg(menu.getId());
-                            return GetRecommendMenu.of(menu, imgUrl);
+                        menuSimpleDto -> {
+                            String imgUrl = menuImgService.findUniqueImg(menuSimpleDto.getMenuId());
+                            return GetRecommendMenu.of(menuSimpleDto, imgUrl);
                         }
                 )
                 .toList();

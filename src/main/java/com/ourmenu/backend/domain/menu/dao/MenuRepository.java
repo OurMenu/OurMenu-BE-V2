@@ -235,5 +235,30 @@ public interface MenuRepository extends JpaRepository<Menu, Long> {
                     JOIN (SELECT id FROM menu ORDER BY RAND() LIMIT :limit) rm ON rm.id = m.id
             """, nativeQuery = true)
     List<MenuSimpleDto> findByRandom(@Param("limit") int limit);
+
+    @Query(value = """
+            SELECT m.id AS menuId, m.title AS menuTitle, s.title AS storeTitle, s.address
+            AS storeAddress, m.price AS menuPrice, m.created_at AS createdAt
+            FROM menu m
+            JOIN menu_tag mt ON m.id = mt.menu_id
+            JOIN store s ON m.store_id = s.id
+            WHERE mt.tag = (:tag)
+            AND m.user_id = :userId
+            """,
+            countQuery = """
+                    SELECT COUNT(*)
+                    FROM (
+                        SELECT m.id AS menuId, m.title AS menuTitle, s.title AS storeTitle, s.address
+                        AS storeAddress, m.price AS menuPrice, m.created_at AS createdAt
+                        FROM menu m
+                        JOIN menu_tag mt ON m.id = mt.menu_id
+                        JOIN store s ON m.store_id = s.id
+                        WHERE mt.tag = (:tag)
+                        AND m.user_id = :userId
+                    ) AS subquery
+                    """, nativeQuery = true)
+    List<MenuSimpleDto> findByUserIdAndTag(@Param("userId") Long userId,
+                                           @Param("tag") String tag,
+                                           Pageable pageable);
 }
 
