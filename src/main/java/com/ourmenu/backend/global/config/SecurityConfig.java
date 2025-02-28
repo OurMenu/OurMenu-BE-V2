@@ -64,14 +64,16 @@ public class SecurityConfig {
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return web -> web.ignoring().requestMatchers(
-                    "/api/users/sign-up",
-                    "/api/users/sign-in",
-                    "/api/users/reissue-token",
-                    "/api/cache-data",
-                    "/api/emails/**",
-                    "/swagger-ui/**",
-                    "/swagger-resources/**",
-                    "/v3/api-docs/**"
-            );
+                "/api/users/sign-up",
+                "/api/users/sign-in",
+                "/api/users/reissue-token",
+                "/api/cache-data",
+                "/api/emails/**",
+                "/swagger-ui/**",
+                "/swagger-resources/**",
+                "/v3/api-docs/**",
+                "/actuator",
+                "/actuator/**"
+        );
     }
 }
