@@ -8,6 +8,7 @@ import com.ourmenu.backend.domain.home.dto.GetHomeRecommendResponse;
 import com.ourmenu.backend.domain.home.dto.GetRecommendMenu;
 import com.ourmenu.backend.domain.home.dto.SaveAndGetQuestionRequest;
 import com.ourmenu.backend.domain.home.dto.SaveAnswerRequest;
+import com.ourmenu.backend.domain.home.dto.TagRandomRecommendDto;
 import com.ourmenu.backend.domain.home.exception.NotFoundQuestionException;
 import com.ourmenu.backend.domain.home.exception.RecreateQuestionException;
 import com.ourmenu.backend.domain.menu.application.MenuService;
@@ -82,11 +83,15 @@ public class HomeService {
      * @return
      */
     public GetHomeRecommendResponse getRecommendMenus(Long userId) {
+        HomeQuestionAnswer homeQuestionAnswer = findByUserId(userId);
+        Answer answer = homeQuestionAnswer.getAnswer();
+
         List<GetRecommendMenu> questionRecommendMenus = getQuestionRecommendMenus(userId);
-        List<GetRecommendMenu> tagRecommendMenus = getTagRecommendMenus();
+        TagRandomRecommendDto tagRandomRecommendDto = getTagRecommendMenus();
         List<GetRecommendMenu> randomRecommendMenus = getRandomRecommendMenu();
 
-        return GetHomeRecommendResponse.of(questionRecommendMenus, tagRecommendMenus, randomRecommendMenus);
+        return GetHomeRecommendResponse.of(answer, questionRecommendMenus, tagRandomRecommendDto.getTag(),
+                tagRandomRecommendDto.getGetRecommendMenus(), randomRecommendMenus);
     }
 
     /**
@@ -122,12 +127,32 @@ public class HomeService {
      *
      * @return
      */
-    private List<GetRecommendMenu> getTagRecommendMenus() {
+    private TagRandomRecommendDto getTagRecommendMenus() {
         Tag randomTag = Tag.getRandomTag();
-        return menuService.findTagRecommendMenu(randomTag, PageRequest.of(0, 7));
+        List<GetRecommendMenu> tagRecommendMenus = menuService.findTagRecommendMenu(randomTag, PageRequest.of(0, 7));
+        return TagRandomRecommendDto.of(randomTag, tagRecommendMenus);
     }
 
+    /**
+     * 랜덤 추천 메뉴 최대 7개를 조회한다.
+     *
+     * @return
+     */
     private List<GetRecommendMenu> getRandomRecommendMenu() {
         return menuService.findRandomRecommendMenu(7);
+    }
+
+    /**
+     * 질문 응답 값 조회
+     *
+     * @param userId
+     * @return
+     */
+    private HomeQuestionAnswer findByUserId(Long userId) {
+        Optional<HomeQuestionAnswer> optionalHomeQuestionAnswer = homeQuestionAnswerRepository.findByUserId(userId);
+        if (optionalHomeQuestionAnswer.isEmpty()) {
+            throw new NotFoundQuestionException();
+        }
+        return optionalHomeQuestionAnswer.get();
     }
 }
