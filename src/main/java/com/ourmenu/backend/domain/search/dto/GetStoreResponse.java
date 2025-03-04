@@ -36,8 +36,8 @@ public class GetStoreResponse {
                 .storeAddress(searchableStore.getAddress())
                 .storeImgs(imgUrls)
                 .menus(getStoreMenuResponses)
-                .storeMapX(searchableStore.getMapX())
-                .storeMapY(searchableStore.getMapY())
+                .storeMapX(searchableStore.getLocation().getMapX())
+                .storeMapY(searchableStore.getLocation().getMapY())
                 .build();
     }
 

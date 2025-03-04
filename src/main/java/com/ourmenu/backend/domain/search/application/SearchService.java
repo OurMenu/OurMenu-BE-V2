@@ -8,6 +8,7 @@ import com.ourmenu.backend.domain.search.domain.NotOwnedMenuSearch;
 import com.ourmenu.backend.domain.search.domain.SearchableStore;
 import com.ourmenu.backend.domain.search.dto.GetSearchHistoryResponse;
 import com.ourmenu.backend.domain.search.dto.GetStoreResponse;
+import com.ourmenu.backend.domain.search.dto.SearchCriterionDto;
 import com.ourmenu.backend.domain.search.dto.SearchStoreResponse;
 import com.ourmenu.backend.domain.search.dto.SimpleSearchDto;
 import java.util.List;
@@ -30,24 +31,24 @@ public class SearchService {
     /**
      * 몽고DB -> mysql -> kakaoAPI 순으로 검색한다
      *
-     * @param query
+     * @param searchCriterionDto 검색 Dto
      * @return
      */
     @Transactional
-    public List<SearchStoreResponse> searchStore(String query) {
-        List<SearchStoreResponse> searchStoreResponses = searchMongoStore(query);
+    public List<SearchStoreResponse> searchStore(SearchCriterionDto searchCriterionDto) {
+        List<SearchStoreResponse> searchStoreResponses = searchMongoStore(searchCriterionDto);
         if (searchStoreResponses.size() != 0) {
             return searchStoreResponses;
         }
 
         //몽고DB 에서 찾을 수 없는 경우, 캐시테이블 조회
-        searchStoreResponses = searchCacheEntity(query);
+        searchStoreResponses = searchCacheEntity(searchCriterionDto.getQuery());
         if (searchStoreResponses.size() != 0) {
             return searchStoreResponses;
         }
 
         //캐시테이블(mysql)에서 찾을 수 없는 경우, openAPI 호출
-        return searchByKakaoApiAndSave(query);
+        return searchByKakaoApiAndSave(searchCriterionDto.getQuery());
     }
 
     /**
@@ -110,15 +111,16 @@ public class SearchService {
     /**
      * 몽고db store 검색 검색후 정렬
      *
-     * @param query 검색어
+     * @param searchCriterionDto 검색, 위치 Dto
      * @return
      */
-    private List<SearchStoreResponse> searchMongoStore(String query) {
+    private List<SearchStoreResponse> searchMongoStore(SearchCriterionDto searchCriterionDto) {
         PageRequest pageRequest = PageRequest.of(0, 10);
         List<SearchableStore> searchableStores = searchableStoreRepository.findByMenuNameOrStoreNameContaining(
-                query, pageRequest);
+                searchCriterionDto.getQuery(), searchCriterionDto.getMapX(), searchCriterionDto.getMapY(), pageRequest);
 
-        List<SearchableStore> storesWithNameMatch = sortStoreByNameMatch(searchableStores, query);
+        List<SearchableStore> storesWithNameMatch = sortStoreByNameMatch(searchableStores,
+                searchCriterionDto.getQuery());
 
         return storesWithNameMatch.stream()
                 .limit(5)

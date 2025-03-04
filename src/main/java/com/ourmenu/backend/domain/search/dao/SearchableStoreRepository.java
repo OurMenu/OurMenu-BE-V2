@@ -11,8 +11,10 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface SearchableStoreRepository extends MongoRepository<SearchableStore, String> {
 
-    @Query("{ '$or': [ { 'menus.menuName': { $regex: ?0, $options: 'i' } }, { 'name': { $regex: ?0, $options: 'i' } } ] }")
-    List<SearchableStore> findByMenuNameOrStoreNameContaining(String keyword, Pageable pageable);
+    @Query("{ '$or': [ { 'menus.menuName': { $regex: ?0, $options: 'i' } }, { 'name': { $regex: ?0, $options: 'i' } } ] ,"
+            + "'location': { $nearSphere: { $geometry: { type: 'Point', coordinates: [?1, ?2] } } } }")
+    List<SearchableStore> findByMenuNameOrStoreNameContaining(String keyword, double mapX, double mapY,
+                                                              Pageable pageable);
 
     Optional<SearchableStore> findByStoreId(String storeId);
 }

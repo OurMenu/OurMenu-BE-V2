@@ -25,8 +25,8 @@ public class SimpleSearchDto {
                 .isCrawled(isCrawled)
                 .storeTitle(searchableStore.getTitle())
                 .storeAddress(searchableStore.getAddress())
-                .mapX(searchableStore.getMapX())
-                .mapY(searchableStore.getMapY())
+                .mapX(searchableStore.getLocation().getMapX())
+                .mapY(searchableStore.getLocation().getMapY())
                 .build();
     }
 
