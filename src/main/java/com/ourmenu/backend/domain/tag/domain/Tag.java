@@ -1,5 +1,6 @@
 package com.ourmenu.backend.domain.tag.domain;
 
+import java.util.Random;
 import lombok.Getter;
 
 @Getter
@@ -40,5 +41,11 @@ public enum Tag {
         this.tagName = tagName;
         this.tagMemo = tagMemo;
         this.imgUrl = imgUrl;
+    }
+
+    public static Tag getRandomTag() {
+        Tag[] tags = Tag.values();
+        Random random = new Random();
+        return tags[random.nextInt(tags.length)];
     }
 }
