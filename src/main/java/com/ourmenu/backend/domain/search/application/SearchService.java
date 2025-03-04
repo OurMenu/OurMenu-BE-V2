@@ -116,7 +116,7 @@ public class SearchService {
     private List<SearchStoreResponse> searchMongoStore(String query) {
         PageRequest pageRequest = PageRequest.of(0, 10);
         List<SearchableStore> searchableStores = searchableStoreRepository.findByMenuNameOrStoreNameContaining(
-                query, pageRequest);
+                query, 127.0759204, 37.5423265, pageRequest);
 
         List<SearchableStore> storesWithNameMatch = sortStoreByNameMatch(searchableStores, query);
 
