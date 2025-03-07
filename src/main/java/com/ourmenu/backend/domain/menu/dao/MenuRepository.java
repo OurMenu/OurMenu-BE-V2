@@ -5,6 +5,7 @@ import com.ourmenu.backend.domain.menu.dto.MenuSimpleDto;
 import com.ourmenu.backend.domain.store.domain.Store;
 import java.util.List;
 import java.util.Optional;
+import org.locationtech.jts.geom.Point;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -203,5 +204,23 @@ public interface MenuRepository extends JpaRepository<Menu, Long> {
             Pageable pageable
     );
 
+    @Query(
+            value = "SELECT m.* FROM menu m " +
+                    "JOIN store s ON m.store_id = s.id " +
+                    "JOIN map ON s.map_id = map.id " +
+                    "WHERE m.user_id = :userId " +
+                    "AND LOWER(m.title) LIKE CONCAT('%', :title, '%') " +
+                    "ORDER BY ST_Distance(map.location, :userLocation) ASC",
+            countQuery = "SELECT COUNT(*) FROM menu m " +
+                    "JOIN store s ON m.store_id = s.id " +
+                    "JOIN map ON s.map_id = map.id " +
+                    "WHERE m.user_id = :userId " +
+                    "AND LOWER(m.title) LIKE CONCAT('%', :title, '%')",
+            nativeQuery = true
+    )
+    Page<Menu> findByUserIdContainingTitleOrderByDistance(@Param("userId") Long userId,
+                                                          @Param("title") String title,
+                                                          @Param("userLocation") Point userLocation,
+                                                          Pageable pageable);
 }
 
