@@ -40,8 +40,8 @@ public class MenuInfoOnMapDto {
                 ).collect(Collectors.toList()))
                 .menuFolderInfo(menuFolderInfo)
                 .mapId(menu.getStore().getMap().getId())
-                .mapX(menu.getStore().getMap().getMapX())
-                .mapY(menu.getStore().getMap().getMapY())
+                .mapX(menu.getStore().getMap().getLocation().getX())
+                .mapY(menu.getStore().getMap().getLocation().getY())
                 .build();
     }
 }
