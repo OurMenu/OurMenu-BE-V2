@@ -2,6 +2,7 @@ package com.ourmenu.backend.domain.home.application;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ourmenu.backend.domain.home.dto.GetRecommendMenu;
+import com.ourmenu.backend.domain.home.exception.DeserializeFailureException;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -50,7 +51,7 @@ public class RecommendMenuCacheService {
                         objectMapper.getTypeFactory().constructCollectionType(List.class, GetRecommendMenu.class));
                 return getRecommendMenus;
             } catch (IOException e) {
-                e.printStackTrace();
+                throw new DeserializeFailureException();
             }
         }
         return null;
