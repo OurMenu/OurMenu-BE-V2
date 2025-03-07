@@ -74,7 +74,7 @@ public class MealTimeService {
     }
 
     /**
-     * 첫번째 식사시간을 반환한다. 사전에 정의한 시간차만크 뺀다.
+     * 첫번째 식사시간을 반환한다. 사전에 정의한 시간차만큼 뺀값이다.
      *
      * @param userId
      * @return
