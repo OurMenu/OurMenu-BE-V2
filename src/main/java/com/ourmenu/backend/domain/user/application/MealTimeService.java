@@ -36,10 +36,8 @@ public class MealTimeService {
 
         long timeDifference = TimeUtil.getTimeDifference(time);
         if (timeDifference < 0) {
-            System.out.println("timeDifference = " + timeDifference);
             return TimeUtil.getTimeDifferenceDayAfter(time);
         }
-        System.out.println("timeDifference = " + timeDifference);
         return timeDifference;
     }
 
