@@ -41,15 +41,6 @@ public class TimeUtil {
     }
 
     /**
-     * 아침 시간을 반환한다.
-     *
-     * @return
-     */
-    public static LocalTime getStartTime() {
-        return LocalTime.of(7, 0);
-    }
-
-    /**
      * UPCOMING_GAP 만큼 시간을 뺄셈한다.
      *
      * @param time
