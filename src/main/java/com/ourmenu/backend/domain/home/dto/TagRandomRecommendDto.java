@@ -16,12 +16,12 @@ import lombok.NoArgsConstructor;
 public class TagRandomRecommendDto {
 
     Tag tag;
-    List<GetRecommendMenu> getRecommendMenus;
+    List<GetRecommendMenuResponse> getRecommendMenuResponses;
 
-    public static TagRandomRecommendDto of(Tag tag, List<GetRecommendMenu> getRecommendMenus) {
+    public static TagRandomRecommendDto of(Tag tag, List<GetRecommendMenuResponse> getRecommendMenuResponses) {
         return TagRandomRecommendDto.builder()
                 .tag(tag)
-                .getRecommendMenus(getRecommendMenus)
+                .getRecommendMenuResponses(getRecommendMenuResponses)
                 .build();
     }
 }

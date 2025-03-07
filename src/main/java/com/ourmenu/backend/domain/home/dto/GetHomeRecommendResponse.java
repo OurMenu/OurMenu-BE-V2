@@ -14,16 +14,16 @@ import lombok.Getter;
 public class GetHomeRecommendResponse {
 
     private Answer answer;
-    private List<GetRecommendMenu> answerRecommendMenus;
+    private List<GetRecommendMenuResponse> answerRecommendMenus;
     private Tag tag;
-    private List<GetRecommendMenu> tagRecommendMenus;
-    private List<GetRecommendMenu> otherRecommendMenus;
+    private List<GetRecommendMenuResponse> tagRecommendMenus;
+    private List<GetRecommendMenuResponse> otherRecommendMenus;
 
     public static GetHomeRecommendResponse of(Answer answer,
-                                              List<GetRecommendMenu> answerRecommendMenus,
+                                              List<GetRecommendMenuResponse> answerRecommendMenus,
                                               Tag tag,
-                                              List<GetRecommendMenu> tagRecommendMenus,
-                                              List<GetRecommendMenu> otherRecommendMenus) {
+                                              List<GetRecommendMenuResponse> tagRecommendMenus,
+                                              List<GetRecommendMenuResponse> otherRecommendMenus) {
         return GetHomeRecommendResponse.builder()
                 .answer(answer)
                 .answerRecommendMenus(answerRecommendMenus)

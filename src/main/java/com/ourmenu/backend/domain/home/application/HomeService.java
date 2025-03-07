@@ -5,7 +5,7 @@ import com.ourmenu.backend.domain.home.domain.Answer;
 import com.ourmenu.backend.domain.home.domain.HomeQuestionAnswer;
 import com.ourmenu.backend.domain.home.domain.Question;
 import com.ourmenu.backend.domain.home.dto.GetHomeRecommendResponse;
-import com.ourmenu.backend.domain.home.dto.GetRecommendMenu;
+import com.ourmenu.backend.domain.home.dto.GetRecommendMenuResponse;
 import com.ourmenu.backend.domain.home.dto.SaveAndGetQuestionRequest;
 import com.ourmenu.backend.domain.home.dto.SaveAnswerRequest;
 import com.ourmenu.backend.domain.home.dto.TagRandomRecommendDto;
@@ -86,12 +86,12 @@ public class HomeService {
         HomeQuestionAnswer homeQuestionAnswer = findByUserId(userId);
         Answer answer = homeQuestionAnswer.getAnswer();
 
-        List<GetRecommendMenu> questionRecommendMenus = getQuestionRecommendMenus(userId);
+        List<GetRecommendMenuResponse> questionRecommendMenus = getQuestionRecommendMenus(userId);
         TagRandomRecommendDto tagRandomRecommendDto = getTagRecommendMenus();
-        List<GetRecommendMenu> randomRecommendMenus = getRandomRecommendMenu();
+        List<GetRecommendMenuResponse> randomRecommendMenus = getRandomRecommendMenu();
 
         return GetHomeRecommendResponse.of(answer, questionRecommendMenus, tagRandomRecommendDto.getTag(),
-                tagRandomRecommendDto.getGetRecommendMenus(), randomRecommendMenus);
+                tagRandomRecommendDto.getGetRecommendMenuResponses(), randomRecommendMenus);
     }
 
     /**
@@ -101,13 +101,13 @@ public class HomeService {
      * @return
      * @throws RecreateQuestionException 질문에 대한 응답을 생성안한 경우, 질문 과 응답 갱신이 필요한 경우
      */
-    private List<GetRecommendMenu> getQuestionRecommendMenus(Long userId) {
-        List<GetRecommendMenu> getRecommendMenus = recommendMenuCacheService.getStoreResponse(userId);
+    private List<GetRecommendMenuResponse> getQuestionRecommendMenus(Long userId) {
+        List<GetRecommendMenuResponse> getRecommendMenuResponses = recommendMenuCacheService.getStoreResponse(userId);
 
-        if (getRecommendMenus == null) {
+        if (getRecommendMenuResponses == null) {
             throw new RecreateQuestionException();
         }
-        return getRecommendMenus;
+        return getRecommendMenuResponses;
     }
 
     /**
@@ -117,7 +117,7 @@ public class HomeService {
      */
     private void setRecommendMenus(Long userId, Answer answer) {
         Tag tag = answer.getTag();
-        List<GetRecommendMenu> recommendMenu = menuService.findRecommendMenu(userId, tag, PageRequest.of(0, 5));
+        List<GetRecommendMenuResponse> recommendMenu = menuService.findRecommendMenu(userId, tag, PageRequest.of(0, 5));
         long nextUpdateMinute = mealTimeService.getNextUpdateMinute(userId);
         recommendMenuCacheService.cacheStoreResponse(userId, recommendMenu, nextUpdateMinute);
     }
@@ -129,7 +129,8 @@ public class HomeService {
      */
     private TagRandomRecommendDto getTagRecommendMenus() {
         Tag randomTag = Tag.getRandomTag();
-        List<GetRecommendMenu> tagRecommendMenus = menuService.findTagRecommendMenu(randomTag, PageRequest.of(0, 7));
+        List<GetRecommendMenuResponse> tagRecommendMenus = menuService.findTagRecommendMenu(randomTag,
+                PageRequest.of(0, 7));
         return TagRandomRecommendDto.of(randomTag, tagRecommendMenus);
     }
 
@@ -138,7 +139,7 @@ public class HomeService {
      *
      * @return
      */
-    private List<GetRecommendMenu> getRandomRecommendMenu() {
+    private List<GetRecommendMenuResponse> getRandomRecommendMenu() {
         return menuService.findRandomRecommendMenu(7);
     }
 

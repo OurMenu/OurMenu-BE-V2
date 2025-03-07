@@ -14,15 +14,15 @@ import lombok.NoArgsConstructor;
 @Builder(access = AccessLevel.PRIVATE)
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class GetRecommendMenu {
+public class GetRecommendMenuResponse {
 
     private Long menuId;
     private String menuTitle;
     private int menuPrice;
     private String menuImgUrl;
 
-    public static GetRecommendMenu of(Menu menu, String imgUrl) {
-        return GetRecommendMenu.builder()
+    public static GetRecommendMenuResponse of(Menu menu, String imgUrl) {
+        return GetRecommendMenuResponse.builder()
                 .menuId(menu.getId())
                 .menuTitle(menu.getTitle())
                 .menuPrice(menu.getPrice())
@@ -30,8 +30,8 @@ public class GetRecommendMenu {
                 .build();
     }
 
-    public static GetRecommendMenu of(MenuSimpleDto menuSimpleDto, String imgUrl) {
-        return GetRecommendMenu.builder()
+    public static GetRecommendMenuResponse of(MenuSimpleDto menuSimpleDto, String imgUrl) {
+        return GetRecommendMenuResponse.builder()
                 .menuId(menuSimpleDto.getMenuId())
                 .menuTitle(menuSimpleDto.getMenuTitle())
                 .menuPrice(menuSimpleDto.getMenuPrice())

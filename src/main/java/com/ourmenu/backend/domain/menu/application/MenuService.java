@@ -1,6 +1,6 @@
 package com.ourmenu.backend.domain.menu.application;
 
-import com.ourmenu.backend.domain.home.dto.GetRecommendMenu;
+import com.ourmenu.backend.domain.home.dto.GetRecommendMenuResponse;
 import com.ourmenu.backend.domain.menu.dao.MenuRepository;
 import com.ourmenu.backend.domain.menu.domain.Menu;
 import com.ourmenu.backend.domain.menu.domain.MenuFolder;
@@ -218,14 +218,14 @@ public class MenuService {
      * @param userId
      * @return
      */
-    public List<GetRecommendMenu> findRecommendMenu(Long userId, Tag tag, PageRequest pageRequest) {
+    public List<GetRecommendMenuResponse> findRecommendMenu(Long userId, Tag tag, PageRequest pageRequest) {
         List<MenuSimpleDto> menus = menuRepository.findByUserIdAndTag(userId, tag.getTagEnum(), pageRequest);
         return menus
                 .stream()
                 .map(
                         menuSimpleDto -> {
                             String imgUrl = menuImgService.findUniqueImg(menuSimpleDto.getMenuId());
-                            return GetRecommendMenu.of(menuSimpleDto, imgUrl);
+                            return GetRecommendMenuResponse.of(menuSimpleDto, imgUrl);
                         }
                 )
                 .toList();
@@ -237,13 +237,13 @@ public class MenuService {
      * @param tag 태그
      * @return
      */
-    public List<GetRecommendMenu> findTagRecommendMenu(Tag tag, PageRequest pageRequest) {
+    public List<GetRecommendMenuResponse> findTagRecommendMenu(Tag tag, PageRequest pageRequest) {
         List<MenuSimpleDto> menuSimpleDtos = menuRepository.findByTag(tag, pageRequest);
         return menuSimpleDtos.stream()
                 .map(
                         menuSimpleDto -> {
                             String imgUrl = menuImgService.findUniqueImg(menuSimpleDto.getMenuId());
-                            return GetRecommendMenu.of(menuSimpleDto, imgUrl);
+                            return GetRecommendMenuResponse.of(menuSimpleDto, imgUrl);
                         }
                 )
                 .toList();
@@ -255,13 +255,13 @@ public class MenuService {
      * @param limit 갯수
      * @return
      */
-    public List<GetRecommendMenu> findRandomRecommendMenu(int limit) {
+    public List<GetRecommendMenuResponse> findRandomRecommendMenu(int limit) {
         List<MenuSimpleDto> menuSimpleDtos = menuRepository.findByRandom(limit);
         return menuSimpleDtos.stream()
                 .map(
                         menuSimpleDto -> {
                             String imgUrl = menuImgService.findUniqueImg(menuSimpleDto.getMenuId());
-                            return GetRecommendMenu.of(menuSimpleDto, imgUrl);
+                            return GetRecommendMenuResponse.of(menuSimpleDto, imgUrl);
                         }
                 )
                 .toList();
