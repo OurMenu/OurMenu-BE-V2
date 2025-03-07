@@ -1,5 +1,6 @@
 package com.ourmenu.backend.domain.menu.application;
 
+import com.ourmenu.backend.domain.home.dto.GetRecommendMenuResponse;
 import com.ourmenu.backend.domain.menu.dao.MenuRepository;
 import com.ourmenu.backend.domain.menu.domain.Menu;
 import com.ourmenu.backend.domain.menu.domain.MenuFolder;
@@ -22,6 +23,7 @@ import com.ourmenu.backend.domain.tag.domain.Tag;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -207,6 +209,62 @@ public class MenuService {
         List<Tag> tags = menuTagService.findTagNames(menuId);
         List<MenuFolder> menuFolders = menuFolderService.findAllByMenuId(menuId);
         return GetMenuResponse.of(menu, imgUrls, tags, menuFolders);
+    }
+
+
+    /**
+     * 질문, 응답 추천 메뉴 조회(임시 용)
+     *
+     * @param userId
+     * @return
+     */
+    public List<GetRecommendMenuResponse> findRecommendMenu(Long userId, Tag tag, PageRequest pageRequest) {
+        List<MenuSimpleDto> menus = menuRepository.findByUserIdAndTag(userId, tag.getTagEnum(), pageRequest);
+        return menus
+                .stream()
+                .map(
+                        menuSimpleDto -> {
+                            String imgUrl = menuImgService.findUniqueImg(menuSimpleDto.getMenuId());
+                            return GetRecommendMenuResponse.of(menuSimpleDto, imgUrl);
+                        }
+                )
+                .toList();
+    }
+
+    /**
+     * 태그에 해당 하는 메뉴를 조죄한다.
+     *
+     * @param tag 태그
+     * @return
+     */
+    public List<GetRecommendMenuResponse> findTagRecommendMenu(Tag tag, PageRequest pageRequest) {
+        List<MenuSimpleDto> menuSimpleDtos = menuRepository.findByTag(tag, pageRequest);
+        return menuSimpleDtos.stream()
+                .map(
+                        menuSimpleDto -> {
+                            String imgUrl = menuImgService.findUniqueImg(menuSimpleDto.getMenuId());
+                            return GetRecommendMenuResponse.of(menuSimpleDto, imgUrl);
+                        }
+                )
+                .toList();
+    }
+
+    /**
+     * 랜덤 추천 메뉴를 조회한다.
+     *
+     * @param limit 갯수
+     * @return
+     */
+    public List<GetRecommendMenuResponse> findRandomRecommendMenu(int limit) {
+        List<MenuSimpleDto> menuSimpleDtos = menuRepository.findByRandom(limit);
+        return menuSimpleDtos.stream()
+                .map(
+                        menuSimpleDto -> {
+                            String imgUrl = menuImgService.findUniqueImg(menuSimpleDto.getMenuId());
+                            return GetRecommendMenuResponse.of(menuSimpleDto, imgUrl);
+                        }
+                )
+                .toList();
     }
 
     private List<Tag> saveTags(List<Tag> tags, Long menuId) {

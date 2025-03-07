@@ -1,29 +1,35 @@
 package com.ourmenu.backend.domain.user.application;
 
-import com.ourmenu.backend.domain.user.dao.MealTimeRepository;
 import com.ourmenu.backend.domain.user.dao.RefreshTokenRepository;
 import com.ourmenu.backend.domain.user.dao.UserRepository;
-import com.ourmenu.backend.domain.user.domain.*;
-import com.ourmenu.backend.domain.user.dto.request.MealTimeRequest;
-import com.ourmenu.backend.domain.user.dto.request.PasswordRequest;
+import com.ourmenu.backend.domain.user.domain.CustomUserDetails;
+import com.ourmenu.backend.domain.user.domain.MealTime;
+import com.ourmenu.backend.domain.user.domain.RefreshToken;
+import com.ourmenu.backend.domain.user.domain.SignInType;
+import com.ourmenu.backend.domain.user.domain.User;
 import com.ourmenu.backend.domain.user.dto.request.EmailSignInRequest;
 import com.ourmenu.backend.domain.user.dto.request.EmailSignUpRequest;
+import com.ourmenu.backend.domain.user.dto.request.PasswordRequest;
 import com.ourmenu.backend.domain.user.dto.response.ReissueRequest;
 import com.ourmenu.backend.domain.user.dto.response.TokenDto;
 import com.ourmenu.backend.domain.user.dto.response.UserDto;
-import com.ourmenu.backend.domain.user.exception.*;
+import com.ourmenu.backend.domain.user.exception.DuplicateEmailException;
+import com.ourmenu.backend.domain.user.exception.InvalidMealTimeCountException;
+import com.ourmenu.backend.domain.user.exception.InvalidTokenException;
+import com.ourmenu.backend.domain.user.exception.NotFoundUserException;
+import com.ourmenu.backend.domain.user.exception.NotMatchPasswordException;
+import com.ourmenu.backend.domain.user.exception.NotMatchTokenException;
+import com.ourmenu.backend.domain.user.exception.TokenExpiredExcpetion;
 import com.ourmenu.backend.global.util.JwtTokenProvider;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.transaction.Transactional;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -34,17 +40,19 @@ public class UserService {
     private final RefreshTokenRepository refreshTokenRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
-    private final MealTimeRepository mealTimeRepository;
+    private final MealTimeService mealTimeService;
 
 
     /**
      * 이메일 중복 검사, 비밀번호 암호화 및 User 객체를 생성 후 DB에 저장
+     *
      * @param emailSignUpRequest User의 Email, Password, SignInType, MealTime 정보를 가진 Request
      * @return 회원가입 완료
      */
+    @Transactional
     public void signUp(EmailSignUpRequest emailSignUpRequest) {
 
-        if(userRepository.findByEmail(emailSignUpRequest.getEmail()).isPresent()){
+        if (userRepository.findByEmail(emailSignUpRequest.getEmail()).isPresent()) {
             throw new DuplicateEmailException();
         }
 
@@ -57,28 +65,19 @@ public class UserService {
                 .build();
         User savedUser = userRepository.save(user);
 
-        List<MealTime> mealTimes = new ArrayList<>();
-        for (Integer mealTime : emailSignUpRequest.getMealTime()) {
-            MealTime newMealTime = MealTime.builder()
-                    .userId(savedUser.getId())
-                    .mealTime(mealTime)
-                    .build();
-            mealTimes.add(newMealTime);
-        }
+        List<MealTime> mealTimes = mealTimeService.saveMealTimes(emailSignUpRequest.getMealTime(), user.getId());
 
-        if (mealTimes.isEmpty() || mealTimes.size() > 4){
+        if (mealTimes.isEmpty() || mealTimes.size() > 4) {
             userRepository.delete(savedUser);
             throw new InvalidMealTimeCountException();
         }
-
-        mealTimeRepository.saveAll(mealTimes);
-
     }
 
     /**
      * 로그인 로직 및 로그인 성공시 RefreshToken 갱신 후 JWT 정보 반환
+     *
      * @param emailSignInRequest User의 Email, Password, SignInType정보를 가진 Request
-     * @param response HTTP Response
+     * @param response           HTTP Response
      * @return Token 정보
      */
     public TokenDto signIn(EmailSignInRequest emailSignInRequest, HttpServletResponse response) {
@@ -87,17 +86,18 @@ public class UserService {
                 NotFoundUserException::new
         );
 
-        if(!passwordEncoder.matches(emailSignInRequest.getPassword(), user.getPassword())) {
+        if (!passwordEncoder.matches(emailSignInRequest.getPassword(), user.getPassword())) {
             throw new NotMatchPasswordException();
         }
 
         TokenDto tokenDto = jwtTokenProvider.createAllToken(emailSignInRequest.getEmail());
 
-        Optional<RefreshToken> refreshToken = refreshTokenRepository.findRefreshTokenByEmail(emailSignInRequest.getEmail());
+        Optional<RefreshToken> refreshToken = refreshTokenRepository.findRefreshTokenByEmail(
+                emailSignInRequest.getEmail());
 
-        if(refreshToken.isPresent()) {
+        if (refreshToken.isPresent()) {
             refreshTokenRepository.save(refreshToken.get().updateToken(tokenDto.getRefreshToken()));
-        }else {
+        } else {
             RefreshToken newToken = new RefreshToken(tokenDto.getRefreshToken(), emailSignInRequest.getEmail());
             refreshTokenRepository.save(newToken);
         }
@@ -109,6 +109,7 @@ public class UserService {
 
     /**
      * Response Header에 AccessToken 값 반환
+     *
      * @param response HTTP Response
      * @param tokenDto JWT Token 정보
      */
@@ -132,33 +133,11 @@ public class UserService {
         userRepository.save(user);
     }
 
-    @Transactional
-    public void changeMealTime(MealTimeRequest request, CustomUserDetails userDetails) {
-        mealTimeRepository.deleteAllByUserId(userDetails.getId());
-
-        ArrayList<Integer> newMealTimes = request.getMealTime();
-
-        ArrayList<MealTime> updatedMealTimes = new ArrayList<>();
-        for (Integer mealTime : newMealTimes) {
-            MealTime newMealTime = MealTime.builder()
-                    .userId(userDetails.getId())
-                    .mealTime(mealTime)
-                    .build();
-            updatedMealTimes.add(newMealTime);
-        }
-
-        if (updatedMealTimes.isEmpty() || updatedMealTimes.size() > 4){
-            throw new InvalidMealTimeCountException();
-        }
-
-        mealTimeRepository.saveAll(updatedMealTimes);
-    }
-
     public UserDto getUserInfo(CustomUserDetails userDetails) {
         User user = userRepository.findById(userDetails.getId())
                 .orElseThrow(NotFoundUserException::new);
 
-        List<MealTime> mealTimes = mealTimeRepository.findAllByUserId(userDetails.getId());
+        List<MealTime> mealTimes = mealTimeService.findAllByUserId(userDetails.getId());
 
         return UserDto.of(user, mealTimes);
     }
@@ -167,7 +146,7 @@ public class UserService {
         String refreshToken = reissueRequest.getRefreshToken();
         String email = jwtTokenProvider.getEmailFromToken(refreshToken);
 
-        if (email.isEmpty()){
+        if (email.isEmpty()) {
             throw new InvalidTokenException();
         }
 
@@ -193,7 +172,7 @@ public class UserService {
         );
     }
 
-    public void signOut(HttpServletRequest request, Long userId){
+    public void signOut(HttpServletRequest request, Long userId) {
         String token = request.getHeader("Authorization");
 
         if (token != null && token.startsWith("Bearer ")) {

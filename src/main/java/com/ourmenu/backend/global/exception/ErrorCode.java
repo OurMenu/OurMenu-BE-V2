@@ -44,7 +44,13 @@ public enum ErrorCode {
     NOT_FOUND_STORE_IN_KAKAO(HttpStatus.INTERNAL_SERVER_ERROR, "K500", "카카오맵에서 찾을 수 없습니다"),
 
     // 지도
-    NOT_FOUND_MAP(HttpStatus.NOT_FOUND, "P404", "찾을 수 없는 위치 정보입니다.");
+    NOT_FOUND_MAP(HttpStatus.NOT_FOUND, "P404", "찾을 수 없는 위치 정보입니다."),
+
+    // 홈
+    INVALID_ANSWER(HttpStatus.UNAUTHORIZED, "H401", "질문과 관련 없는 대답입니다"),
+    NOT_FOUND_QUESTION(HttpStatus.NOT_FOUND, "H404", "아직 질문을 생성하지 않았습니다"),
+    RECREATE_QUESTION(HttpStatus.BAD_REQUEST, "H400", "질문 및 응답을 갱신해야합니다"),
+    DESERIALIZE_FAILURE(HttpStatus.INTERNAL_SERVER_ERROR, "H500", "역직렬화를 실패하였습니다");
 
     private final HttpStatus httpStatus;
 
