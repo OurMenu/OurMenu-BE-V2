@@ -58,7 +58,7 @@ public class HomeService {
      * @return
      */
     @Transactional
-    public SaveAndGetQuestionRequest updateQuestionAnswer(Long userId) {
+    public SaveAndGetQuestionRequest updateQuestion(Long userId) {
         Optional<HomeQuestionAnswer> optionalHomeQuestionAnswer = homeQuestionAnswerRepository.findByUserId(userId);
         Question randomQuestion = Question.getRandomQuestion();
 

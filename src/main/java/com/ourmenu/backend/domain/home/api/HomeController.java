@@ -29,7 +29,7 @@ public class HomeController {
     @PostMapping("/questions")
     public ApiResponse<SaveAndGetQuestionRequest> saveAndGetQuestion(
             @AuthenticationPrincipal CustomUserDetails userDetails) {
-        SaveAndGetQuestionRequest response = homeService.updateQuestionAnswer(userDetails.getId());
+        SaveAndGetQuestionRequest response = homeService.updateQuestion(userDetails.getId());
         return ApiUtil.success(response);
     }
 
