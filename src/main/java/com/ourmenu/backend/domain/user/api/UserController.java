@@ -39,8 +39,8 @@ public class UserController {
 
     @Operation(summary = "이메일 회원가입", description = "이메일 회원가입한다")
     @PostMapping("/sign-up")
-    private ApiResponse<Void> signUp(@Valid @RequestBody EmailSignUpRequest emailSignUpRequest) {
-        userService.signUp(emailSignUpRequest);
+    private ApiResponse<Void> signUp(@Valid @RequestBody EmailSignUpRequest request) {
+        userService.signUp(request);
         return ApiUtil.successOnly();
     }
 

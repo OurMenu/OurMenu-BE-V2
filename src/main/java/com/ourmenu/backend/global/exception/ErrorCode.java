@@ -25,6 +25,8 @@ public enum ErrorCode {
     TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "U401", "JWT 토큰의 유효 기간이 만료되었습니다."),
     SEND_CODE_FAILURE(HttpStatus.INTERNAL_SERVER_ERROR, "U500", "이메일 인증 코드 전송에 실패하였습니다."),
     INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "U401", "유효하지 않은 토큰입니다."),
+    UNSUPPORTED_SIGN_IN_TYPE(HttpStatus.BAD_REQUEST, "U400", "지원하지 않는 방식입니다."),
+
 
     // 메뉴판
     FORBIDDEN_MENU_FOLDER(HttpStatus.FORBIDDEN, "F403", "소유하고 있는 메뉴판이 아닙니다"),

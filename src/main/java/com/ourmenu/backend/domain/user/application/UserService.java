@@ -22,6 +22,7 @@ import com.ourmenu.backend.domain.user.exception.NotFoundUserException;
 import com.ourmenu.backend.domain.user.exception.NotMatchPasswordException;
 import com.ourmenu.backend.domain.user.exception.NotMatchTokenException;
 import com.ourmenu.backend.domain.user.exception.TokenExpiredExcpetion;
+import com.ourmenu.backend.domain.user.exception.UnsupportedSignInTypeException;
 import com.ourmenu.backend.global.util.JwtTokenProvider;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -48,26 +49,15 @@ public class UserService {
     /**
      * 이메일 중복 검사, 비밀번호 암호화 및 User 객체를 생성 후 DB에 저장
      *
-     * @param emailSignUpRequest User의 Email, Password, SignInType, MealTime 정보를 가진 Request
+     * @param request User의 Email, Password, SignInType, MealTime 정보를 가진 Request
      * @return 회원가입 완료
      */
     @Transactional
-    public void signUp(EmailSignUpRequest emailSignUpRequest) {
+    public void signUp(EmailSignUpRequest request) {
 
-        if (userRepository.findByEmail(emailSignUpRequest.getEmail()).isPresent()) {
-            throw new DuplicateEmailException();
-        }
+        User savedUser = saveUser(request);
 
-        String encodedPassword = passwordEncoder.encode(emailSignUpRequest.getPassword());
-
-        User user = User.builder()
-                .email(emailSignUpRequest.getEmail())
-                .password(encodedPassword)
-                .signInType(SignInType.EMAIL)
-                .build();
-        User savedUser = userRepository.save(user);
-
-        List<MealTime> mealTimes = mealTimeService.saveMealTimes(emailSignUpRequest.getMealTime(), user.getId());
+        List<MealTime> mealTimes = mealTimeService.saveMealTimes(request.getMealTime(), savedUser.getId());
 
         if (mealTimes.isEmpty() || mealTimes.size() > 4) {
             userRepository.delete(savedUser);
@@ -196,5 +186,46 @@ public class UserService {
         }
 
         return KakaoExistenceResponse.from(false);
+    }
+
+    private User saveUser(EmailSignUpRequest request) {
+        if (request.getSignInType().equals("EMAIL")) {
+            return signUpByEmail(request);
+        }
+
+        if (request.getSignInType().equals("KAKAO")) {
+            return signUpByKakao(request);
+        }
+
+        throw new UnsupportedSignInTypeException();
+    }
+
+    private User signUpByKakao(EmailSignUpRequest request) {
+        Optional<User> optionalUser = userRepository.findByEmail(request.getEmail());
+        if (optionalUser.isPresent() && optionalUser.get().getSignInType() == SignInType.KAKAO) {
+            throw new DuplicateEmailException();
+        }
+
+        User user = User.builder()
+                .email(request.getEmail())
+                .signInType(SignInType.KAKAO)
+                .build();
+
+        return userRepository.save(user);
+    }
+
+    private User signUpByEmail(EmailSignUpRequest request) {
+        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+            throw new DuplicateEmailException();
+        }
+
+        String encodedPassword = passwordEncoder.encode(request.getPassword());
+
+        User user = User.builder()
+                .email(request.getEmail())
+                .password(encodedPassword)
+                .signInType(SignInType.EMAIL)
+                .build();
+        return userRepository.save(user);
     }
 }
