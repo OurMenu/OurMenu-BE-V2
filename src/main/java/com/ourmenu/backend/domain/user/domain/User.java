@@ -2,6 +2,8 @@ package com.ourmenu.backend.domain.user.domain;
 
 import com.ourmenu.backend.global.domain.BaseEntity;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -25,6 +27,7 @@ public class User extends BaseEntity {
 
     private String email;
 
+    @Enumerated(EnumType.STRING)
     private SignInType signInType;
 
     public void changePassword(String newPassword) {
