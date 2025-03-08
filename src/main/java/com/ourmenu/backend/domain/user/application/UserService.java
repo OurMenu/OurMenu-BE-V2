@@ -7,9 +7,11 @@ import com.ourmenu.backend.domain.user.domain.MealTime;
 import com.ourmenu.backend.domain.user.domain.RefreshToken;
 import com.ourmenu.backend.domain.user.domain.SignInType;
 import com.ourmenu.backend.domain.user.domain.User;
+import com.ourmenu.backend.domain.user.dto.request.EmailRequest;
 import com.ourmenu.backend.domain.user.dto.request.EmailSignInRequest;
 import com.ourmenu.backend.domain.user.dto.request.EmailSignUpRequest;
 import com.ourmenu.backend.domain.user.dto.request.PasswordRequest;
+import com.ourmenu.backend.domain.user.dto.response.KakaoExistenceResponse;
 import com.ourmenu.backend.domain.user.dto.response.ReissueRequest;
 import com.ourmenu.backend.domain.user.dto.response.TokenDto;
 import com.ourmenu.backend.domain.user.dto.response.UserDto;
@@ -182,5 +184,17 @@ public class UserService {
             refreshTokenRepository.findRefreshTokenByEmail(email)
                     .ifPresent(refreshTokenRepository::delete);
         }
+    }
+
+    public KakaoExistenceResponse validateKakaoUserExists(EmailRequest request) {
+        String email = request.getEmail();
+
+        Optional<User> optionalUser = userRepository.findByEmail(email);
+
+        if (optionalUser.isPresent() && optionalUser.get().getSignInType() == SignInType.KAKAO) {
+            return KakaoExistenceResponse.from(true);
+        }
+
+        return KakaoExistenceResponse.from(false);
     }
 }

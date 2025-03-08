@@ -3,10 +3,12 @@ package com.ourmenu.backend.domain.user.api;
 import com.ourmenu.backend.domain.user.application.MealTimeService;
 import com.ourmenu.backend.domain.user.application.UserService;
 import com.ourmenu.backend.domain.user.domain.CustomUserDetails;
+import com.ourmenu.backend.domain.user.dto.request.EmailRequest;
 import com.ourmenu.backend.domain.user.dto.request.EmailSignInRequest;
 import com.ourmenu.backend.domain.user.dto.request.EmailSignUpRequest;
 import com.ourmenu.backend.domain.user.dto.request.MealTimeRequest;
 import com.ourmenu.backend.domain.user.dto.request.PasswordRequest;
+import com.ourmenu.backend.domain.user.dto.response.KakaoExistenceResponse;
 import com.ourmenu.backend.domain.user.dto.response.ReissueRequest;
 import com.ourmenu.backend.domain.user.dto.response.TokenDto;
 import com.ourmenu.backend.domain.user.dto.response.UserDto;
@@ -47,6 +49,13 @@ public class UserController {
     private ApiResponse<TokenDto> signIn(@Valid @RequestBody EmailSignInRequest request, HttpServletResponse response) {
         TokenDto tokenDto = userService.signIn(request, response);
         return ApiUtil.success(tokenDto);
+    }
+
+    @Operation(summary = "카카오 계정 검증", description = "카카오 계정 존재 여부를 확인한다.")
+    @PostMapping("/auth/kakao")
+    private ApiResponse<KakaoExistenceResponse> checkKakaoUserExists(@RequestBody EmailRequest request) {
+        KakaoExistenceResponse response = userService.validateKakaoUserExists(request);
+        return ApiUtil.success(response);
     }
 
     @Operation(summary = "패스워드 변경", description = "패스워드를 변경한다.")
