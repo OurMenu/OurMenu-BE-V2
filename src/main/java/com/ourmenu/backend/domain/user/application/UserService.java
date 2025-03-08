@@ -68,29 +68,29 @@ public class UserService {
     /**
      * 로그인 로직 및 로그인 성공시 RefreshToken 갱신 후 JWT 정보 반환
      *
-     * @param emailSignInRequest User의 Email, Password, SignInType정보를 가진 Request
+     * @param request User의 Email, Password, SignInType정보를 가진 Request
      * @param response           HTTP Response
      * @return Token 정보
      */
-    public TokenDto signIn(EmailSignInRequest emailSignInRequest, HttpServletResponse response) {
+    public TokenDto signIn(EmailSignInRequest request, HttpServletResponse response) {
+        Optional<User> optionalUser = userRepository.findByEmail(request.getEmail());
+        if (optionalUser.isEmpty() || !optionalUser.get().getSignInType().name().equals(request.getSignInType())) {
+            throw new NotFoundUserException();
+        }
 
-        User user = userRepository.findByEmail(emailSignInRequest.getEmail()).orElseThrow(
-                NotFoundUserException::new
-        );
+        User user = optionalUser.get();
 
-        if (!passwordEncoder.matches(emailSignInRequest.getPassword(), user.getPassword())) {
+        if (request.getSignInType().equals("EMAIL") && !passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new NotMatchPasswordException();
         }
 
-        TokenDto tokenDto = jwtTokenProvider.createAllToken(emailSignInRequest.getEmail());
-
-        Optional<RefreshToken> refreshToken = refreshTokenRepository.findRefreshTokenByEmail(
-                emailSignInRequest.getEmail());
+        TokenDto tokenDto = jwtTokenProvider.createAllToken(request.getEmail());
+        Optional<RefreshToken> refreshToken = refreshTokenRepository.findRefreshTokenByEmail(request.getEmail());
 
         if (refreshToken.isPresent()) {
             refreshTokenRepository.save(refreshToken.get().updateToken(tokenDto.getRefreshToken()));
         } else {
-            RefreshToken newToken = new RefreshToken(tokenDto.getRefreshToken(), emailSignInRequest.getEmail());
+            RefreshToken newToken = new RefreshToken(tokenDto.getRefreshToken(), request.getEmail());
             refreshTokenRepository.save(newToken);
         }
 
