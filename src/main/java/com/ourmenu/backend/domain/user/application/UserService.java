@@ -251,7 +251,8 @@ public class UserService {
      * @return
      */
     private User signUpByEmail(EmailSignUpRequest request) {
-        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+        Optional<User> optionalUser = userRepository.findByEmail(request.getEmail());
+        if (optionalUser.isPresent() && optionalUser.get().getSignInType() == SignInType.EMAIL) {
             throw new DuplicateEmailException();
         }
 
