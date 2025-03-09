@@ -37,14 +37,14 @@ public class UserController {
     private final UserService userService;
     private final MealTimeService mealTimeService;
 
-    @Operation(summary = "이메일 회원가입", description = "이메일 회원가입한다")
+    @Operation(summary = "회원가입", description = "회원가입한다")
     @PostMapping("/sign-up")
     private ApiResponse<Void> signUp(@Valid @RequestBody EmailSignUpRequest request) {
         userService.signUp(request);
         return ApiUtil.successOnly();
     }
 
-    @Operation(summary = "이메일 로그인", description = "이메일 로그인한다.")
+    @Operation(summary = "로그인", description = "로그인한다.")
     @PostMapping("/sign-in")
     private ApiResponse<TokenDto> signIn(@Valid @RequestBody EmailSignInRequest request, HttpServletResponse response) {
         TokenDto tokenDto = userService.signIn(request, response);
@@ -81,7 +81,7 @@ public class UserController {
         return ApiUtil.success(response);
     }
 
-    @Operation(summary = "로그 아웃", description = "로그아웃한다.")
+    @Operation(summary = "로그아웃", description = "로그아웃한다.")
     @PostMapping("/sign-out")
     private ApiResponse<Void> signOut(HttpServletRequest request,
                                       @AuthenticationPrincipal CustomUserDetails userDetails) {
@@ -89,7 +89,7 @@ public class UserController {
         return ApiUtil.successOnly();
     }
 
-    @Operation(summary = "토큰 갱신", description = "refresh 토큰을 갱신한다.")
+    @Operation(summary = "토큰 갱신", description = "Access 토큰을 갱신한다.")
     @PostMapping("/reissue-token")
     private ApiResponse<TokenDto> reissueToken(@Valid @RequestBody ReissueRequest reissueRequest) {
         TokenDto response = userService.reissueToken(reissueRequest);
