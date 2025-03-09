@@ -105,12 +105,9 @@ public class MapService {
         PageRequest pageRequest = PageRequest.of(0, 30);
 
         Page<Menu> menusByUserIdOrderByDistance =
-                menuRepository.findByUserIdContainingTitleOrderByDistance(userId, title, userLocation, pageRequest);
-        List<Menu> menus = menuRepository.findMenusByUserId(userId);
+                menuRepository.findByUserIdTitleContainingOrderByDistance(userId, title, userLocation, pageRequest);
 
-        return menus.stream()
-                .filter(m -> m.getStore().getTitle().contains(title)
-                        || m.getTitle().contains(title))
+        return menusByUserIdOrderByDistance.stream()
                 .map(MapSearchDto::from)
                 .toList();
     }
