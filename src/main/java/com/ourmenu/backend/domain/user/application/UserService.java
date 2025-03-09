@@ -94,8 +94,6 @@ public class UserService {
             refreshTokenRepository.save(newToken);
         }
 
-        setHeader(response, tokenDto);
-
         return tokenDto;
     }
 
@@ -217,15 +215,5 @@ public class UserService {
                 .signInType(SignInType.EMAIL)
                 .build();
         return userRepository.save(user);
-    }
-
-    /**
-     * Response Header에 AccessToken 값 반환
-     *
-     * @param response HTTP Response
-     * @param tokenDto JWT Token 정보
-     */
-    private void setHeader(HttpServletResponse response, TokenDto tokenDto) {
-        response.addHeader(JwtTokenProvider.ACCESS_TOKEN, tokenDto.getAccessToken());
     }
 }
