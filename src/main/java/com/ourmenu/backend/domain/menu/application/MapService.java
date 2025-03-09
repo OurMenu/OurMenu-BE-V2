@@ -102,7 +102,7 @@ public class MapService {
         Point userLocation = new GeometryFactory().createPoint(new Coordinate(mapX, mapY));
         userLocation.setSRID(4326);
 
-        PageRequest pageRequest = PageRequest.of(0, 30);
+        PageRequest pageRequest = PageRequest.of(0, 10);
 
         Page<Menu> menusByUserIdOrderByDistance =
                 menuRepository.findByUserIdTitleContainingOrderByDistance(userId, title, userLocation, pageRequest);
