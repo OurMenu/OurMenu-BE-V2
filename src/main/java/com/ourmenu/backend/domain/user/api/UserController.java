@@ -70,7 +70,7 @@ public class UserController {
     @PatchMapping("/meal-time")
     private ApiResponse<Void> changeMealTime(@Valid @RequestBody MealTimeRequest request,
                                              @AuthenticationPrincipal CustomUserDetails userDetails) {
-        mealTimeService.changeMealTime(request, userDetails);
+        mealTimeService.changeMealTime(request, userDetails.getId());
         return ApiUtil.successOnly();
     }
 

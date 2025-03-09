@@ -61,10 +61,10 @@ public class MealTimeService {
     }
 
     @Transactional
-    public void changeMealTime(MealTimeRequest request, CustomUserDetails userDetails) {
-        mealTimeRepository.deleteAllByUserId(userDetails.getId());
+    public void changeMealTime(MealTimeRequest request, Long userId) {
+        mealTimeRepository.deleteAllByUserId(userId);
 
-        List<MealTime> updatedMealTimes = saveMealTimes(request.getMealTime(), userDetails.getId());
+        List<MealTime> updatedMealTimes = saveMealTimes(request.getMealTime(), userId);
 
         if (updatedMealTimes.isEmpty() || updatedMealTimes.size() > 4) {
             throw new InvalidMealTimeCountException();
