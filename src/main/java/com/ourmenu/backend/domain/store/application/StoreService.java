@@ -64,6 +64,7 @@ public class StoreService {
 
     private Map saveMapIfNonExists(Double mapX, Double mapY) {
         Point location = new GeometryFactory().createPoint(new Coordinate(mapX, mapY));
+        location.setSRID(4326);
         Optional<Map> optionalMap = mapRepository.findByLocation(location);
         Map map;
 
