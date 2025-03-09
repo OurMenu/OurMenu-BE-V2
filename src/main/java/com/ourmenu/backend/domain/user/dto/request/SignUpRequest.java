@@ -7,8 +7,9 @@ import java.util.ArrayList;
 
 @Getter
 @NoArgsConstructor
-public class EmailSignUpRequest {
+public class SignUpRequest {
     private String email;
     private String password;
     private ArrayList<Integer> mealTime;
+    private String signInType;
 }

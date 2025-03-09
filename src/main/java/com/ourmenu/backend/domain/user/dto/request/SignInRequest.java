@@ -5,7 +5,8 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class PasswordRequest {
-    String password;
-    String newPassword;
+public class SignInRequest {
+    private String email;
+    private String password;
+    private String signInType;
 }
