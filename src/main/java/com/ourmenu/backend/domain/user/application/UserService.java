@@ -45,7 +45,6 @@ public class UserService {
     private final JwtTokenProvider jwtTokenProvider;
     private final MealTimeService mealTimeService;
 
-
     /**
      * 이메일 중복 검사, 비밀번호 암호화 및 User 객체를 생성 후 DB에 저장한다
      *
