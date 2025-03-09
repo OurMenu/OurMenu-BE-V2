@@ -27,6 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.PrecisionModel;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -99,8 +100,8 @@ public class MapService {
         User user = userRepository.findById(userId)
                 .orElseThrow(NotFoundUserException::new);
 
-        Point userLocation = new GeometryFactory().createPoint(new Coordinate(mapX, mapY));
-        userLocation.setSRID(4326);
+        GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
+        Point userLocation = geometryFactory.createPoint(new Coordinate(mapX, mapY));
 
         PageRequest pageRequest = PageRequest.of(0, 10);
 
