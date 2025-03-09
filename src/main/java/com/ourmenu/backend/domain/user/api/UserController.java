@@ -3,7 +3,7 @@ package com.ourmenu.backend.domain.user.api;
 import com.ourmenu.backend.domain.user.application.MealTimeService;
 import com.ourmenu.backend.domain.user.application.UserService;
 import com.ourmenu.backend.domain.user.domain.CustomUserDetails;
-import com.ourmenu.backend.domain.user.dto.request.EmailRequest;
+import com.ourmenu.backend.domain.user.dto.request.PostEmailRequest;
 import com.ourmenu.backend.domain.user.dto.request.EmailSignInRequest;
 import com.ourmenu.backend.domain.user.dto.request.EmailSignUpRequest;
 import com.ourmenu.backend.domain.user.dto.request.MealTimeRequest;
@@ -53,7 +53,7 @@ public class UserController {
 
     @Operation(summary = "카카오 계정 검증", description = "카카오 계정 존재 여부를 확인한다.")
     @PostMapping("/auth/kakao")
-    private ApiResponse<KakaoExistenceResponse> checkKakaoUserExists(@RequestBody EmailRequest request) {
+    private ApiResponse<KakaoExistenceResponse> checkKakaoUserExists(@RequestBody PostEmailRequest request) {
         KakaoExistenceResponse response = userService.validateKakaoUserExists(request);
         return ApiUtil.success(response);
     }

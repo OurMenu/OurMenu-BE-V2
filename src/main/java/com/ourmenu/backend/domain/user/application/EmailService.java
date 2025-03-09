@@ -4,7 +4,7 @@ import com.ourmenu.backend.domain.user.dao.ConfirmCodeRepository;
 import com.ourmenu.backend.domain.user.dao.UserRepository;
 import com.ourmenu.backend.domain.user.domain.ConfirmCode;
 import com.ourmenu.backend.domain.user.domain.User;
-import com.ourmenu.backend.domain.user.dto.request.EmailRequest;
+import com.ourmenu.backend.domain.user.dto.request.PostEmailRequest;
 import com.ourmenu.backend.domain.user.dto.response.EmailResponse;
 import com.ourmenu.backend.domain.user.dto.request.VerifyEmailRequest;
 import com.ourmenu.backend.domain.user.dto.response.TemporaryPasswordResponse;
@@ -29,7 +29,7 @@ public class EmailService {
     private final ConfirmCodeRepository confirmCodeRepository;
     private final UserRepository userRepository;
 
-    public EmailResponse sendCodeToEmail(EmailRequest request){
+    public EmailResponse sendCodeToEmail(PostEmailRequest request){
         String email = request.getEmail();
         String title = "아워메뉴 이메일 인증 번호";
         String generatedRandomCode = generateRandomCode(CONFIRM_CODE_LENGTH);
@@ -79,7 +79,7 @@ public class EmailService {
         }
     }
 
-    public TemporaryPasswordResponse sendTemporaryPassword(EmailRequest request) {
+    public TemporaryPasswordResponse sendTemporaryPassword(PostEmailRequest request) {
         String email = request.getEmail();
         String temporaryPassword = generateRandomCode(8);
         User user = userRepository.findByEmail(email)

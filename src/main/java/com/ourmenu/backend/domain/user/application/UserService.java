@@ -7,7 +7,7 @@ import com.ourmenu.backend.domain.user.domain.MealTime;
 import com.ourmenu.backend.domain.user.domain.RefreshToken;
 import com.ourmenu.backend.domain.user.domain.SignInType;
 import com.ourmenu.backend.domain.user.domain.User;
-import com.ourmenu.backend.domain.user.dto.request.EmailRequest;
+import com.ourmenu.backend.domain.user.dto.request.PostEmailRequest;
 import com.ourmenu.backend.domain.user.dto.request.EmailSignInRequest;
 import com.ourmenu.backend.domain.user.dto.request.EmailSignUpRequest;
 import com.ourmenu.backend.domain.user.dto.request.PasswordRequest;
@@ -192,7 +192,7 @@ public class UserService {
      * @param request
      * @return
      */
-    public KakaoExistenceResponse validateKakaoUserExists(EmailRequest request) {
+    public KakaoExistenceResponse validateKakaoUserExists(PostEmailRequest request) {
         String email = request.getEmail();
 
         Optional<User> optionalUser = userRepository.findByEmail(email);
