@@ -8,9 +8,9 @@ import com.ourmenu.backend.domain.user.domain.RefreshToken;
 import com.ourmenu.backend.domain.user.domain.SignInType;
 import com.ourmenu.backend.domain.user.domain.User;
 import com.ourmenu.backend.domain.user.dto.request.PostEmailRequest;
-import com.ourmenu.backend.domain.user.dto.request.EmailSignInRequest;
-import com.ourmenu.backend.domain.user.dto.request.EmailSignUpRequest;
-import com.ourmenu.backend.domain.user.dto.request.PasswordRequest;
+import com.ourmenu.backend.domain.user.dto.request.SignInRequest;
+import com.ourmenu.backend.domain.user.dto.request.SignUpRequest;
+import com.ourmenu.backend.domain.user.dto.request.UpdatePasswordRequest;
 import com.ourmenu.backend.domain.user.dto.response.KakaoExistenceResponse;
 import com.ourmenu.backend.domain.user.dto.response.ReissueRequest;
 import com.ourmenu.backend.domain.user.dto.response.TokenDto;
@@ -51,7 +51,7 @@ public class UserService {
      * @param request User의 Email, Password, SignInType, MealTime Request
      */
     @Transactional
-    public void signUp(EmailSignUpRequest request) {
+    public void signUp(SignUpRequest request) {
 
         User savedUser = saveUser(request);
 
@@ -70,7 +70,7 @@ public class UserService {
      * @param response           HTTP Response
      * @return Token 정보
      */
-    public TokenDto signIn(EmailSignInRequest request, HttpServletResponse response) {
+    public TokenDto signIn(SignInRequest request, HttpServletResponse response) {
         Optional<User> optionalUser = userRepository.findByEmail(request.getEmail());
         if (optionalUser.isEmpty() || !optionalUser.get().getSignInType().name().equals(request.getSignInType())) {
             throw new NotFoundUserException();
@@ -101,7 +101,7 @@ public class UserService {
      * @param request
      * @param userDetails
      */
-    public void changePassword(PasswordRequest request, CustomUserDetails userDetails) {
+    public void changePassword(UpdatePasswordRequest request, CustomUserDetails userDetails) {
         String rawPassword = request.getPassword();
         String encodedPassword = userDetails.getPassword();
 
@@ -211,7 +211,7 @@ public class UserService {
      * @return
      * @throws UnsupportedSignInTypeException 지원하지 않는 SignInType을 요청한 경우
      */
-    private User saveUser(EmailSignUpRequest request) {
+    private User saveUser(SignUpRequest request) {
         if (request.getSignInType().equals("EMAIL")) {
             return signUpByEmail(request);
         }
@@ -229,7 +229,7 @@ public class UserService {
      * @param request
      * @return
      */
-    private User signUpByKakao(EmailSignUpRequest request) {
+    private User signUpByKakao(SignUpRequest request) {
         Optional<User> optionalUser = userRepository.findByEmail(request.getEmail());
         if (optionalUser.isPresent() && optionalUser.get().getSignInType() == SignInType.KAKAO) {
             throw new DuplicateEmailException();
@@ -249,7 +249,7 @@ public class UserService {
      * @param request
      * @return
      */
-    private User signUpByEmail(EmailSignUpRequest request) {
+    private User signUpByEmail(SignUpRequest request) {
         Optional<User> optionalUser = userRepository.findByEmail(request.getEmail());
         if (optionalUser.isPresent() && optionalUser.get().getSignInType() == SignInType.EMAIL) {
             throw new DuplicateEmailException();

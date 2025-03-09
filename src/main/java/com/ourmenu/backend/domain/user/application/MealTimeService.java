@@ -1,9 +1,8 @@
 package com.ourmenu.backend.domain.user.application;
 
 import com.ourmenu.backend.domain.user.dao.MealTimeRepository;
-import com.ourmenu.backend.domain.user.domain.CustomUserDetails;
 import com.ourmenu.backend.domain.user.domain.MealTime;
-import com.ourmenu.backend.domain.user.dto.request.MealTimeRequest;
+import com.ourmenu.backend.domain.user.dto.request.UpdateMealTimeRequest;
 import com.ourmenu.backend.domain.user.exception.InvalidMealTimeCountException;
 import com.ourmenu.backend.domain.user.util.TimeUtil;
 import java.time.LocalTime;
@@ -61,7 +60,7 @@ public class MealTimeService {
     }
 
     @Transactional
-    public void changeMealTime(MealTimeRequest request, Long userId) {
+    public void changeMealTime(UpdateMealTimeRequest request, Long userId) {
         mealTimeRepository.deleteAllByUserId(userId);
 
         List<MealTime> updatedMealTimes = saveMealTimes(request.getMealTime(), userId);

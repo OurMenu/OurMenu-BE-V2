@@ -4,10 +4,10 @@ import com.ourmenu.backend.domain.user.application.MealTimeService;
 import com.ourmenu.backend.domain.user.application.UserService;
 import com.ourmenu.backend.domain.user.domain.CustomUserDetails;
 import com.ourmenu.backend.domain.user.dto.request.PostEmailRequest;
-import com.ourmenu.backend.domain.user.dto.request.EmailSignInRequest;
-import com.ourmenu.backend.domain.user.dto.request.EmailSignUpRequest;
-import com.ourmenu.backend.domain.user.dto.request.MealTimeRequest;
-import com.ourmenu.backend.domain.user.dto.request.PasswordRequest;
+import com.ourmenu.backend.domain.user.dto.request.SignInRequest;
+import com.ourmenu.backend.domain.user.dto.request.SignUpRequest;
+import com.ourmenu.backend.domain.user.dto.request.UpdateMealTimeRequest;
+import com.ourmenu.backend.domain.user.dto.request.UpdatePasswordRequest;
 import com.ourmenu.backend.domain.user.dto.response.KakaoExistenceResponse;
 import com.ourmenu.backend.domain.user.dto.response.ReissueRequest;
 import com.ourmenu.backend.domain.user.dto.response.TokenDto;
@@ -39,14 +39,14 @@ public class UserController {
 
     @Operation(summary = "회원가입", description = "회원가입한다")
     @PostMapping("/sign-up")
-    private ApiResponse<Void> signUp(@Valid @RequestBody EmailSignUpRequest request) {
+    private ApiResponse<Void> signUp(@Valid @RequestBody SignUpRequest request) {
         userService.signUp(request);
         return ApiUtil.successOnly();
     }
 
     @Operation(summary = "로그인", description = "로그인한다.")
     @PostMapping("/sign-in")
-    private ApiResponse<TokenDto> signIn(@Valid @RequestBody EmailSignInRequest request, HttpServletResponse response) {
+    private ApiResponse<TokenDto> signIn(@Valid @RequestBody SignInRequest request, HttpServletResponse response) {
         TokenDto tokenDto = userService.signIn(request, response);
         return ApiUtil.success(tokenDto);
     }
@@ -60,7 +60,7 @@ public class UserController {
 
     @Operation(summary = "패스워드 변경", description = "패스워드를 변경한다.")
     @PatchMapping("/password")
-    private ApiResponse<Void> changePassword(@Valid @RequestBody PasswordRequest request,
+    private ApiResponse<Void> changePassword(@Valid @RequestBody UpdatePasswordRequest request,
                                              @AuthenticationPrincipal CustomUserDetails userDetails) {
         userService.changePassword(request, userDetails);
         return ApiUtil.successOnly();
@@ -68,7 +68,7 @@ public class UserController {
 
     @Operation(summary = "식사 시간 변경", description = "식사 시간을 변경한다.")
     @PatchMapping("/meal-time")
-    private ApiResponse<Void> changeMealTime(@Valid @RequestBody MealTimeRequest request,
+    private ApiResponse<Void> changeMealTime(@Valid @RequestBody UpdateMealTimeRequest request,
                                              @AuthenticationPrincipal CustomUserDetails userDetails) {
         mealTimeService.changeMealTime(request, userDetails.getId());
         return ApiUtil.successOnly();
