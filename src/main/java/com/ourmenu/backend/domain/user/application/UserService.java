@@ -47,10 +47,9 @@ public class UserService {
 
 
     /**
-     * 이메일 중복 검사, 비밀번호 암호화 및 User 객체를 생성 후 DB에 저장
+     * 이메일 중복 검사, 비밀번호 암호화 및 User 객체를 생성 후 DB에 저장한다
      *
-     * @param request User의 Email, Password, SignInType, MealTime 정보를 가진 Request
-     * @return 회원가입 완료
+     * @param request User의 Email, Password, SignInType, MealTime Request
      */
     @Transactional
     public void signUp(EmailSignUpRequest request) {
@@ -66,9 +65,9 @@ public class UserService {
     }
 
     /**
-     * 로그인 로직 및 로그인 성공시 RefreshToken 갱신 후 JWT 정보 반환
+     * 로그인 로직 및 로그인 성공시 RefreshToken 갱신 후 JWT 정보 반환한다
      *
-     * @param request User의 Email, Password, SignInType정보를 가진 Request
+     * @param request    User의 Email, Password, SignInType Request
      * @param response           HTTP Response
      * @return Token 정보
      */
@@ -97,6 +96,12 @@ public class UserService {
         return tokenDto;
     }
 
+    /**
+     * 비밀번호를 변경한다.
+     *
+     * @param request
+     * @param userDetails
+     */
     public void changePassword(PasswordRequest request, CustomUserDetails userDetails) {
         String rawPassword = request.getPassword();
         String encodedPassword = userDetails.getPassword();
@@ -113,6 +118,12 @@ public class UserService {
         userRepository.save(user);
     }
 
+    /**
+     * 유저 정보를 조회한다.
+     *
+     * @param userDetails
+     * @return
+     */
     public UserDto getUserInfo(CustomUserDetails userDetails) {
         User user = userRepository.findById(userDetails.getId())
                 .orElseThrow(NotFoundUserException::new);
@@ -122,6 +133,12 @@ public class UserService {
         return UserDto.of(user, mealTimes);
     }
 
+    /**
+     * RefreshToken을 사용해 토큰을 갱신한다.
+     *
+     * @param reissueRequest
+     * @return
+     */
     public TokenDto reissueToken(ReissueRequest reissueRequest) {
         String refreshToken = reissueRequest.getRefreshToken();
         String email = jwtTokenProvider.getEmailFromToken(refreshToken);
@@ -152,6 +169,12 @@ public class UserService {
         );
     }
 
+    /**
+     * 해당 유저의 RefreshToken을 제거하며 로그아웃한다.
+     *
+     * @param request
+     * @param userId
+     */
     public void signOut(HttpServletRequest request, Long userId) {
         String token = request.getHeader("Authorization");
 
@@ -164,6 +187,12 @@ public class UserService {
         }
     }
 
+    /**
+     * 카카오 계정 존재 여부를 검증한다.
+     *
+     * @param request
+     * @return
+     */
     public KakaoExistenceResponse validateKakaoUserExists(EmailRequest request) {
         String email = request.getEmail();
 
@@ -176,6 +205,13 @@ public class UserService {
         return KakaoExistenceResponse.from(false);
     }
 
+    /**
+     * 유저 정보를 저장한다.
+     *
+     * @param request
+     * @return
+     * @throws UnsupportedSignInTypeException 지원하지 않는 SignInType을 요청한 경우
+     */
     private User saveUser(EmailSignUpRequest request) {
         if (request.getSignInType().equals("EMAIL")) {
             return signUpByEmail(request);
@@ -188,6 +224,12 @@ public class UserService {
         throw new UnsupportedSignInTypeException();
     }
 
+    /**
+     * Kakao 유저를 저장한다.
+     *
+     * @param request
+     * @return
+     */
     private User signUpByKakao(EmailSignUpRequest request) {
         Optional<User> optionalUser = userRepository.findByEmail(request.getEmail());
         if (optionalUser.isPresent() && optionalUser.get().getSignInType() == SignInType.KAKAO) {
@@ -202,6 +244,12 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    /**
+     * Email 유저를 저장한다.
+     *
+     * @param request
+     * @return
+     */
     private User signUpByEmail(EmailSignUpRequest request) {
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new DuplicateEmailException();
