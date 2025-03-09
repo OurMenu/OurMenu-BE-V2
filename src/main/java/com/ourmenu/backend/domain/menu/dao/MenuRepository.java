@@ -267,7 +267,7 @@ public interface MenuRepository extends JpaRepository<Menu, Long> {
                     "JOIN map ON s.map_id = map.id " +
                     "WHERE m.user_id = :userId " +
                     "AND LOWER(m.title) LIKE CONCAT('%', LOWER(:title), '%') " +
-                    "ORDER BY ST_Distance(map.location, :userLocation) ASC",
+                    "ORDER BY ST_Distance_Sphere(map.location, :userLocation) ASC",
             countQuery = "SELECT COUNT(*) FROM menu m " +
                     "JOIN store s ON m.store_id = s.id " +
                     "JOIN map ON s.map_id = map.id " +
