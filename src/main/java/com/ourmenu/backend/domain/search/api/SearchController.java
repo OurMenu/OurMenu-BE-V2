@@ -3,6 +3,7 @@ package com.ourmenu.backend.domain.search.api;
 import com.ourmenu.backend.domain.search.application.SearchService;
 import com.ourmenu.backend.domain.search.dto.GetSearchHistoryResponse;
 import com.ourmenu.backend.domain.search.dto.GetStoreResponse;
+import com.ourmenu.backend.domain.search.dto.SearchCriterionDto;
 import com.ourmenu.backend.domain.search.dto.SearchStoreResponse;
 import com.ourmenu.backend.domain.user.domain.CustomUserDetails;
 import com.ourmenu.backend.global.response.ApiResponse;
@@ -26,10 +27,14 @@ public class SearchController {
 
     private final SearchService searchService;
 
-    @Operation(summary = "식당 검색", description = "식당을 검색한다. 메뉴 이름과 가게 이름이 검색 범주에 포함된다.")
+    @Operation(summary = "식당 검색", description = "식당을 검색한다. 메뉴 이름과 가게 이름이 검색 범주에 포함된다."
+            + "건국대학교 경도, 위도는 127.0759204, 37.5423265 이다")
     @GetMapping("/priored/stores/menus")
-    public ApiResponse<List<SearchStoreResponse>> searchStore(@RequestParam(name = "query") String query) {
-        List<SearchStoreResponse> response = searchService.searchStore(query);
+    public ApiResponse<List<SearchStoreResponse>> searchStore(@RequestParam(name = "query") String query,
+                                                              @RequestParam(name = "mapX", defaultValue = "127.0759204") double mapX,
+                                                              @RequestParam(name = "mapY", defaultValue = "37.5423265") double mapY) {
+        SearchCriterionDto searchCriterionDto = SearchCriterionDto.of(query, mapX, mapY);
+        List<SearchStoreResponse> response = searchService.searchStore(searchCriterionDto);
         return ApiUtil.success(response);
     }
 

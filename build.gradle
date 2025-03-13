@@ -67,6 +67,9 @@ dependencies {
     //monitoring
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
+
+    //Hibernate Spatial
+    implementation 'org.hibernate.orm:hibernate-spatial:6.2.9.Final'
 }
 
 tasks.named('test') {

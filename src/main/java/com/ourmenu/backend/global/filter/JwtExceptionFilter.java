@@ -38,7 +38,6 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
 
     private void setResponse(HttpServletResponse response, ApiResponse<?> errorMessage) throws RuntimeException, IOException {
         response.setContentType("application/json;charset=UTF-8");
-
         ObjectMapper objectMapper = new ObjectMapper();
         String result = objectMapper.writeValueAsString(errorMessage);
         response.getWriter().print(result);

@@ -49,8 +49,8 @@ public class SaveMenuResponse {
                 .tags(tags)
                 .storeTitle(store.getTitle())
                 .storeAddress(store.getAddress())
-                .storeMapX(map.getMapX())
-                .storeMapY(map.getMapY())
+                .storeMapX(map.getLocation().getX())
+                .storeMapY(map.getLocation().getY())
                 .menuImgUrls(menuImgUrls)
                 .build();
     }

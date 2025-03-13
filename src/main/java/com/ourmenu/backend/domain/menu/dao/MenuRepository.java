@@ -3,8 +3,10 @@ package com.ourmenu.backend.domain.menu.dao;
 import com.ourmenu.backend.domain.menu.domain.Menu;
 import com.ourmenu.backend.domain.menu.dto.MenuSimpleDto;
 import com.ourmenu.backend.domain.store.domain.Store;
+import com.ourmenu.backend.domain.tag.domain.Tag;
 import java.util.List;
 import java.util.Optional;
+import org.locationtech.jts.geom.Point;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -92,7 +94,6 @@ public interface MenuRepository extends JpaRepository<Menu, Long> {
     @Query(value = """
             SELECT m.id AS menuId, m.title AS menuTitle, s.title AS storeTitle, s.address
             AS storeAddress, m.price AS menuPrice, m.created_at AS createdAt
-
             FROM menu m
             JOIN menu_tag mt ON m.id = mt.menu_id
             JOIN store s ON m.store_id = s.id
@@ -117,7 +118,7 @@ public interface MenuRepository extends JpaRepository<Menu, Long> {
                         GROUP BY m.id
                         HAVING COUNT(DISTINCT mt.tag) = :tagSize
                     ) AS subquery
-                            """, nativeQuery = true)
+                    """, nativeQuery = true)
     List<MenuSimpleDto> findByTagNameAndPriceRangeOrderByTitleAsc(
             @Param("userId") Long userId,
             @Param("tags") List<String> tags,
@@ -130,7 +131,6 @@ public interface MenuRepository extends JpaRepository<Menu, Long> {
     @Query(value = """
             SELECT m.id AS menuId, m.title AS menuTitle, s.title AS storeTitle, s.address
             AS storeAddress, m.price AS menuPrice, m.created_at AS createdAt
-
             FROM menu m
             JOIN menu_tag mt ON m.id = mt.menu_id
             JOIN store s ON m.store_id = s.id
@@ -155,7 +155,7 @@ public interface MenuRepository extends JpaRepository<Menu, Long> {
                         GROUP BY m.id
                         HAVING COUNT(DISTINCT mt.tag) = :tagSize
                     ) AS subquery
-                            """, nativeQuery = true)
+                    """, nativeQuery = true)
     List<MenuSimpleDto> findByTagNameAndPriceRangeOrderByCreatedByDesc(
             @Param("userId") Long userId,
             @Param("tags") List<String> tags,
@@ -168,7 +168,6 @@ public interface MenuRepository extends JpaRepository<Menu, Long> {
     @Query(value = """
             SELECT m.id AS menuId, m.title AS menuTitle, s.title AS storeTitle, s.address
             AS storeAddress, m.price AS menuPrice, m.created_at AS createdAt
-
             FROM menu m
             JOIN menu_tag mt ON m.id = mt.menu_id
             JOIN store s ON m.store_id = s.id
@@ -193,7 +192,7 @@ public interface MenuRepository extends JpaRepository<Menu, Long> {
                         GROUP BY m.id
                         HAVING COUNT(DISTINCT mt.tag) = :tagSize
                     ) AS subquery
-                            """, nativeQuery = true)
+                    """, nativeQuery = true)
     List<MenuSimpleDto> findByTagNameAndPriceRangeOrderByPriceAsc(
             @Param("userId") Long userId,
             @Param("tags") List<String> tags,
@@ -203,5 +202,82 @@ public interface MenuRepository extends JpaRepository<Menu, Long> {
             Pageable pageable
     );
 
+
+    @Query(value = """
+            SELECT m.id AS menuId, m.title AS menuTitle, s.title AS storeTitle, s.address
+            AS storeAddress, m.price AS menuPrice, m.created_at AS createdAt
+            FROM menu m
+            JOIN menu_tag mt ON m.id = mt.menu_id
+            JOIN store s ON m.store_id = s.id
+            WHERE mt.tag = (:tags)
+            """,
+            countQuery = """
+                    SELECT COUNT(*)
+                    FROM (
+                        SELECT m.id AS menuId, m.title AS menuTitle, s.title AS storeTitle, s.address
+                        AS storeAddress, m.price AS menuPrice, m.created_at AS createdAt
+                        FROM menu m
+                        JOIN menu_tag mt ON m.id = mt.menu_id
+                        JOIN store s ON m.store_id = s.id
+                        WHERE mt.tag = (:tags)
+                    ) AS subquery
+                    """, nativeQuery = true)
+    List<MenuSimpleDto> findByTag(
+            @Param("tags") Tag tag,
+            Pageable pageable
+    );
+
+    @Query(value = """
+                    SELECT m.id AS menuId, m.title AS menuTitle, s.title AS storeTitle, s.address
+                                AS storeAddress, m.price AS menuPrice, m.created_at AS createdAt
+                    FROM menu m
+                    JOIN menu_tag mt ON m.id = mt.menu_id
+                    JOIN store s ON m.store_id = s.id
+                    JOIN (SELECT id FROM menu ORDER BY RAND() LIMIT :limit) rm ON rm.id = m.id
+            """, nativeQuery = true)
+    List<MenuSimpleDto> findByRandom(@Param("limit") int limit);
+
+    @Query(value = """
+            SELECT m.id AS menuId, m.title AS menuTitle, s.title AS storeTitle, s.address
+            AS storeAddress, m.price AS menuPrice, m.created_at AS createdAt
+            FROM menu m
+            JOIN menu_tag mt ON m.id = mt.menu_id
+            JOIN store s ON m.store_id = s.id
+            WHERE mt.tag = (:tag)
+            AND m.user_id = :userId
+            """,
+            countQuery = """
+                    SELECT COUNT(*)
+                    FROM (
+                        SELECT m.id AS menuId, m.title AS menuTitle, s.title AS storeTitle, s.address
+                        AS storeAddress, m.price AS menuPrice, m.created_at AS createdAt
+                        FROM menu m
+                        JOIN menu_tag mt ON m.id = mt.menu_id
+                        JOIN store s ON m.store_id = s.id
+                        WHERE mt.tag = (:tag)
+                        AND m.user_id = :userId
+                    ) AS subquery
+                    """, nativeQuery = true)
+    List<MenuSimpleDto> findByUserIdAndTag(@Param("userId") Long userId,
+                                           @Param("tag") String tag,
+                                           Pageable pageable);
+    @Query(
+            value = "SELECT m.* FROM menu m " +
+                    "JOIN store s ON m.store_id = s.id " +
+                    "JOIN map ON s.map_id = map.id " +
+                    "WHERE m.user_id = :userId " +
+                    "AND LOWER(m.title) LIKE CONCAT('%', LOWER(:title), '%') " +
+                    "ORDER BY ST_Distance_Sphere(map.location, :userLocation) ASC",
+            countQuery = "SELECT COUNT(*) FROM menu m " +
+                    "JOIN store s ON m.store_id = s.id " +
+                    "JOIN map ON s.map_id = map.id " +
+                    "WHERE m.user_id = :userId " +
+                    "AND LOWER(m.title) LIKE CONCAT('%', LOWER(:title), '%')",
+            nativeQuery = true
+    )
+    Page<Menu> findByUserIdTitleContainingOrderByDistance(@Param("userId") Long userId,
+                                                          @Param("title") String title,
+                                                          @Param("userLocation") Point userLocation,
+                                                          Pageable pageable);
 }
 

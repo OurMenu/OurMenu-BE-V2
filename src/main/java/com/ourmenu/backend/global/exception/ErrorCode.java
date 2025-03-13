@@ -25,6 +25,8 @@ public enum ErrorCode {
     TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "U401", "JWT 토큰의 유효 기간이 만료되었습니다."),
     SEND_CODE_FAILURE(HttpStatus.INTERNAL_SERVER_ERROR, "U500", "이메일 인증 코드 전송에 실패하였습니다."),
     INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "U401", "유효하지 않은 토큰입니다."),
+    UNSUPPORTED_SIGN_IN_TYPE(HttpStatus.BAD_REQUEST, "U400", "지원하지 않는 방식입니다."),
+
 
     // 메뉴판
     FORBIDDEN_MENU_FOLDER(HttpStatus.FORBIDDEN, "F403", "소유하고 있는 메뉴판이 아닙니다"),
@@ -44,7 +46,13 @@ public enum ErrorCode {
     NOT_FOUND_STORE_IN_KAKAO(HttpStatus.INTERNAL_SERVER_ERROR, "K500", "카카오맵에서 찾을 수 없습니다"),
 
     // 지도
-    NOT_FOUND_MAP(HttpStatus.NOT_FOUND, "P404", "찾을 수 없는 위치 정보입니다.");
+    NOT_FOUND_MAP(HttpStatus.NOT_FOUND, "P404", "찾을 수 없는 위치 정보입니다."),
+
+    // 홈
+    INVALID_ANSWER(HttpStatus.UNAUTHORIZED, "H401", "질문과 관련 없는 대답입니다"),
+    NOT_FOUND_QUESTION(HttpStatus.NOT_FOUND, "H404", "아직 질문을 생성하지 않았습니다"),
+    RECREATE_QUESTION(HttpStatus.BAD_REQUEST, "H400", "질문 및 응답을 갱신해야합니다"),
+    DESERIALIZE_FAILURE(HttpStatus.INTERNAL_SERVER_ERROR, "H500", "역직렬화를 실패하였습니다");
 
     private final HttpStatus httpStatus;
 

@@ -20,13 +20,15 @@ public class SimpleSearchDto {
     private Double mapY;
 
     public static SimpleSearchDto of(SearchableStore searchableStore, boolean isCrawled) {
+        Double mapX = searchableStore.getLocation().getCoordinates().get(0);
+        Double mapY = searchableStore.getLocation().getCoordinates().get(1);
         return SimpleSearchDto.builder()
                 .storeId(searchableStore.getStoreId())
                 .isCrawled(isCrawled)
                 .storeTitle(searchableStore.getTitle())
                 .storeAddress(searchableStore.getAddress())
-                .mapX(searchableStore.getMapX())
-                .mapY(searchableStore.getMapY())
+                .mapX(mapX)
+                .mapY(mapY)
                 .build();
     }
 
