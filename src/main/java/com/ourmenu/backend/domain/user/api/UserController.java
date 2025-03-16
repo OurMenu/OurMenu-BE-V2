@@ -39,9 +39,9 @@ public class UserController {
 
     @Operation(summary = "회원가입", description = "회원가입한다")
     @PostMapping("/sign-up")
-    private ApiResponse<Void> signUp(@Valid @RequestBody SignUpRequest request) {
-        userService.signUp(request);
-        return ApiUtil.successOnly();
+    private ApiResponse<TokenDto> signUp(@Valid @RequestBody SignUpRequest request) {
+        TokenDto response = userService.signUp(request);
+        return ApiUtil.success(response);
     }
 
     @Operation(summary = "로그인", description = "로그인한다.")

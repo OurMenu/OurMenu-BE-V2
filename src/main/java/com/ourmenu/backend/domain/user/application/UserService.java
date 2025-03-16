@@ -51,7 +51,7 @@ public class UserService {
      * @param request User의 Email, Password, SignInType, MealTime Request
      */
     @Transactional
-    public void signUp(SignUpRequest request) {
+    public TokenDto signUp(SignUpRequest request) {
 
         User savedUser = saveUser(request);
 
@@ -61,6 +61,8 @@ public class UserService {
             userRepository.delete(savedUser);
             throw new InvalidMealTimeCountException();
         }
+
+        return jwtTokenProvider.createAllToken(request.getEmail());
     }
 
     /**
