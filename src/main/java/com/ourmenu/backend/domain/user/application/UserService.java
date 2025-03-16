@@ -205,6 +205,11 @@ public class UserService {
         return KakaoExistenceResponse.from(false);
     }
 
+    /**
+     * DB에서 유저를 삭제한다.
+     *
+     * @param userId
+     */
     public void removeUser(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(NotFoundUserException::new);

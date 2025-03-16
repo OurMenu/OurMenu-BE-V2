@@ -97,6 +97,7 @@ public class UserController {
         return ApiUtil.success(response);
     }
 
+    @Operation(summary = "유저 삭제", description = "유저를 DB에서 삭제한다.")
     @DeleteMapping("")
     private ApiResponse<Void> deleteUser(@AuthenticationPrincipal CustomUserDetails userDetails) {
         userService.removeUser(userDetails.getId());
