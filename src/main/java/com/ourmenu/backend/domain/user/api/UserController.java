@@ -21,6 +21,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -94,5 +95,11 @@ public class UserController {
     private ApiResponse<TokenDto> reissueToken(@Valid @RequestBody ReissueRequest reissueRequest) {
         TokenDto response = userService.reissueToken(reissueRequest);
         return ApiUtil.success(response);
+    }
+
+    @DeleteMapping("")
+    private ApiResponse<Void> deleteUser(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        userService.removeUser(userDetails.getId());
+        return ApiUtil.successOnly();
     }
 }

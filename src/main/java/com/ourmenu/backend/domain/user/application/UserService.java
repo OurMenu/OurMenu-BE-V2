@@ -206,6 +206,16 @@ public class UserService {
         return KakaoExistenceResponse.from(false);
     }
 
+    public void removeUser(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(NotFoundUserException::new);
+
+        refreshTokenRepository.findRefreshTokenByEmail(user.getEmail())
+                .ifPresent(refreshTokenRepository::delete);
+
+        userRepository.delete(user);
+    }
+
     /**
      * 유저 정보를 저장한다.
      *
