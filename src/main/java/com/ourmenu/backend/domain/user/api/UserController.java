@@ -86,7 +86,7 @@ public class UserController {
     @PostMapping("/sign-out")
     private ApiResponse<Void> signOut(HttpServletRequest request,
                                       @AuthenticationPrincipal CustomUserDetails userDetails) {
-        userService.signOut(request, userDetails.getId());
+        userService.signOut(request);
         return ApiUtil.successOnly();
     }
 

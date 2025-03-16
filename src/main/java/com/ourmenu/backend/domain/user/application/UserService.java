@@ -174,18 +174,17 @@ public class UserService {
      * 해당 유저의 RefreshToken을 제거하며 로그아웃한다.
      *
      * @param request
-     * @param userId
      */
-    public void signOut(HttpServletRequest request, Long userId) {
+    public void signOut(HttpServletRequest request) {
         String token = request.getHeader("Authorization");
-
-        if (token != null && token.startsWith("Bearer ")) {
+        if (token.startsWith("Bearer ")) {
             token = token.substring(7);
-            String email = jwtTokenProvider.getEmailFromToken(token);
-
-            refreshTokenRepository.findRefreshTokenByEmail(email)
-                    .ifPresent(refreshTokenRepository::delete);
         }
+
+        String email = jwtTokenProvider.getEmailFromToken(token);
+
+        refreshTokenRepository.findRefreshTokenByEmail(email)
+                .ifPresent(refreshTokenRepository::delete);
     }
 
     /**
