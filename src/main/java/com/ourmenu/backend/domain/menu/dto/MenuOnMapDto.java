@@ -23,8 +23,8 @@ public class MenuOnMapDto {
                 .menuPins(menus.stream()
                         .map(Menu::getPin)
                         .collect(Collectors.toList()))
-                .mapX(map.getMapX())
-                .mapY(map.getMapY())
+                .mapX(map.getLocation().getX())
+                .mapY(map.getLocation().getY())
                 .build();
     }
 }

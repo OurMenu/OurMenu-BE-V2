@@ -30,14 +30,16 @@ public class GetStoreResponse {
                 .map(UrlUtil::parseStoreImgUrl)
                 .limit(3)
                 .toList();
+        Double mapX = searchableStore.getLocation().getCoordinates().get(0);
+        Double mapY = searchableStore.getLocation().getCoordinates().get(1);
         return GetStoreResponse.builder()
                 .storeId(searchableStore.getStoreId())
                 .storeTitle(searchableStore.getTitle())
                 .storeAddress(searchableStore.getAddress())
                 .storeImgs(imgUrls)
                 .menus(getStoreMenuResponses)
-                .storeMapX(searchableStore.getLocation().getMapX())
-                .storeMapY(searchableStore.getLocation().getMapY())
+                .storeMapX(mapX)
+                .storeMapY(mapY)
                 .build();
     }
 

@@ -1,5 +1,6 @@
 package com.ourmenu.backend.domain.search.domain;
 
+import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -9,6 +10,5 @@ import lombok.ToString;
 @ToString
 public class Point {
 
-    private Double mapX;
-    private Double mapY;
+    private List<Double> coordinates;
 }
