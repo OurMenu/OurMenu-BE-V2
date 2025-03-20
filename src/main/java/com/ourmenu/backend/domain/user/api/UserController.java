@@ -21,6 +21,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -39,9 +40,9 @@ public class UserController {
 
     @Operation(summary = "회원가입", description = "회원가입한다")
     @PostMapping("/sign-up")
-    private ApiResponse<Void> signUp(@Valid @RequestBody SignUpRequest request) {
-        userService.signUp(request);
-        return ApiUtil.successOnly();
+    private ApiResponse<TokenDto> signUp(@Valid @RequestBody SignUpRequest request) {
+        TokenDto response = userService.signUp(request);
+        return ApiUtil.success(response);
     }
 
     @Operation(summary = "로그인", description = "로그인한다.")
@@ -85,7 +86,7 @@ public class UserController {
     @PostMapping("/sign-out")
     private ApiResponse<Void> signOut(HttpServletRequest request,
                                       @AuthenticationPrincipal CustomUserDetails userDetails) {
-        userService.signOut(request, userDetails.getId());
+        userService.signOut(request);
         return ApiUtil.successOnly();
     }
 
@@ -94,5 +95,12 @@ public class UserController {
     private ApiResponse<TokenDto> reissueToken(@Valid @RequestBody ReissueRequest reissueRequest) {
         TokenDto response = userService.reissueToken(reissueRequest);
         return ApiUtil.success(response);
+    }
+
+    @Operation(summary = "유저 삭제", description = "유저를 DB에서 삭제한다.")
+    @DeleteMapping("")
+    private ApiResponse<Void> deleteUser(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        userService.removeUser(userDetails.getId());
+        return ApiUtil.successOnly();
     }
 }
