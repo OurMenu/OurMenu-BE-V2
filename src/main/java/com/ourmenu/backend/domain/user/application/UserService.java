@@ -62,7 +62,10 @@ public class UserService {
             throw new InvalidMealTimeCountException();
         }
 
-        return jwtTokenProvider.createAllToken(request.getEmail());
+        TokenDto tokenDto = jwtTokenProvider.createAllToken(request.getEmail());
+        RefreshToken refreshToken = new RefreshToken(tokenDto.getRefreshToken(), request.getEmail());
+        refreshTokenRepository.save(refreshToken);
+        return tokenDto;
     }
 
     /**
