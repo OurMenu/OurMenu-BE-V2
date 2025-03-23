@@ -51,7 +51,7 @@ public class UserService {
      * @param request User의 Email, Password, SignInType, MealTime Request
      */
     @Transactional
-    public void signUp(SignUpRequest request) {
+    public TokenDto signUp(SignUpRequest request) {
 
         User savedUser = saveUser(request);
 
@@ -61,6 +61,11 @@ public class UserService {
             userRepository.delete(savedUser);
             throw new InvalidMealTimeCountException();
         }
+
+        TokenDto tokenDto = jwtTokenProvider.createAllToken(request.getEmail());
+        RefreshToken refreshToken = new RefreshToken(tokenDto.getRefreshToken(), request.getEmail());
+        refreshTokenRepository.save(refreshToken);
+        return tokenDto;
     }
 
     /**
@@ -172,18 +177,17 @@ public class UserService {
      * 해당 유저의 RefreshToken을 제거하며 로그아웃한다.
      *
      * @param request
-     * @param userId
      */
-    public void signOut(HttpServletRequest request, Long userId) {
+    public void signOut(HttpServletRequest request) {
         String token = request.getHeader("Authorization");
-
-        if (token != null && token.startsWith("Bearer ")) {
+        if (token.startsWith("Bearer ")) {
             token = token.substring(7);
-            String email = jwtTokenProvider.getEmailFromToken(token);
-
-            refreshTokenRepository.findRefreshTokenByEmail(email)
-                    .ifPresent(refreshTokenRepository::delete);
         }
+
+        String email = jwtTokenProvider.getEmailFromToken(token);
+
+        refreshTokenRepository.findRefreshTokenByEmail(email)
+                .ifPresent(refreshTokenRepository::delete);
     }
 
     /**
@@ -202,6 +206,21 @@ public class UserService {
         }
 
         return KakaoExistenceResponse.from(false);
+    }
+
+    /**
+     * DB에서 유저를 삭제한다.
+     *
+     * @param userId
+     */
+    public void removeUser(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(NotFoundUserException::new);
+
+        refreshTokenRepository.findRefreshTokenByEmail(user.getEmail())
+                .ifPresent(refreshTokenRepository::delete);
+
+        userRepository.delete(user);
     }
 
     /**
