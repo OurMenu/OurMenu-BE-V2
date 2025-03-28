@@ -5,9 +5,11 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ourmenu.backend.global.exception.ErrorResponse;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 @AllArgsConstructor
 @JsonInclude(Include.NON_NULL)
+@Getter
 public class ApiResponse<T> {
 
     @JsonProperty(value = "isSuccess")
