@@ -45,8 +45,10 @@ public class MapController {
     @Operation(summary = "지도 검색", description = "지도에서 메뉴를 검색한다. 메뉴 이름과 가게 이름이 검색 범주에 포함된다.")
     @GetMapping("/maps/search")
     public ApiResponse<List<MapSearchDto>> findSearchOnMap(@RequestParam String title,
+                                                           @RequestParam(defaultValue = "127.0759204") double mapX,
+                                                           @RequestParam(defaultValue = "37.5423265") double mapY,
                                                            @AuthenticationPrincipal CustomUserDetails userDetails) {
-        List<MapSearchDto> response = mapService.findSearchResultOnMap(title, userDetails.getId());
+        List<MapSearchDto> response = mapService.findSearchResultOnMap(title, mapX, mapY, userDetails.getId());
         return ApiUtil.success(response);
     }
 

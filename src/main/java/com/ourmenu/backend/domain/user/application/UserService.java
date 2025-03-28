@@ -7,9 +7,11 @@ import com.ourmenu.backend.domain.user.domain.MealTime;
 import com.ourmenu.backend.domain.user.domain.RefreshToken;
 import com.ourmenu.backend.domain.user.domain.SignInType;
 import com.ourmenu.backend.domain.user.domain.User;
-import com.ourmenu.backend.domain.user.dto.request.EmailSignInRequest;
-import com.ourmenu.backend.domain.user.dto.request.EmailSignUpRequest;
-import com.ourmenu.backend.domain.user.dto.request.PasswordRequest;
+import com.ourmenu.backend.domain.user.dto.request.PostEmailRequest;
+import com.ourmenu.backend.domain.user.dto.request.SignInRequest;
+import com.ourmenu.backend.domain.user.dto.request.SignUpRequest;
+import com.ourmenu.backend.domain.user.dto.request.UpdatePasswordRequest;
+import com.ourmenu.backend.domain.user.dto.response.KakaoExistenceResponse;
 import com.ourmenu.backend.domain.user.dto.response.ReissueRequest;
 import com.ourmenu.backend.domain.user.dto.response.TokenDto;
 import com.ourmenu.backend.domain.user.dto.response.UserDto;
@@ -20,6 +22,7 @@ import com.ourmenu.backend.domain.user.exception.NotFoundUserException;
 import com.ourmenu.backend.domain.user.exception.NotMatchPasswordException;
 import com.ourmenu.backend.domain.user.exception.NotMatchTokenException;
 import com.ourmenu.backend.domain.user.exception.TokenExpiredExcpetion;
+import com.ourmenu.backend.domain.user.exception.UnsupportedSignInTypeException;
 import com.ourmenu.backend.global.util.JwtTokenProvider;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -42,82 +45,68 @@ public class UserService {
     private final JwtTokenProvider jwtTokenProvider;
     private final MealTimeService mealTimeService;
 
-
     /**
-     * 이메일 중복 검사, 비밀번호 암호화 및 User 객체를 생성 후 DB에 저장
+     * 이메일 중복 검사, 비밀번호 암호화 및 User 객체를 생성 후 DB에 저장한다
      *
-     * @param emailSignUpRequest User의 Email, Password, SignInType, MealTime 정보를 가진 Request
-     * @return 회원가입 완료
+     * @param request User의 Email, Password, SignInType, MealTime Request
      */
     @Transactional
-    public void signUp(EmailSignUpRequest emailSignUpRequest) {
+    public TokenDto signUp(SignUpRequest request) {
 
-        if (userRepository.findByEmail(emailSignUpRequest.getEmail()).isPresent()) {
-            throw new DuplicateEmailException();
-        }
+        User savedUser = saveUser(request);
 
-        String encodedPassword = passwordEncoder.encode(emailSignUpRequest.getPassword());
-
-        User user = User.builder()
-                .email(emailSignUpRequest.getEmail())
-                .password(encodedPassword)
-                .signInType(SignInType.EMAIL)
-                .build();
-        User savedUser = userRepository.save(user);
-
-        List<MealTime> mealTimes = mealTimeService.saveMealTimes(emailSignUpRequest.getMealTime(), user.getId());
+        List<MealTime> mealTimes = mealTimeService.saveMealTimes(request.getMealTime(), savedUser.getId());
 
         if (mealTimes.isEmpty() || mealTimes.size() > 4) {
             userRepository.delete(savedUser);
             throw new InvalidMealTimeCountException();
         }
+
+        TokenDto tokenDto = jwtTokenProvider.createAllToken(request.getEmail());
+        RefreshToken refreshToken = new RefreshToken(tokenDto.getRefreshToken(), request.getEmail());
+        refreshTokenRepository.save(refreshToken);
+        return tokenDto;
     }
 
     /**
-     * 로그인 로직 및 로그인 성공시 RefreshToken 갱신 후 JWT 정보 반환
+     * 로그인 로직 및 로그인 성공시 RefreshToken 갱신 후 JWT 정보 반환한다
      *
-     * @param emailSignInRequest User의 Email, Password, SignInType정보를 가진 Request
+     * @param request    User의 Email, Password, SignInType Request
      * @param response           HTTP Response
      * @return Token 정보
      */
-    public TokenDto signIn(EmailSignInRequest emailSignInRequest, HttpServletResponse response) {
+    public TokenDto signIn(SignInRequest request, HttpServletResponse response) {
+        Optional<User> optionalUser = userRepository.findByEmail(request.getEmail());
+        if (optionalUser.isEmpty() || !optionalUser.get().getSignInType().name().equals(request.getSignInType())) {
+            throw new NotFoundUserException();
+        }
 
-        User user = userRepository.findByEmail(emailSignInRequest.getEmail()).orElseThrow(
-                NotFoundUserException::new
-        );
+        User user = optionalUser.get();
 
-        if (!passwordEncoder.matches(emailSignInRequest.getPassword(), user.getPassword())) {
+        if (request.getSignInType().equals("EMAIL") && !passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new NotMatchPasswordException();
         }
 
-        TokenDto tokenDto = jwtTokenProvider.createAllToken(emailSignInRequest.getEmail());
-
-        Optional<RefreshToken> refreshToken = refreshTokenRepository.findRefreshTokenByEmail(
-                emailSignInRequest.getEmail());
+        TokenDto tokenDto = jwtTokenProvider.createAllToken(request.getEmail());
+        Optional<RefreshToken> refreshToken = refreshTokenRepository.findRefreshTokenByEmail(request.getEmail());
 
         if (refreshToken.isPresent()) {
             refreshTokenRepository.save(refreshToken.get().updateToken(tokenDto.getRefreshToken()));
         } else {
-            RefreshToken newToken = new RefreshToken(tokenDto.getRefreshToken(), emailSignInRequest.getEmail());
+            RefreshToken newToken = new RefreshToken(tokenDto.getRefreshToken(), request.getEmail());
             refreshTokenRepository.save(newToken);
         }
-
-        setHeader(response, tokenDto);
 
         return tokenDto;
     }
 
     /**
-     * Response Header에 AccessToken 값 반환
+     * 비밀번호를 변경한다.
      *
-     * @param response HTTP Response
-     * @param tokenDto JWT Token 정보
+     * @param request
+     * @param userDetails
      */
-    private void setHeader(HttpServletResponse response, TokenDto tokenDto) {
-        response.addHeader(JwtTokenProvider.ACCESS_TOKEN, tokenDto.getAccessToken());
-    }
-
-    public void changePassword(PasswordRequest request, CustomUserDetails userDetails) {
+    public void changePassword(UpdatePasswordRequest request, CustomUserDetails userDetails) {
         String rawPassword = request.getPassword();
         String encodedPassword = userDetails.getPassword();
 
@@ -133,6 +122,12 @@ public class UserService {
         userRepository.save(user);
     }
 
+    /**
+     * 유저 정보를 조회한다.
+     *
+     * @param userDetails
+     * @return
+     */
     public UserDto getUserInfo(CustomUserDetails userDetails) {
         User user = userRepository.findById(userDetails.getId())
                 .orElseThrow(NotFoundUserException::new);
@@ -142,6 +137,12 @@ public class UserService {
         return UserDto.of(user, mealTimes);
     }
 
+    /**
+     * RefreshToken을 사용해 토큰을 갱신한다.
+     *
+     * @param reissueRequest
+     * @return
+     */
     public TokenDto reissueToken(ReissueRequest reissueRequest) {
         String refreshToken = reissueRequest.getRefreshToken();
         String email = jwtTokenProvider.getEmailFromToken(refreshToken);
@@ -172,15 +173,114 @@ public class UserService {
         );
     }
 
-    public void signOut(HttpServletRequest request, Long userId) {
+    /**
+     * 해당 유저의 RefreshToken을 제거하며 로그아웃한다.
+     *
+     * @param request
+     */
+    public void signOut(HttpServletRequest request) {
         String token = request.getHeader("Authorization");
-
-        if (token != null && token.startsWith("Bearer ")) {
+        if (token.startsWith("Bearer ")) {
             token = token.substring(7);
-            String email = jwtTokenProvider.getEmailFromToken(token);
-
-            refreshTokenRepository.findRefreshTokenByEmail(email)
-                    .ifPresent(refreshTokenRepository::delete);
         }
+
+        String email = jwtTokenProvider.getEmailFromToken(token);
+
+        refreshTokenRepository.findRefreshTokenByEmail(email)
+                .ifPresent(refreshTokenRepository::delete);
+    }
+
+    /**
+     * 카카오 계정 존재 여부를 검증한다.
+     *
+     * @param request
+     * @return
+     */
+    public KakaoExistenceResponse validateKakaoUserExists(PostEmailRequest request) {
+        String email = request.getEmail();
+
+        Optional<User> optionalUser = userRepository.findByEmail(email);
+
+        if (optionalUser.isPresent() && optionalUser.get().getSignInType() == SignInType.KAKAO) {
+            return KakaoExistenceResponse.from(true);
+        }
+
+        return KakaoExistenceResponse.from(false);
+    }
+
+    /**
+     * DB에서 유저를 삭제한다.
+     *
+     * @param userId
+     */
+    public void removeUser(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(NotFoundUserException::new);
+
+        refreshTokenRepository.findRefreshTokenByEmail(user.getEmail())
+                .ifPresent(refreshTokenRepository::delete);
+
+        userRepository.delete(user);
+    }
+
+    /**
+     * 유저 정보를 저장한다.
+     *
+     * @param request
+     * @return
+     * @throws UnsupportedSignInTypeException 지원하지 않는 SignInType을 요청한 경우
+     */
+    private User saveUser(SignUpRequest request) {
+        if (request.getSignInType().equals("EMAIL")) {
+            return signUpByEmail(request);
+        }
+
+        if (request.getSignInType().equals("KAKAO")) {
+            return signUpByKakao(request);
+        }
+
+        throw new UnsupportedSignInTypeException();
+    }
+
+    /**
+     * Kakao 유저를 저장한다.
+     *
+     * @param request
+     * @return
+     */
+    private User signUpByKakao(SignUpRequest request) {
+        Optional<User> optionalUser = userRepository.findByEmail(request.getEmail());
+        if (optionalUser.isPresent() && optionalUser.get().getSignInType() == SignInType.KAKAO) {
+            throw new DuplicateEmailException();
+        }
+
+        User user = User.builder()
+                .email(request.getEmail())
+                .signInType(SignInType.KAKAO)
+                .build();
+
+        return userRepository.save(user);
+    }
+
+    /**
+     * Email 유저를 저장한다.
+     *
+     * @param request
+     * @return
+     */
+    private User signUpByEmail(SignUpRequest request) {
+        Optional<User> optionalUser = userRepository.findByEmail(request.getEmail());
+        if (optionalUser.isPresent() && optionalUser.get().getSignInType() == SignInType.EMAIL) {
+            throw new DuplicateEmailException();
+        }
+
+        String encodedPassword = passwordEncoder.encode(request.getPassword());
+
+        User user = User.builder()
+                .email(request.getEmail())
+                .password(encodedPassword)
+                .signInType(SignInType.EMAIL)
+                .build();
+        return userRepository.save(user);
     }
 }

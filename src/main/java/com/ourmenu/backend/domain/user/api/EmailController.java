@@ -1,7 +1,7 @@
 package com.ourmenu.backend.domain.user.api;
 
 import com.ourmenu.backend.domain.user.application.EmailService;
-import com.ourmenu.backend.domain.user.dto.request.EmailRequest;
+import com.ourmenu.backend.domain.user.dto.request.PostEmailRequest;
 import com.ourmenu.backend.domain.user.dto.request.VerifyEmailRequest;
 import com.ourmenu.backend.domain.user.dto.response.EmailResponse;
 import com.ourmenu.backend.domain.user.dto.response.TemporaryPasswordResponse;
@@ -26,7 +26,7 @@ public class EmailController {
 
     @Operation(summary = "이메일 인증 요청", description = "메일에 인증 메세지를 요청한다.")
     @PostMapping("")
-    private ApiResponse<EmailResponse> sendConfirmCode(@Valid @RequestBody EmailRequest request) {
+    private ApiResponse<EmailResponse> sendConfirmCode(@Valid @RequestBody PostEmailRequest request) {
         EmailResponse response = emailService.sendCodeToEmail(request);
         return ApiUtil.success(response);
     }
@@ -40,7 +40,7 @@ public class EmailController {
 
     @Operation(summary = "임시 비밀번호 발급", description = "임시 비밀번호를 발급한다.")
     @PostMapping("/temporary-password")
-    private ApiResponse<TemporaryPasswordResponse> sendTemporaryPassword(@RequestBody EmailRequest request) {
+    private ApiResponse<TemporaryPasswordResponse> sendTemporaryPassword(@RequestBody PostEmailRequest request) {
         TemporaryPasswordResponse response = emailService.sendTemporaryPassword(request);
         return ApiUtil.success(response);
     }

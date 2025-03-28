@@ -7,6 +7,9 @@ import com.ourmenu.backend.domain.store.domain.Map;
 import com.ourmenu.backend.domain.store.domain.Store;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -60,16 +63,17 @@ public class StoreService {
     }
 
     private Map saveMapIfNonExists(Double mapX, Double mapY) {
-        Optional<Map> optionalMap = mapRepository.findByMapXAndMapY(mapX, mapY);
+        Point location = new GeometryFactory().createPoint(new Coordinate(mapX, mapY));
+        location.setSRID(4326);
+        Optional<Map> optionalMap = mapRepository.findByLocation(location);
         Map map;
+
         if (optionalMap.isPresent()) {
             return optionalMap.get();
-
         }
 
         map = Map.builder()
-                .mapX(mapX)
-                .mapY(mapY)
+                .location(location)
                 .build();
         return mapRepository.save(map);
     }

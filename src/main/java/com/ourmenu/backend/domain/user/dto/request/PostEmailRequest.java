@@ -4,6 +4,6 @@ import lombok.*;
 
 @Getter
 @NoArgsConstructor
-public class EmailRequest {
+public class PostEmailRequest {
     private String email;
 }

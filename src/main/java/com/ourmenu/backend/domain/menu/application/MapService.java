@@ -24,6 +24,10 @@ import com.ourmenu.backend.domain.user.domain.User;
 import com.ourmenu.backend.domain.user.exception.NotFoundUserException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.PrecisionModel;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -92,15 +96,19 @@ public class MapService {
      * @param userId
      * @return
      */
-    public List<MapSearchDto> findSearchResultOnMap(String title, Long userId) {
+    public List<MapSearchDto> findSearchResultOnMap(String title, double mapX, double mapY, Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(NotFoundUserException::new);
 
-        List<Menu> menus = menuRepository.findMenusByUserId(userId);
+        GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
+        Point userLocation = geometryFactory.createPoint(new Coordinate(mapX, mapY));
 
-        return menus.stream()
-                .filter(m -> m.getStore().getTitle().contains(title)
-                        || m.getTitle().contains(title))
+        PageRequest pageRequest = PageRequest.of(0, 10);
+
+        Page<Menu> menusByUserIdOrderByDistance =
+                menuRepository.findByUserIdTitleContainingOrderByDistance(userId, title, userLocation, pageRequest);
+
+        return menusByUserIdOrderByDistance.stream()
                 .map(MapSearchDto::from)
                 .toList();
     }
