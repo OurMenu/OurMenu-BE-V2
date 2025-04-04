@@ -29,6 +29,8 @@ public interface MenuRepository extends JpaRepository<Menu, Long> {
 
     List<Menu> findByUserIdAndStoreId(Long userId, Long storeId);
 
+    int countByUserId(Long userId);
+
     @Query(value = """
             SELECT m.id AS menuId, m.title AS menuTitle, s.title AS storeTitle, s.address
             AS storeAddress, m.price AS menuPrice, m.created_at AS createdAt
@@ -261,6 +263,7 @@ public interface MenuRepository extends JpaRepository<Menu, Long> {
     List<MenuSimpleDto> findByUserIdAndTag(@Param("userId") Long userId,
                                            @Param("tag") String tag,
                                            Pageable pageable);
+
     @Query(
             value = "SELECT m.* FROM menu m " +
                     "JOIN store s ON m.store_id = s.id " +
