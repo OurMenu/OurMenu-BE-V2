@@ -13,6 +13,7 @@ import com.ourmenu.backend.domain.menu.dto.UpdateMenuFolderRequest;
 import com.ourmenu.backend.domain.menu.dto.UpdateMenuFolderResponse;
 import com.ourmenu.backend.domain.user.domain.CustomUserDetails;
 import com.ourmenu.backend.global.DatabaseCleaner;
+import com.ourmenu.backend.global.TestConfig;
 import com.ourmenu.backend.global.response.ApiResponse;
 import java.util.Collections;
 import java.util.List;
@@ -25,7 +26,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 
 @SpringBootTest
-@Import(MenuTestConfig.class)
+@Import({TestConfig.class, MenuTestConfig.class})
 @DisplayName("메뉴 폴더 통합 테스트")
 public class MenuFolderApiTest {
 
