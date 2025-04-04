@@ -12,10 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 public class DatabaseCleaner implements InitializingBean {
 
-    // 테이블 이름들을 저장할 List
     private final List<String> tables = new ArrayList<>();
 
-    // 엔티티 매니저를 선언한다
     @PersistenceContext
     private EntityManager entityManager;
 
@@ -23,13 +21,9 @@ public class DatabaseCleaner implements InitializingBean {
     @PostConstruct
     public void findDatabaseTableNames() {
         List<String> tableInfos = entityManager.createNativeQuery("SHOW TABLES").getResultList();
-        for (String tableInfo : tableInfos) {
-            String tableName = tableInfo;
-            tables.add(tableName);
-        }
+        tables.addAll(tableInfos);
     }
 
-    // 테이블을 초기화한다
     private void truncate() {
         entityManager.createNativeQuery(String.format("SET FOREIGN_KEY_CHECKS = %d", 0)).executeUpdate();
         for (String tableName : tables) {
@@ -39,7 +33,7 @@ public class DatabaseCleaner implements InitializingBean {
     }
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         findDatabaseTableNames();
     }
 
