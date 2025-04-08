@@ -4,7 +4,6 @@ import com.ourmenu.backend.domain.cache.domain.MenuFolderIcon;
 import com.ourmenu.backend.domain.menu.domain.MenuFolder;
 import com.ourmenu.backend.domain.user.domain.CustomUserDetails;
 import jakarta.persistence.EntityManager;
-import java.util.ArrayList;
 import java.util.List;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,13 +25,11 @@ public class MenuTestData {
                 .userId(customUserDetails.getId())
                 .build();
         entityManager.persist(menuFolder);
-        entityManager.flush();
         return menuFolder;
     }
 
     @Transactional
     public List<MenuFolder> createTestMenuFolderList(CustomUserDetails customUserDetails) {
-        List<MenuFolder> menuFolderList = new ArrayList<>();
         MenuFolder menuFolder1 = MenuFolder.builder()
                 .title("테스트 메뉴 폴더1")
                 .imgUrl(null)
@@ -57,6 +54,6 @@ public class MenuTestData {
         entityManager.persist(menuFolder1);
         entityManager.persist(menuFolder2);
         entityManager.persist(menuFolder3);
-        return menuFolderList;
+        return List.of(menuFolder1, menuFolder2, menuFolder3);
     }
 }
