@@ -1,6 +1,8 @@
 package com.ourmenu.backend.domain.menu.data;
 
 import com.ourmenu.backend.domain.cache.domain.MenuFolderIcon;
+import com.ourmenu.backend.domain.cache.domain.MenuPin;
+import com.ourmenu.backend.domain.menu.domain.Menu;
 import com.ourmenu.backend.domain.menu.domain.MenuFolder;
 import com.ourmenu.backend.domain.user.domain.CustomUserDetails;
 import jakarta.persistence.EntityManager;
@@ -55,5 +57,21 @@ public class MenuTestData {
         entityManager.persist(menuFolder2);
         entityManager.persist(menuFolder3);
         return List.of(menuFolder1, menuFolder2, menuFolder3);
+    }
+
+    @Transactional
+    public Menu createTestMenu(CustomUserDetails customUserDetails) {
+        Menu menu = Menu.builder()
+                .title("테스트 메뉴 비비큐")
+                .price(1000)
+                .pin(MenuPin.BBQ)
+                .memoTitle("테스트 메뉴 메모 제목")
+                .memoContent("테스트 메뉴 메모 내용")
+                .isCrawled(Boolean.FALSE)
+                .userId(customUserDetails.getId())
+                .build();
+
+        entityManager.persist(menu);
+        return menu;
     }
 }

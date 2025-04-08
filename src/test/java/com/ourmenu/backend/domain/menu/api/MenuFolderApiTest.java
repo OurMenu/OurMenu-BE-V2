@@ -16,7 +16,6 @@ import com.ourmenu.backend.global.DatabaseCleaner;
 import com.ourmenu.backend.global.TestConfig;
 import com.ourmenu.backend.global.response.ApiResponse;
 import java.util.Collections;
-import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -86,15 +85,18 @@ public class MenuFolderApiTest {
         SaveMenuFolderRequest saveMenuFolderRequest = new SaveMenuFolderRequest(null, menuFolderTitle,
                 MenuFolderIcon.ANGRY,
                 Collections.emptyList());
-        menuFolderController.saveMenuFolder(saveMenuFolderRequest, testCustomUserDetails);
+        ApiResponse<SaveMenuFolderResponse> saveMenuFolderResponseApiResponse = menuFolderController.saveMenuFolder(
+                saveMenuFolderRequest, testCustomUserDetails);
 
         //when
-        ApiResponse<List<GetMenuFolderResponse>> response = menuFolderController.getMenuFolder(testCustomUserDetails);
+        ApiResponse<GetMenuFolderResponse> response = menuFolderController.getMenuFolder(testCustomUserDetails);
 
         //then
         Assertions.assertThat(response.isSuccess()).isEqualTo(true);
-        Assertions.assertThat(response.getResponse().get(0).getIndex()).isEqualTo(2);
-        Assertions.assertThat(response.getResponse().get(1).getIndex()).isEqualTo(1);
+        Assertions.assertThat(response.getResponse().getMenuFolders().get(0).getIndex())
+                .isEqualTo(saveMenuFolderResponseApiResponse.getResponse().getIndex());
+        Assertions.assertThat(response.getResponse().getMenuFolders().get(1).getIndex())
+                .isEqualTo(testMenuFolder.getIndex());
     }
 
     @Test
@@ -104,12 +106,31 @@ public class MenuFolderApiTest {
         MenuFolder testMenuFolder = menuTestData.createTestMenuFolder(testCustomUserDetails);
 
         //when
-        ApiResponse<List<GetMenuFolderResponse>> response = menuFolderController.getMenuFolder(testCustomUserDetails);
+        ApiResponse<GetMenuFolderResponse> response = menuFolderController.getMenuFolder(testCustomUserDetails);
 
         //then
         Assertions.assertThat(response.isSuccess()).isEqualTo(true);
-        Assertions.assertThat(response.getResponse().size()).isEqualTo(1);
-        Assertions.assertThat(response.getResponse().get(0).getMenuFolderTitle()).isEqualTo(testMenuFolder.getTitle());
+        Assertions.assertThat(response.getResponse().getMenuFolders().size()).isEqualTo(1);
+        Assertions.assertThat(response.getResponse().getMenuFolders().get(0).getMenuFolderTitle())
+                .isEqualTo(testMenuFolder.getTitle());
+    }
+
+    @Test
+    void 메뉴판들을_조회시_유저_메뉴_전체_개수_를_확인_할_수_있다() {
+        //given
+        CustomUserDetails testCustomUserDetails = userTestData.createTestEmailUser();
+        MenuFolder testMenuFolder = menuTestData.createTestMenuFolder(testCustomUserDetails);
+        menuTestData.createTestMenu(testCustomUserDetails);
+
+        //when
+        ApiResponse<GetMenuFolderResponse> response = menuFolderController.getMenuFolder(testCustomUserDetails);
+
+        //then
+        Assertions.assertThat(response.isSuccess()).isEqualTo(true);
+        Assertions.assertThat(response.getResponse().getMenuFolders().size()).isEqualTo(1);
+        Assertions.assertThat(response.getResponse().getMenuCount()).isEqualTo(1);
+        Assertions.assertThat(response.getResponse().getMenuFolders().get(0).getMenuFolderTitle())
+                .isEqualTo(testMenuFolder.getTitle());
     }
 
     @Test
@@ -142,21 +163,21 @@ public class MenuFolderApiTest {
         menuTestData.createTestMenuFolderList(testCustomUserDetails);
 
         //when
-        ApiResponse<List<GetMenuFolderResponse>> preResponse = menuFolderController.getMenuFolder(
+        ApiResponse<GetMenuFolderResponse> preResponse = menuFolderController.getMenuFolder(
                 testCustomUserDetails);
         UpdateMenuFolderIndexRequest updateMenuFolderIndexRequest = new UpdateMenuFolderIndexRequest(3);
         ApiResponse<UpdateMenuFolderResponse> updateMenuFolderResponseApiResponse = menuFolderController.updateMenuFolderIndex(
                 1L, updateMenuFolderIndexRequest, testCustomUserDetails);
-        ApiResponse<List<GetMenuFolderResponse>> response = menuFolderController.getMenuFolder(testCustomUserDetails);
+        ApiResponse<GetMenuFolderResponse> response = menuFolderController.getMenuFolder(testCustomUserDetails);
 
         //then
         Assertions.assertThat(updateMenuFolderResponseApiResponse.isSuccess()).isEqualTo(true);
-        Assertions.assertThat(preResponse.getResponse().get(0).getMenuFolderTitle())
-                .isEqualTo(response.getResponse().get(1).getMenuFolderTitle());
-        Assertions.assertThat(preResponse.getResponse().get(1).getMenuFolderTitle())
-                .isEqualTo(response.getResponse().get(2).getMenuFolderTitle());
-        Assertions.assertThat(preResponse.getResponse().get(2).getMenuFolderTitle())
-                .isEqualTo(response.getResponse().get(0).getMenuFolderTitle());
+        Assertions.assertThat(preResponse.getResponse().getMenuFolders().get(0).getMenuFolderTitle())
+                .isEqualTo(response.getResponse().getMenuFolders().get(1).getMenuFolderTitle());
+        Assertions.assertThat(preResponse.getResponse().getMenuFolders().get(1).getMenuFolderTitle())
+                .isEqualTo(response.getResponse().getMenuFolders().get(2).getMenuFolderTitle());
+        Assertions.assertThat(preResponse.getResponse().getMenuFolders().get(2).getMenuFolderTitle())
+                .isEqualTo(response.getResponse().getMenuFolders().get(0).getMenuFolderTitle());
     }
 
     @Test
@@ -167,10 +188,10 @@ public class MenuFolderApiTest {
 
         //when
         menuFolderController.deleteMenuFolder(testMenuFolder.getId(), testCustomUserDetails);
-        ApiResponse<List<GetMenuFolderResponse>> response = menuFolderController.getMenuFolder(testCustomUserDetails);
+        ApiResponse<GetMenuFolderResponse> response = menuFolderController.getMenuFolder(testCustomUserDetails);
 
         //then
         Assertions.assertThat(response.isSuccess()).isEqualTo(true);
-        Assertions.assertThat(response.getResponse().size()).isEqualTo(0);
+        Assertions.assertThat(response.getResponse().getMenuFolders().size()).isEqualTo(0);
     }
 }
