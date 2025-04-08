@@ -14,8 +14,7 @@ public class DatabaseCleaner implements InitializingBean {
 
     @PersistenceContext
     private EntityManager entityManager;
-
-    @SuppressWarnings("unchecked")
+    
     @PostConstruct
     public void findDatabaseTableNames() {
         List<String> tableInfos = entityManager.createNativeQuery("SHOW TABLES").getResultList();
