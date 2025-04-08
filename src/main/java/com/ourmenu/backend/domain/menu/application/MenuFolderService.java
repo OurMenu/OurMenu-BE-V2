@@ -1,10 +1,12 @@
 package com.ourmenu.backend.domain.menu.application;
 
 import com.ourmenu.backend.domain.menu.dao.MenuFolderRepository;
+import com.ourmenu.backend.domain.menu.dao.MenuRepository;
 import com.ourmenu.backend.domain.menu.domain.MenuFolder;
 import com.ourmenu.backend.domain.menu.domain.MenuMenuFolder;
 import com.ourmenu.backend.domain.menu.dto.GetMenuFolderResponse;
 import com.ourmenu.backend.domain.menu.dto.MenuFolderDto;
+import com.ourmenu.backend.domain.menu.dto.MenuFolderResponse;
 import com.ourmenu.backend.domain.menu.dto.SaveMenuFolderResponse;
 import com.ourmenu.backend.domain.menu.dto.UpdateMenuFolderResponse;
 import com.ourmenu.backend.domain.menu.exception.ForbiddenMenuFolderException;
@@ -25,6 +27,7 @@ public class MenuFolderService {
     private final MenuFolderRepository menuFolderRepository;
     private final MenuMenuFolderService menuMenuFolderService;
     private final DefaultImgConverter defaultImgConvertor;
+    private final MenuRepository menuRepository;
 
     /**
      * 메뉴 폴더 저장
@@ -129,19 +132,21 @@ public class MenuFolderService {
      * 유저 메뉴판 정보 조회
      *
      * @param userId
-     * @return index 기준 내림 차순 메뉴판 리스
+     * @return index 기준 내림 차순 메뉴판 리스트
      */
     @Transactional
-    public List<GetMenuFolderResponse> findAllMenuFolder(Long userId) {
+    public GetMenuFolderResponse findAllMenuFolder(Long userId) {
         List<MenuFolder> menuFolders = menuFolderRepository.findAllByUserIdOrderByIndexDesc(userId);
 
-        return menuFolders.stream()
+        List<MenuFolderResponse> menuFolderResponses = menuFolders.stream()
                 .map(menuFolder -> {
                     List<MenuMenuFolder> menuMenuFolders = menuMenuFolderService.findAllByMenuFolderId(
                             menuFolder.getId());
-                    return GetMenuFolderResponse.of(menuFolder, menuMenuFolders,
+                    return MenuFolderResponse.of(menuFolder, menuMenuFolders,
                             defaultImgConvertor.getDefaultMenuFolderImgUrl());
                 }).toList();
+        int menuCount = menuRepository.countByUserId(userId);
+        return GetMenuFolderResponse.of(menuCount, menuFolderResponses);
     }
 
     @Transactional
