@@ -13,7 +13,6 @@ import com.ourmenu.backend.global.response.ApiResponse;
 import com.ourmenu.backend.global.response.util.ApiUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -37,9 +36,9 @@ public class MenuFolderController {
 
     @Operation(summary = "메뉴판 조회", description = "메뉴판 리스트를 조회한다.")
     @GetMapping
-    public ApiResponse<List<GetMenuFolderResponse>> getMenuFolder(
+    public ApiResponse<GetMenuFolderResponse> getMenuFolder(
             @AuthenticationPrincipal CustomUserDetails userDetails) {
-        List<GetMenuFolderResponse> response = menuFolderService.findAllMenuFolder(userDetails.getId());
+        GetMenuFolderResponse response = menuFolderService.findAllMenuFolder(userDetails.getId());
         return ApiUtil.success(response);
     }
 
