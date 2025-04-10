@@ -174,7 +174,7 @@ public class MenuFolderService {
         return saveMenuFolder;
     }
 
-    private MenuFolder findOne(Long userId, Long menuFolderId) {
+    public MenuFolder findOne(Long userId, Long menuFolderId) {
         MenuFolder menuFolder = menuFolderRepository.findById(menuFolderId)
                 .orElseThrow(NotFoundMenuFolderException::new);
         Long findUserId = menuFolder.getUserId();
