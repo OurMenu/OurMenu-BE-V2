@@ -16,7 +16,7 @@ public class MenuFolderResponse {
 
     private Long menuFolderId;
     private String menuFolderTitle;
-    private String menuFolderUrl;
+    private String menuFolderImgUrl;
     private MenuFolderIcon menuFolderIcon;
     private List<Long> menuIds;
     private int index;
@@ -34,7 +34,7 @@ public class MenuFolderResponse {
         return MenuFolderResponse.builder()
                 .menuFolderId(menuFolder.getId())
                 .menuFolderTitle(menuFolder.getTitle())
-                .menuFolderUrl(menuFolderImgUrl)
+                .menuFolderImgUrl(menuFolderImgUrl)
                 .menuFolderIcon(menuFolder.getIcon())
                 .menuIds(menuIds)
                 .index(menuFolder.getIndex())
