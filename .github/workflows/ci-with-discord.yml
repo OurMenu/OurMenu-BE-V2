@@ -65,6 +65,7 @@ jobs:
           apt-get update && apt-get install sudo -y
 
       - name: sudo 설치 테스트한다
+        if: ${{ env.ACT }}
         run: |
           sudo id
 
@@ -74,10 +75,7 @@ jobs:
           cat infra/sql/ddl.sql
 
       - name: DDL 파일을 실행하여 테이블을 생성한다.
-        if: ${{ !github.event.ACT }}
         run: |
-          sudo apt-get update
-          echo "DDL insert"
           sudo apt-get install -y default-mysql-client
           mysql -h 127.0.0.1 -P 3307 -uroot -ptestdb testdb --verbose < infra/sql/ddl.sql
 
