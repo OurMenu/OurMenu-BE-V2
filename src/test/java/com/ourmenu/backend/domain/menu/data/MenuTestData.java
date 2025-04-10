@@ -35,7 +35,7 @@ public class MenuTestData {
     }
 
     @Transactional
-    public List<MenuFolder> createTestMenuFolderList(CustomUserDetails customUserDetails) {
+    public List<MenuFolder> createTestMenuFolders(CustomUserDetails customUserDetails) {
         MenuFolder menuFolder1 = MenuFolder.builder()
                 .title("테스트 메뉴 폴더1")
                 .imgUrl(null)
