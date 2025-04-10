@@ -25,7 +25,7 @@ jobs:
       mysql:
         image: mysql:8.0
         ports:
-          - 3306:3306
+          - 3307:3306
         env:
           MYSQL_DATABASE: testdb
           MYSQL_ROOT_PASSWORD: testdb
@@ -34,6 +34,16 @@ jobs:
           --health-interval=10s
           --health-timeout=5s
           --health-retries=3
+
+      redis:
+        image: redis
+        ports:
+          - 6380:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
       - uses: actions/checkout@v4
@@ -49,13 +59,35 @@ jobs:
       - name: Gradle 를 준비한다.
         uses: gradle/actions/setup-gradle@417ae3ccd767c252f5661f1ace9f835f9654f2b5 # v3.1.0
 
+      - name: ACT 환경에 대해서 패키지를 업데이터 & 설치한다
+        if: ${{ env.ACT }}
+        run: |
+          apt-get update && apt-get install sudo -y
+
+      - name: sudo 설치 테스트한다
+        run: |
+          sudo id
+
+      - name: DDL 경로 확인
+        run: |
+          ls -al infra/sql/
+          cat infra/sql/ddl.sql
+
+      - name: DDL 파일을 실행하여 테이블을 생성한다.
+        if: ${{ !github.event.ACT }}
+        run: |
+          sudo apt-get update
+          echo "DDL insert"
+          sudo apt-get install -y default-mysql-client
+          mysql -h 127.0.0.1 -P 3307 -uroot -ptestdb testdb --verbose < infra/sql/ddl.sql
+
       - name: 빌드한다.
         env:
-          SPRING_DATASOURCE_URL: jdbc:mysql://127.0.0.1:3306/testdb
+          SPRING_DATASOURCE_URL: jdbc:mysql://127.0.0.1:3307/testdb
           SPRING_DATASOURCE_USERNAME: root
           SPRING_DATASOURCE_PASSWORD: testdb
-          SPRING_JPA_HIBERNATE_DDL_AUTO: update
-          SPRING_DATA_REDIS_HOST: localhost
+          SPRING_DATA_REDIS_HOST: 127.0.0.1
+          SPRING_DATA_REDIS_PORT: 6380
           SPRING_DATA_REDIS_PASSWORD:
           MONGO_URL: ${{ secrets.MONGO_URL }}
           S3_BUCKET: ${{ secrets.S3_BUCKET }}
