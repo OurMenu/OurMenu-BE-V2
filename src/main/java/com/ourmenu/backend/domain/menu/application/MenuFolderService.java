@@ -134,7 +134,6 @@ public class MenuFolderService {
      * @param userId
      * @return index 기준 내림 차순 메뉴판 리스트
      */
-    @Transactional
     public GetMenuFolderResponse findAllMenuFolder(Long userId) {
         List<MenuFolder> menuFolders = menuFolderRepository.findAllByUserIdOrderByIndexDesc(userId);
 
@@ -149,9 +148,18 @@ public class MenuFolderService {
         return GetMenuFolderResponse.of(menuCount, menuFolderResponses);
     }
 
-    @Transactional
     public List<MenuFolder> findAllByMenuId(Long menuId) {
         return menuFolderRepository.findMenuFoldersByMenuId(menuId);
+    }
+
+    public MenuFolder findOne(Long userId, Long menuFolderId) {
+        MenuFolder menuFolder = menuFolderRepository.findById(menuFolderId)
+                .orElseThrow(NotFoundMenuFolderException::new);
+        Long findUserId = menuFolder.getUserId();
+        if (!userId.equals(findUserId)) {
+            throw new ForbiddenMenuFolderException();
+        }
+        return menuFolder;
     }
 
     /**
@@ -172,15 +180,5 @@ public class MenuFolderService {
         MenuFolder saveMenuFolder = menuFolderRepository.save(menuFolder);
         menuMenuFolderService.saveMenuMenuFolders(menuFolderDto.getMenuIds(), menuFolder.getUserId(), saveMenuFolder);
         return saveMenuFolder;
-    }
-
-    private MenuFolder findOne(Long userId, Long menuFolderId) {
-        MenuFolder menuFolder = menuFolderRepository.findById(menuFolderId)
-                .orElseThrow(NotFoundMenuFolderException::new);
-        Long findUserId = menuFolder.getUserId();
-        if (!userId.equals(findUserId)) {
-            throw new ForbiddenMenuFolderException();
-        }
-        return menuFolder;
     }
 }
