@@ -160,7 +160,7 @@ public class MenuFolderApiTest {
     void 메뉴_폴더_순서를_변경_할_수_있다() {
         //given
         CustomUserDetails testCustomUserDetails = userTestData.createTestEmailUser();
-        menuTestData.createTestMenuFolderList(testCustomUserDetails);
+        menuTestData.createTestMenuFolders(testCustomUserDetails);
 
         //when
         ApiResponse<GetMenuFolderResponse> preResponse = menuFolderController.getMenuFolder(

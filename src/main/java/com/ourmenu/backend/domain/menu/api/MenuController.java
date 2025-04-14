@@ -60,12 +60,12 @@ public class MenuController {
 
     @Operation(summary = "메뉴판 메뉴 리스트 조회", description = "메뉴판의 메뉴 리스트를 조회한다. 필터를 사용할 수 있다")
     @GetMapping("/menu-folders/{menuFolderId}/menus")
-    public ApiResponse<List<GetMenuFolderMenuResponse>> getMenuFolderMenus(
+    public ApiResponse<GetMenuFolderMenuResponse> getMenuFolderMenus(
             @PathVariable("menuFolderId") Long menuFolderId,
             @RequestParam(value = "sortOrder") SortOrder sortOrder,
             @AuthenticationPrincipal CustomUserDetails userDetails) {
         MenuFilterDto menuFilterDto = MenuFilterDto.from(sortOrder);
-        List<GetMenuFolderMenuResponse> response = menuService.findMenusByMenuFolder(userDetails.getId(),
+        GetMenuFolderMenuResponse response = menuService.findMenusByMenuFolder(userDetails.getId(),
                 menuFolderId, menuFilterDto);
         return ApiUtil.success(response);
     }

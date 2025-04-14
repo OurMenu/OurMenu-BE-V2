@@ -1,6 +1,7 @@
 package com.ourmenu.backend.domain.menu.config;
 
 import com.ourmenu.backend.domain.menu.data.MenuTestData;
+import com.ourmenu.backend.domain.menu.data.StoreTestData;
 import com.ourmenu.backend.domain.menu.data.UserTestData;
 import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,11 @@ public class MenuTestConfig {
 
     @Bean
     public MenuTestData menuTestData() {
-        return new MenuTestData(entityManager);
+        return new MenuTestData(entityManager, storeTestData());
+    }
+
+    @Bean
+    public StoreTestData storeTestData() {
+        return new StoreTestData(entityManager);
     }
 }
