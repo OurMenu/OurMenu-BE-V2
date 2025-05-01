@@ -4,15 +4,18 @@ import com.ourmenu.backend.domain.cache.domain.MenuPin;
 import com.ourmenu.backend.domain.menu.config.MenuTestConfig;
 import com.ourmenu.backend.domain.menu.data.MenuTestData;
 import com.ourmenu.backend.domain.menu.data.UserTestData;
+import com.ourmenu.backend.domain.menu.domain.Menu;
 import com.ourmenu.backend.domain.menu.domain.MenuFolder;
 import com.ourmenu.backend.domain.menu.domain.SortOrder;
 import com.ourmenu.backend.domain.menu.dto.GetMenuFolderMenuResponse;
+import com.ourmenu.backend.domain.menu.dto.GetSimpleMenuResponse;
 import com.ourmenu.backend.domain.menu.dto.SaveMenuRequest;
 import com.ourmenu.backend.domain.menu.dto.SaveMenuResponse;
 import com.ourmenu.backend.domain.user.domain.CustomUserDetails;
 import com.ourmenu.backend.global.DatabaseCleaner;
 import com.ourmenu.backend.global.TestConfig;
 import com.ourmenu.backend.global.response.ApiResponse;
+import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -38,15 +41,17 @@ public class MenuApiTest {
     @Autowired
     DatabaseCleaner databaseCleaner;
 
+    CustomUserDetails testCustomUserDetails;
+
     @BeforeEach
     void setUp() {
         databaseCleaner.clear();
+        testCustomUserDetails = userTestData.createTestEmailUser();
     }
 
     @Test
     void 메뉴판_정보_및_메뉴판에_속한_메뉴들을_조회_할_수_있다() {
         //given
-        CustomUserDetails testCustomUserDetails = userTestData.createTestEmailUser();
         MenuFolder testMenuFolder = menuTestData.createMenuFolderWithMenu(testCustomUserDetails);
 
         //when
@@ -63,7 +68,6 @@ public class MenuApiTest {
     @Test
     void 메뉴를_등록_할_수_있다() {
         //given
-        CustomUserDetails testCustomUserDetails = userTestData.createTestEmailUser();
         String menuMemoTitle = "비비큐";
         SaveMenuRequest request = new SaveMenuRequest(null, "테스트 메뉴", 1000, MenuPin.BBQ, menuMemoTitle,
                 "맛있다", null, "31060661", true, null);
@@ -78,4 +82,17 @@ public class MenuApiTest {
         Assertions.assertThat(response.getResponse().getMenuMemoTitle()).isEqualTo(menuMemoTitle);
     }
 
+    @Test
+    void 메뉴를_전체_조회_할_수_있다() {
+        //given
+        List<Menu> preStoredMenus = menuTestData.createTestMenusWithStore(testCustomUserDetails);
+
+        //when
+        ApiResponse<List<GetSimpleMenuResponse>> response = menuController.getMenus(null, null, null, 0, 10,
+                SortOrder.CREATED_AT_DESC, testCustomUserDetails);
+
+        //then
+        Assertions.assertThat(response.isSuccess()).isTrue();
+        Assertions.assertThat(response.getResponse().size()).isEqualTo(preStoredMenus.size());
+    }
 }
