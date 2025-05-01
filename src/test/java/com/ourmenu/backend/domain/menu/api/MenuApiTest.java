@@ -1,11 +1,14 @@
 package com.ourmenu.backend.domain.menu.api;
 
+import com.ourmenu.backend.domain.cache.domain.MenuPin;
 import com.ourmenu.backend.domain.menu.config.MenuTestConfig;
 import com.ourmenu.backend.domain.menu.data.MenuTestData;
 import com.ourmenu.backend.domain.menu.data.UserTestData;
 import com.ourmenu.backend.domain.menu.domain.MenuFolder;
 import com.ourmenu.backend.domain.menu.domain.SortOrder;
 import com.ourmenu.backend.domain.menu.dto.GetMenuFolderMenuResponse;
+import com.ourmenu.backend.domain.menu.dto.SaveMenuRequest;
+import com.ourmenu.backend.domain.menu.dto.SaveMenuResponse;
 import com.ourmenu.backend.domain.user.domain.CustomUserDetails;
 import com.ourmenu.backend.global.DatabaseCleaner;
 import com.ourmenu.backend.global.TestConfig;
@@ -56,4 +59,23 @@ public class MenuApiTest {
         Assertions.assertThat(response.getResponse().getMenuFolderTitle()).isEqualTo(testMenuFolder.getTitle());
         Assertions.assertThat(response.getResponse().getMenus().size()).isEqualTo(3);
     }
+
+    @Test
+    void 메뉴를_등록_할_수_있다() {
+        //given
+        CustomUserDetails testCustomUserDetails = userTestData.createTestEmailUser();
+        String menuMemoTitle = "비비큐";
+        SaveMenuRequest request = new SaveMenuRequest(null, "테스트 메뉴", 1000, MenuPin.BBQ, menuMemoTitle,
+                "맛있다", null, "31060661", true, null);
+
+        //when
+        ApiResponse<SaveMenuResponse> response = menuController.saveMenu(request,
+                testCustomUserDetails);
+
+        //then
+        Assertions.assertThat(response.isSuccess()).isTrue();
+        Assertions.assertThat(response.getResponse().getMenuPin()).isEqualTo(MenuPin.BBQ);
+        Assertions.assertThat(response.getResponse().getMenuMemoTitle()).isEqualTo(menuMemoTitle);
+    }
+
 }
