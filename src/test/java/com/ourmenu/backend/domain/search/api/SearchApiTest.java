@@ -2,6 +2,8 @@ package com.ourmenu.backend.domain.search.api;
 
 import com.ourmenu.backend.domain.menu.config.MenuTestConfig;
 import com.ourmenu.backend.domain.menu.data.UserTestData;
+import com.ourmenu.backend.domain.search.dto.GetSearchHistoryResponse;
+import com.ourmenu.backend.domain.search.dto.GetStoreResponse;
 import com.ourmenu.backend.domain.search.dto.SearchStoreResponse;
 import com.ourmenu.backend.domain.user.domain.CustomUserDetails;
 import com.ourmenu.backend.global.DatabaseCleaner;
@@ -50,5 +52,42 @@ public class SearchApiTest {
         //then
         Assertions.assertThat(response.isSuccess()).isTrue();
         Assertions.assertThat(response.getResponse().size()).isBetween(1, 5);
+    }
+
+    @Test
+    void 검색한_식당을_상세조회_할_수_있다() {
+        //given
+        String searchWord = "고기";
+        String storeId = getStoreIds(searchWord).stream().findFirst().orElseThrow(() -> new RuntimeException("테스트 실패"));
+
+        //when
+        ApiResponse<GetStoreResponse> response = searchController.getStore(true, storeId, testCustomUserDetails);
+
+        //then
+        Assertions.assertThat(response.isSuccess()).isTrue();
+    }
+
+    @Test
+    void 검색_기록을_조회_할_수_있다() {
+        //given
+        String searchWord = "고기";
+        String storeId = getStoreIds(searchWord).stream().findFirst().orElseThrow(() -> new RuntimeException("테스트 실패"));
+        searchController.getStore(true, storeId, testCustomUserDetails);
+
+        //when
+        ApiResponse<List<GetSearchHistoryResponse>> response = searchController.getSearchHistory(
+                testCustomUserDetails);
+
+        //then
+        Assertions.assertThat(response.isSuccess()).isTrue();
+        Assertions.assertThat(response.getResponse().size()).isEqualTo(1);
+    }
+
+    private List<String> getStoreIds(String query) {
+        ApiResponse<List<SearchStoreResponse>> response = searchController.searchStore(query, 127.0759204,
+                37.5423265);
+        return response.getResponse().stream()
+                .map(SearchStoreResponse::getStoreId)
+                .toList();
     }
 }
