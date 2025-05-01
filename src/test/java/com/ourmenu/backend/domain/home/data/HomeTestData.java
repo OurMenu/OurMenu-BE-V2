@@ -37,7 +37,7 @@ public class HomeTestData {
     /**
      * 홈 화면에 필요한 테스트 데이터를 저장한다
      *
-     * @param userId
+     * @param customUserDetails
      */
     @Transactional
     public void createTestHomeMenu(CustomUserDetails customUserDetails) {
@@ -59,8 +59,29 @@ public class HomeTestData {
                 .build();
         entityManager.persist(store);
 
-        Menu menu1 = Menu.builder()
-                .title("테스트 메뉴1 비비큐")
+        createTestMenu("테스트 메뉴1 비비큐", MenuPin.BBQ, Tag.PROMISE, store, customUserDetails);
+        createTestMenu("테스트 메뉴2 빵", MenuPin.BREAD, Tag.PROMISE, store, customUserDetails);
+
+        HomeQuestionAnswer homeQuestionAnswer = HomeQuestionAnswer.builder()
+                .question(Question.FEEL)
+                .userId(customUserDetails.getId())
+                .build();
+        entityManager.persist(homeQuestionAnswer);
+    }
+
+    /**
+     * 메뉴와 관련된 엔티티를 모두 저장
+     *
+     * @param title
+     * @param menuPin
+     * @param tag
+     * @param store
+     * @param customUserDetails
+     */
+    private void createTestMenu(String title, MenuPin menuPin, Tag tag, Store store,
+                                CustomUserDetails customUserDetails) {
+        Menu menu = Menu.builder()
+                .title(title)
                 .price(1000)
                 .pin(MenuPin.BBQ)
                 .memoTitle("테스트 메뉴1 메모 제목")
@@ -70,37 +91,13 @@ public class HomeTestData {
                 .userId(customUserDetails.getId())
                 .build();
 
-        Menu menu2 = Menu.builder()
-                .title("테스트 메뉴2 빵")
-                .price(2000)
-                .pin(MenuPin.BREAD)
-                .memoTitle("테스트 메뉴2 메모 제목")
-                .memoContent("테스트 메뉴2 메모 내용")
-                .store(store)
-                .isCrawled(Boolean.FALSE)
-                .userId(customUserDetails.getId())
+        entityManager.persist(menu);
+
+        MenuTag menuTag = MenuTag.builder()
+                .menuId(menu.getId())
+                .tag(tag)
                 .build();
 
-        entityManager.persist(menu1);
-        entityManager.persist(menu2);
-
-        MenuTag menuTag1 = MenuTag.builder()
-                .menuId(menu1.getId())
-                .tag(Tag.PROMISE)
-                .build();
-
-        MenuTag menuTag2 = MenuTag.builder()
-                .menuId(menu2.getId())
-                .tag(Tag.PROMISE)
-                .build();
-
-        entityManager.persist(menuTag1);
-        entityManager.persist(menuTag2);
-
-        HomeQuestionAnswer homeQuestionAnswer = HomeQuestionAnswer.builder()
-                .question(Question.FEEL)
-                .userId(customUserDetails.getId())
-                .build();
-        entityManager.persist(homeQuestionAnswer);
+        entityManager.persist(menuTag);
     }
 }
