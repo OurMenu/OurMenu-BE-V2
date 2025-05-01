@@ -11,6 +11,7 @@ import com.ourmenu.backend.domain.menu.dto.GetMenuFolderMenuResponse;
 import com.ourmenu.backend.domain.menu.dto.GetSimpleMenuResponse;
 import com.ourmenu.backend.domain.menu.dto.SaveMenuRequest;
 import com.ourmenu.backend.domain.menu.dto.SaveMenuResponse;
+import com.ourmenu.backend.domain.menu.exception.NotFoundMenuException;
 import com.ourmenu.backend.domain.user.domain.CustomUserDetails;
 import com.ourmenu.backend.global.DatabaseCleaner;
 import com.ourmenu.backend.global.TestConfig;
@@ -94,5 +95,19 @@ public class MenuApiTest {
         //then
         Assertions.assertThat(response.isSuccess()).isTrue();
         Assertions.assertThat(response.getResponse().size()).isEqualTo(preStoredMenus.size());
+    }
+
+    @Test
+    void 메뉴를_삭제할_수_있다() {
+        //given
+        Menu testMenu = menuTestData.createTestMenu(testCustomUserDetails);
+
+        //when
+        ApiResponse<Void> response = menuController.deleteMenu(testMenu.getId(), testCustomUserDetails);
+
+        //then
+        Assertions.assertThat(response.isSuccess()).isTrue();
+        Assertions.assertThatThrownBy(() -> menuController.getMenu(testMenu.getId(), testCustomUserDetails))
+                .isInstanceOf(NotFoundMenuException.class);
     }
 }
