@@ -65,12 +65,15 @@ public class MenuTestData {
 
     @Transactional
     public Menu createTestMenu(CustomUserDetails customUserDetails) {
+        Store store = storeTestData.createTestStore();
+
         Menu menu = Menu.builder()
                 .title("테스트 메뉴 비비큐")
                 .price(1000)
                 .pin(MenuPin.BBQ)
                 .memoTitle("테스트 메뉴 메모 제목")
                 .memoContent("테스트 메뉴 메모 내용")
+                .store(store)
                 .isCrawled(Boolean.FALSE)
                 .userId(customUserDetails.getId())
                 .build();
