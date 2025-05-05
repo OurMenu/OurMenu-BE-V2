@@ -2,13 +2,14 @@ package com.ourmenu.backend.domain.menu.api;
 
 import com.ourmenu.backend.domain.menu.config.MenuTestConfig;
 import com.ourmenu.backend.domain.menu.data.MenuTestData;
-import com.ourmenu.backend.domain.menu.data.UserTestData;
 import com.ourmenu.backend.domain.menu.domain.MenuFolder;
 import com.ourmenu.backend.domain.menu.domain.SortOrder;
 import com.ourmenu.backend.domain.menu.dto.GetMenuFolderMenuResponse;
 import com.ourmenu.backend.domain.user.domain.CustomUserDetails;
 import com.ourmenu.backend.global.DatabaseCleaner;
 import com.ourmenu.backend.global.TestConfig;
+import com.ourmenu.backend.global.config.GlobalDataConfig;
+import com.ourmenu.backend.global.data.GlobalUserTestData;
 import com.ourmenu.backend.global.response.ApiResponse;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,7 +20,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 
 @SpringBootTest
-@Import({TestConfig.class, MenuTestConfig.class})
+@Import({GlobalDataConfig.class, TestConfig.class, MenuTestConfig.class})
 @DisplayName("메뉴 통합 테스트")
 public class MenuApiTest {
 
@@ -27,7 +28,7 @@ public class MenuApiTest {
     MenuController menuController;
 
     @Autowired
-    UserTestData userTestData;
+    GlobalUserTestData userTestData;
 
     @Autowired
     MenuTestData menuTestData;

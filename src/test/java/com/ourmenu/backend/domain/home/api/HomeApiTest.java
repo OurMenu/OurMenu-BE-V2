@@ -2,7 +2,6 @@ package com.ourmenu.backend.domain.home.api;
 
 import com.ourmenu.backend.domain.home.config.HomeTestConfig;
 import com.ourmenu.backend.domain.home.data.HomeTestData;
-import com.ourmenu.backend.domain.home.data.UserTestData;
 import com.ourmenu.backend.domain.home.domain.Answer;
 import com.ourmenu.backend.domain.home.dto.GetHomeRecommendResponse;
 import com.ourmenu.backend.domain.home.dto.SaveAndGetQuestionRequest;
@@ -10,6 +9,8 @@ import com.ourmenu.backend.domain.home.dto.SaveAnswerRequest;
 import com.ourmenu.backend.domain.user.domain.CustomUserDetails;
 import com.ourmenu.backend.global.DatabaseCleaner;
 import com.ourmenu.backend.global.TestConfig;
+import com.ourmenu.backend.global.config.GlobalDataConfig;
+import com.ourmenu.backend.global.data.GlobalUserTestData;
 import com.ourmenu.backend.global.response.ApiResponse;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,7 +21,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 
 @SpringBootTest
-@Import({TestConfig.class, HomeTestConfig.class})
+@Import({GlobalDataConfig.class, TestConfig.class, HomeTestConfig.class})
 @DisplayName("홈 통합 테스트")
 public class HomeApiTest {
 
@@ -31,7 +32,7 @@ public class HomeApiTest {
     HomeTestData homeTestData;
 
     @Autowired
-    UserTestData userTestData;
+    GlobalUserTestData userTestData;
 
     @Autowired
     DatabaseCleaner databaseCleaner;

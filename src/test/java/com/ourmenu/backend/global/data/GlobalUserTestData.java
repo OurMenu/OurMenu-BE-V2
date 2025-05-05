@@ -1,4 +1,4 @@
-package com.ourmenu.backend.domain.home.data;
+package com.ourmenu.backend.global.data;
 
 import com.ourmenu.backend.domain.user.domain.CustomUserDetails;
 import com.ourmenu.backend.domain.user.domain.MealTime;
@@ -8,11 +8,11 @@ import jakarta.persistence.EntityManager;
 import java.time.LocalTime;
 import org.springframework.transaction.annotation.Transactional;
 
-public class UserTestData {
+public class GlobalUserTestData {
 
     private EntityManager entityManager;
 
-    public UserTestData(EntityManager entityManager) {
+    public GlobalUserTestData(EntityManager entityManager) {
         this.entityManager = entityManager;
     }
 
@@ -32,19 +32,6 @@ public class UserTestData {
     }
 
     @Transactional
-    public CustomUserDetails createTestEmailUserWithMealTime() {
-        CustomUserDetails testEmailUser = createTestEmailUser();
-
-        MealTime mealTime = MealTime.builder()
-                .userId(testEmailUser.getId())
-                .mealTime(LocalTime.NOON)
-                .build();
-        entityManager.persist(mealTime);
-
-        return testEmailUser;
-    }
-
-    @Transactional
     public CustomUserDetails createTestKakaoUser() {
         String email = "testKakaoUser@naver.com";
         String password = "password1!";
@@ -56,5 +43,18 @@ public class UserTestData {
         entityManager.persist(user);
         entityManager.flush();
         return new CustomUserDetails(user.getId(), email, password);
+    }
+
+    @Transactional
+    public CustomUserDetails createTestEmailUserWithMealTime() {
+        CustomUserDetails testEmailUser = createTestEmailUser();
+
+        MealTime mealTime = MealTime.builder()
+                .userId(testEmailUser.getId())
+                .mealTime(LocalTime.NOON)
+                .build();
+        entityManager.persist(mealTime);
+
+        return testEmailUser;
     }
 }
