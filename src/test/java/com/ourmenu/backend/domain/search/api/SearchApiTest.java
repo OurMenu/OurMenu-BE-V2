@@ -1,13 +1,14 @@
 package com.ourmenu.backend.domain.search.api;
 
 import com.ourmenu.backend.domain.menu.config.MenuTestConfig;
-import com.ourmenu.backend.domain.menu.data.UserTestData;
 import com.ourmenu.backend.domain.search.dto.GetSearchHistoryResponse;
 import com.ourmenu.backend.domain.search.dto.GetStoreResponse;
 import com.ourmenu.backend.domain.search.dto.SearchStoreResponse;
 import com.ourmenu.backend.domain.user.domain.CustomUserDetails;
 import com.ourmenu.backend.global.DatabaseCleaner;
 import com.ourmenu.backend.global.TestConfig;
+import com.ourmenu.backend.global.config.GlobalDataConfig;
+import com.ourmenu.backend.global.data.GlobalUserTestData;
 import com.ourmenu.backend.global.response.ApiResponse;
 import java.util.List;
 import org.assertj.core.api.Assertions;
@@ -19,7 +20,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 
 @SpringBootTest
-@Import({TestConfig.class, MenuTestConfig.class})
+@Import({GlobalDataConfig.class, TestConfig.class, MenuTestConfig.class})
 @DisplayName("검색 통합 테스트")
 public class SearchApiTest {
 
@@ -27,7 +28,7 @@ public class SearchApiTest {
     SearchController searchController;
 
     @Autowired
-    UserTestData userTestData;
+    GlobalUserTestData userTestData;
 
     @Autowired
     DatabaseCleaner databaseCleaner;

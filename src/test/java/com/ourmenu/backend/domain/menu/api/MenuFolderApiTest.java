@@ -3,7 +3,6 @@ package com.ourmenu.backend.domain.menu.api;
 import com.ourmenu.backend.domain.cache.domain.MenuFolderIcon;
 import com.ourmenu.backend.domain.menu.config.MenuTestConfig;
 import com.ourmenu.backend.domain.menu.data.MenuTestData;
-import com.ourmenu.backend.domain.menu.data.UserTestData;
 import com.ourmenu.backend.domain.menu.domain.MenuFolder;
 import com.ourmenu.backend.domain.menu.dto.GetMenuFolderResponse;
 import com.ourmenu.backend.domain.menu.dto.SaveMenuFolderRequest;
@@ -14,6 +13,7 @@ import com.ourmenu.backend.domain.menu.dto.UpdateMenuFolderResponse;
 import com.ourmenu.backend.domain.user.domain.CustomUserDetails;
 import com.ourmenu.backend.global.DatabaseCleaner;
 import com.ourmenu.backend.global.TestConfig;
+import com.ourmenu.backend.global.data.GlobalUserTestData;
 import com.ourmenu.backend.global.response.ApiResponse;
 import java.util.Collections;
 import org.assertj.core.api.Assertions;
@@ -25,7 +25,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 
 @SpringBootTest
-@Import({TestConfig.class, MenuTestConfig.class})
+@Import({GlobalUserTestData.class, TestConfig.class, MenuTestConfig.class})
 @DisplayName("메뉴 폴더 통합 테스트")
 public class MenuFolderApiTest {
 
@@ -33,7 +33,7 @@ public class MenuFolderApiTest {
     MenuFolderController menuFolderController;
 
     @Autowired
-    UserTestData userTestData;
+    GlobalUserTestData userTestData;
 
     @Autowired
     MenuTestData menuTestData;
