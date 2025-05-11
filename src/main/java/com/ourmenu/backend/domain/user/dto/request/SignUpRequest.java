@@ -1,12 +1,12 @@
 package com.ourmenu.backend.domain.user.dto.request;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 
 @Getter
-@NoArgsConstructor
+@AllArgsConstructor
 public class SignUpRequest {
     private String email;
     private String password;
