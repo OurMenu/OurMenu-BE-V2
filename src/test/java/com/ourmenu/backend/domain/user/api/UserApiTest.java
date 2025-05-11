@@ -4,6 +4,7 @@ import com.ourmenu.backend.domain.user.domain.CustomUserDetails;
 import com.ourmenu.backend.domain.user.dto.request.PostEmailRequest;
 import com.ourmenu.backend.domain.user.dto.request.SignInRequest;
 import com.ourmenu.backend.domain.user.dto.request.SignUpRequest;
+import com.ourmenu.backend.domain.user.dto.request.UpdateMealTimeRequest;
 import com.ourmenu.backend.domain.user.dto.response.KakaoExistenceResponse;
 import com.ourmenu.backend.domain.user.dto.response.TokenDto;
 import com.ourmenu.backend.global.DatabaseCleaner;
@@ -88,6 +89,22 @@ public class UserApiTest {
 
         //when
         ApiResponse<KakaoExistenceResponse> response = userController.checkKakaoUserExists(request);
+
+        //then
+        Assertions.assertThat(response.isSuccess()).isEqualTo(true);
+    }
+    
+    @Test
+    public void 식사시간_정보를_변경할_수_있다() {
+        //given
+        CustomUserDetails testEmailUserWithMealTime = userTestData.createTestEmailUserWithMealTime();
+        ArrayList<Integer> changeMealTime = new ArrayList<>();
+        changeMealTime.add(10);
+        changeMealTime.add(16);
+        UpdateMealTimeRequest request = new UpdateMealTimeRequest(changeMealTime);
+
+        //when
+        ApiResponse<Void> response = userController.changeMealTime(request, testEmailUserWithMealTime);
 
         //then
         Assertions.assertThat(response.isSuccess()).isEqualTo(true);
