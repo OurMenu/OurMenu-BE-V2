@@ -40,28 +40,28 @@ public class UserController {
 
     @Operation(summary = "회원가입", description = "회원가입한다")
     @PostMapping("/sign-up")
-    private ApiResponse<TokenDto> signUp(@Valid @RequestBody SignUpRequest request) {
+    public ApiResponse<TokenDto> signUp(@Valid @RequestBody SignUpRequest request) {
         TokenDto response = userService.signUp(request);
         return ApiUtil.success(response);
     }
 
     @Operation(summary = "로그인", description = "로그인한다.")
     @PostMapping("/sign-in")
-    private ApiResponse<TokenDto> signIn(@Valid @RequestBody SignInRequest request, HttpServletResponse response) {
+    public ApiResponse<TokenDto> signIn(@Valid @RequestBody SignInRequest request, HttpServletResponse response) {
         TokenDto tokenDto = userService.signIn(request, response);
         return ApiUtil.success(tokenDto);
     }
 
     @Operation(summary = "카카오 계정 검증", description = "카카오 계정 존재 여부를 확인한다.")
     @PostMapping("/auth/kakao")
-    private ApiResponse<KakaoExistenceResponse> checkKakaoUserExists(@RequestBody PostEmailRequest request) {
+    public ApiResponse<KakaoExistenceResponse> checkKakaoUserExists(@RequestBody PostEmailRequest request) {
         KakaoExistenceResponse response = userService.validateKakaoUserExists(request);
         return ApiUtil.success(response);
     }
 
     @Operation(summary = "패스워드 변경", description = "패스워드를 변경한다.")
     @PatchMapping("/password")
-    private ApiResponse<Void> changePassword(@Valid @RequestBody UpdatePasswordRequest request,
+    public ApiResponse<Void> changePassword(@Valid @RequestBody UpdatePasswordRequest request,
                                              @AuthenticationPrincipal CustomUserDetails userDetails) {
         userService.changePassword(request, userDetails);
         return ApiUtil.successOnly();
@@ -69,7 +69,7 @@ public class UserController {
 
     @Operation(summary = "식사 시간 변경", description = "식사 시간을 변경한다.")
     @PatchMapping("/meal-time")
-    private ApiResponse<Void> changeMealTime(@Valid @RequestBody UpdateMealTimeRequest request,
+    public ApiResponse<Void> changeMealTime(@Valid @RequestBody UpdateMealTimeRequest request,
                                              @AuthenticationPrincipal CustomUserDetails userDetails) {
         mealTimeService.changeMealTime(request, userDetails.getId());
         return ApiUtil.successOnly();
@@ -77,14 +77,14 @@ public class UserController {
 
     @Operation(summary = "유저 정보 조회", description = "유저 정보를 조회한다")
     @GetMapping("")
-    private ApiResponse<UserDto> getUserInfo(@AuthenticationPrincipal CustomUserDetails userDetails) {
+    public ApiResponse<UserDto> getUserInfo(@AuthenticationPrincipal CustomUserDetails userDetails) {
         UserDto response = userService.getUserInfo(userDetails);
         return ApiUtil.success(response);
     }
 
     @Operation(summary = "로그아웃", description = "로그아웃한다.")
     @PostMapping("/sign-out")
-    private ApiResponse<Void> signOut(HttpServletRequest request,
+    public ApiResponse<Void> signOut(HttpServletRequest request,
                                       @AuthenticationPrincipal CustomUserDetails userDetails) {
         userService.signOut(request);
         return ApiUtil.successOnly();
@@ -92,14 +92,14 @@ public class UserController {
 
     @Operation(summary = "토큰 갱신", description = "Access 토큰을 갱신한다.")
     @PostMapping("/reissue-token")
-    private ApiResponse<TokenDto> reissueToken(@Valid @RequestBody ReissueRequest reissueRequest) {
+    public ApiResponse<TokenDto> reissueToken(@Valid @RequestBody ReissueRequest reissueRequest) {
         TokenDto response = userService.reissueToken(reissueRequest);
         return ApiUtil.success(response);
     }
 
     @Operation(summary = "유저 삭제", description = "유저를 DB에서 삭제한다.")
     @DeleteMapping("")
-    private ApiResponse<Void> deleteUser(@AuthenticationPrincipal CustomUserDetails userDetails) {
+    public ApiResponse<Void> deleteUser(@AuthenticationPrincipal CustomUserDetails userDetails) {
         userService.removeUser(userDetails.getId());
         return ApiUtil.successOnly();
     }
