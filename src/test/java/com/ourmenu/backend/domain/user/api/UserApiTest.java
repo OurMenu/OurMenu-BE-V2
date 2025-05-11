@@ -13,6 +13,7 @@ import com.ourmenu.backend.global.TestConfig;
 import com.ourmenu.backend.global.config.GlobalDataConfig;
 import com.ourmenu.backend.global.data.GlobalUserTestData;
 import com.ourmenu.backend.global.response.ApiResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -122,6 +123,19 @@ public class UserApiTest {
         
         //when
         ApiResponse<Void> response = userController.changePassword(request, testEmailUser);
+
+        //then
+        Assertions.assertThat(response.isSuccess()).isEqualTo(true);
+    }
+
+    @Test
+    public void 로그아웃_할_수_있다() {
+        //given
+        CustomUserDetails testEmailUser = userTestData.createTestEmailUser();
+        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+
+        //when
+        ApiResponse<Void> response = userController.signOut(request, testEmailUser);
 
         //then
         Assertions.assertThat(response.isSuccess()).isEqualTo(true);
