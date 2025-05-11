@@ -27,10 +27,10 @@ public class GlobalUserTestData {
     @Transactional
     public CustomUserDetails createTestEmailUser() {
         String email = "testEmailUser@naver.com";
-        String password = "password1!";
+        String password = passwordEncoder.encode("password1!");
         User user = User.builder()
                 .email(email)
-                .password(passwordEncoder.encode(password))
+                .password(password)
                 .signInType(SignInType.EMAIL)
                 .build();
         entityManager.persist(user);
