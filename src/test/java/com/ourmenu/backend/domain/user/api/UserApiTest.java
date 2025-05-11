@@ -5,6 +5,7 @@ import com.ourmenu.backend.domain.user.dto.request.PostEmailRequest;
 import com.ourmenu.backend.domain.user.dto.request.SignInRequest;
 import com.ourmenu.backend.domain.user.dto.request.SignUpRequest;
 import com.ourmenu.backend.domain.user.dto.request.UpdateMealTimeRequest;
+import com.ourmenu.backend.domain.user.dto.request.UpdatePasswordRequest;
 import com.ourmenu.backend.domain.user.dto.response.KakaoExistenceResponse;
 import com.ourmenu.backend.domain.user.dto.response.TokenDto;
 import com.ourmenu.backend.global.DatabaseCleaner;
@@ -105,6 +106,22 @@ public class UserApiTest {
 
         //when
         ApiResponse<Void> response = userController.changeMealTime(request, testEmailUserWithMealTime);
+
+        //then
+        Assertions.assertThat(response.isSuccess()).isEqualTo(true);
+    }
+    
+    @Test
+    public void 비밀번호를_변경할_수_있다() {
+        //given
+        CustomUserDetails testEmailUser = userTestData.createTestEmailUser();
+        UpdatePasswordRequest request = new UpdatePasswordRequest(
+                "password1!",
+                "password2@"
+        );
+        
+        //when
+        ApiResponse<Void> response = userController.changePassword(request, testEmailUser);
 
         //then
         Assertions.assertThat(response.isSuccess()).isEqualTo(true);
