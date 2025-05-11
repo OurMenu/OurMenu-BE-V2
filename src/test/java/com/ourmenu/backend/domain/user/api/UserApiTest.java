@@ -1,8 +1,10 @@
 package com.ourmenu.backend.domain.user.api;
 
 import com.ourmenu.backend.domain.user.domain.CustomUserDetails;
+import com.ourmenu.backend.domain.user.dto.request.PostEmailRequest;
 import com.ourmenu.backend.domain.user.dto.request.SignInRequest;
 import com.ourmenu.backend.domain.user.dto.request.SignUpRequest;
+import com.ourmenu.backend.domain.user.dto.response.KakaoExistenceResponse;
 import com.ourmenu.backend.domain.user.dto.response.TokenDto;
 import com.ourmenu.backend.global.DatabaseCleaner;
 import com.ourmenu.backend.global.TestConfig;
@@ -78,4 +80,16 @@ public class UserApiTest {
         Assertions.assertThat(signInResponse.isSuccess()).isEqualTo(true);
     }
 
+    @Test
+    public void 카카오_계정을_검증할_수_있다() {
+        //given
+        CustomUserDetails testKakaoUser = userTestData.createTestKakaoUser();
+        PostEmailRequest request = new PostEmailRequest("testKakaoUser@naver.com");
+
+        //when
+        ApiResponse<KakaoExistenceResponse> response = userController.checkKakaoUserExists(request);
+
+        //then
+        Assertions.assertThat(response.isSuccess()).isEqualTo(true);
+    }
 }
