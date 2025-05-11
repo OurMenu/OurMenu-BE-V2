@@ -10,6 +10,7 @@ import com.ourmenu.backend.domain.user.dto.request.UpdatePasswordRequest;
 import com.ourmenu.backend.domain.user.dto.response.KakaoExistenceResponse;
 import com.ourmenu.backend.domain.user.dto.response.TokenDto;
 import com.ourmenu.backend.domain.user.dto.response.UserDto;
+import com.ourmenu.backend.domain.user.exception.NotFoundUserException;
 import com.ourmenu.backend.global.DatabaseCleaner;
 import com.ourmenu.backend.global.TestConfig;
 import com.ourmenu.backend.global.config.GlobalDataConfig;
@@ -28,7 +29,6 @@ import org.springframework.context.annotation.Import;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.List;
 
 @SpringBootTest
 @Import({GlobalDataConfig.class, TestConfig.class})
@@ -162,5 +162,19 @@ public class UserApiTest {
         Assertions.assertThat(response.getResponse().getEmail()).isEqualTo("testEmailUser@naver.com");
         Assertions.assertThat(response.getResponse().getSignInType()).isEqualTo("EMAIL");
         Assertions.assertThat(response.getResponse().getMealTime()).contains(mealTime.getMealTime());
+    }
+
+    @Test
+    public void 본인의_유저_정보를_삭제할_수_있다() {
+        //given
+        CustomUserDetails testEmailUser = userTestData.createTestEmailUser();
+
+        //when
+        ApiResponse<Void> response = userController.deleteUser(testEmailUser);
+
+        //then
+        Assertions.assertThat(response.isSuccess()).isEqualTo(true);
+        Assertions.assertThatThrownBy(() -> userController.getUserInfo(testEmailUser))
+                .isInstanceOf(NotFoundUserException.class);
     }
 }
