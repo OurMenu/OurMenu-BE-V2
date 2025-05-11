@@ -1,6 +1,7 @@
 package com.ourmenu.backend.domain.user.api;
 
 import com.ourmenu.backend.domain.user.domain.CustomUserDetails;
+import com.ourmenu.backend.domain.user.domain.MealTime;
 import com.ourmenu.backend.domain.user.dto.request.PostEmailRequest;
 import com.ourmenu.backend.domain.user.dto.request.SignInRequest;
 import com.ourmenu.backend.domain.user.dto.request.SignUpRequest;
@@ -8,6 +9,7 @@ import com.ourmenu.backend.domain.user.dto.request.UpdateMealTimeRequest;
 import com.ourmenu.backend.domain.user.dto.request.UpdatePasswordRequest;
 import com.ourmenu.backend.domain.user.dto.response.KakaoExistenceResponse;
 import com.ourmenu.backend.domain.user.dto.response.TokenDto;
+import com.ourmenu.backend.domain.user.dto.response.UserDto;
 import com.ourmenu.backend.global.DatabaseCleaner;
 import com.ourmenu.backend.global.TestConfig;
 import com.ourmenu.backend.global.config.GlobalDataConfig;
@@ -24,7 +26,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.List;
 
 @SpringBootTest
 @Import({GlobalDataConfig.class, TestConfig.class})
@@ -139,5 +143,24 @@ public class UserApiTest {
 
         //then
         Assertions.assertThat(response.isSuccess()).isEqualTo(true);
+    }
+
+    @Test
+    public void 본인의_유저_정보를_조회할_수_있다() {
+        //given
+        CustomUserDetails testEmailUser = userTestData.createTestEmailUserWithMealTime();
+        MealTime mealTime = MealTime.builder()
+                .userId(testEmailUser.getId())
+                .mealTime(LocalTime.NOON)
+                .build();
+
+        //when
+        ApiResponse<UserDto> response = userController.getUserInfo(testEmailUser);
+
+        //then
+        Assertions.assertThat(response.isSuccess()).isEqualTo(true);
+        Assertions.assertThat(response.getResponse().getEmail()).isEqualTo("testEmailUser@naver.com");
+        Assertions.assertThat(response.getResponse().getSignInType()).isEqualTo("EMAIL");
+        Assertions.assertThat(response.getResponse().getMealTime()).contains(mealTime.getMealTime());
     }
 }
