@@ -12,6 +12,7 @@ import com.ourmenu.backend.domain.user.dto.response.ReissueRequest;
 import com.ourmenu.backend.domain.user.dto.response.TokenDto;
 import com.ourmenu.backend.domain.user.dto.response.UserDto;
 import com.ourmenu.backend.domain.user.exception.NotFoundUserException;
+import com.ourmenu.backend.domain.user.exception.NotMatchTokenException;
 import com.ourmenu.backend.global.DatabaseCleaner;
 import com.ourmenu.backend.global.TestConfig;
 import com.ourmenu.backend.global.config.GlobalDataConfig;
@@ -28,6 +29,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.mock.web.MockHttpServletRequest;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -141,13 +143,25 @@ public class UserApiTest {
     public void 로그아웃_할_수_있다() {
         //given
         CustomUserDetails testEmailUser = userTestData.createTestEmailUser();
-        HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
+        SignInRequest request = new SignInRequest(
+                "testEmailUser@naver.com",
+                "password1!",
+                "EMAIL"
+        );
+        HttpServletResponse httpServletResponse = Mockito.mock(HttpServletResponse.class);
+        MockHttpServletRequest httpServletRequest = new MockHttpServletRequest();
+        ApiResponse<TokenDto> signInResponse = userController.signIn(request, httpServletResponse);
+        httpServletRequest.addHeader("Authorization",
+                "Bearer " + signInResponse.getResponse().getRefreshToken());
 
         //when
-        ApiResponse<Void> response = userController.signOut(request, testEmailUser);
+        ApiResponse<Void> response = userController.signOut(httpServletRequest, testEmailUser);
 
         //then
         Assertions.assertThat(response.isSuccess()).isEqualTo(true);
+        Assertions.assertThatThrownBy(() -> userController.reissueToken
+                        (new ReissueRequest(signInResponse.getResponse().getRefreshToken())))
+                .isInstanceOf(NotMatchTokenException.class);
     }
 
     @Test
