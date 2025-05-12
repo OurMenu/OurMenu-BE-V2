@@ -51,8 +51,6 @@ public class UserApiTest {
     @Autowired
     JwtTokenProvider jwtTokenProvider;
 
-    CustomUserDetails customUserDetails;
-
     @BeforeEach
     void setUp() {
         databaseCleaner.clear();
