@@ -8,6 +8,7 @@ import com.ourmenu.backend.domain.user.dto.request.SignUpRequest;
 import com.ourmenu.backend.domain.user.dto.request.UpdateMealTimeRequest;
 import com.ourmenu.backend.domain.user.dto.request.UpdatePasswordRequest;
 import com.ourmenu.backend.domain.user.dto.response.KakaoExistenceResponse;
+import com.ourmenu.backend.domain.user.dto.response.ReissueRequest;
 import com.ourmenu.backend.domain.user.dto.response.TokenDto;
 import com.ourmenu.backend.domain.user.dto.response.UserDto;
 import com.ourmenu.backend.domain.user.exception.NotFoundUserException;
@@ -16,6 +17,7 @@ import com.ourmenu.backend.global.TestConfig;
 import com.ourmenu.backend.global.config.GlobalDataConfig;
 import com.ourmenu.backend.global.data.GlobalUserTestData;
 import com.ourmenu.backend.global.response.ApiResponse;
+import com.ourmenu.backend.global.util.JwtTokenProvider;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.assertj.core.api.Assertions;
@@ -43,6 +45,9 @@ public class UserApiTest {
 
     @Autowired
     DatabaseCleaner databaseCleaner;
+
+    @Autowired
+    JwtTokenProvider jwtTokenProvider;
 
     CustomUserDetails customUserDetails;
 
@@ -176,5 +181,27 @@ public class UserApiTest {
         Assertions.assertThat(response.isSuccess()).isEqualTo(true);
         Assertions.assertThatThrownBy(() -> userController.getUserInfo(testEmailUser))
                 .isInstanceOf(NotFoundUserException.class);
+    }
+
+
+    @Test
+    public void 토큰을_재발급_받을_수_있다() {
+        //given
+        ArrayList<Integer> mealTime = new ArrayList<>();
+        mealTime.add(12);
+        mealTime.add(16);
+        SignUpRequest signUpRequest = new SignUpRequest("test123@gmail.com",
+                "password123",
+                mealTime,
+                "EMAIL");
+        ApiResponse<TokenDto> signUpResponse = userController.signUp(signUpRequest);
+        ReissueRequest request = new ReissueRequest(signUpResponse.getResponse().getRefreshToken());
+
+        //when
+        ApiResponse<TokenDto> response = userController.reissueToken(request);
+
+        //then
+        Assertions.assertThat(response.isSuccess()).isEqualTo(true);
+        Assertions.assertThat(response.getResponse().getRefreshToken()).isNotEqualTo(request.getRefreshToken());
     }
 }
