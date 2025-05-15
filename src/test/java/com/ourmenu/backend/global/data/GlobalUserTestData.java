@@ -6,11 +6,18 @@ import com.ourmenu.backend.domain.user.domain.SignInType;
 import com.ourmenu.backend.domain.user.domain.User;
 import jakarta.persistence.EntityManager;
 import java.time.LocalTime;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
 public class GlobalUserTestData {
 
+    @Autowired
+    PasswordEncoder passwordEncoder;
+
     private EntityManager entityManager;
+
 
     public GlobalUserTestData(EntityManager entityManager) {
         this.entityManager = entityManager;
@@ -20,7 +27,7 @@ public class GlobalUserTestData {
     @Transactional
     public CustomUserDetails createTestEmailUser() {
         String email = "testEmailUser@naver.com";
-        String password = "password1!";
+        String password = passwordEncoder.encode("password1!");
         User user = User.builder()
                 .email(email)
                 .password(password)

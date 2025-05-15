@@ -15,6 +15,7 @@ import com.ourmenu.backend.domain.user.exception.NotFoundUserException;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -28,6 +29,7 @@ public class EmailService {
     private final int CONFIRM_CODE_LENGTH = 6;
     private final ConfirmCodeRepository confirmCodeRepository;
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public EmailResponse sendCodeToEmail(PostEmailRequest request){
         String email = request.getEmail();
@@ -85,7 +87,7 @@ public class EmailService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(NotFoundUserException::new);
 
-        user.changePassword(temporaryPassword);
+        user.changePassword(passwordEncoder.encode(temporaryPassword));
         userRepository.save(user);
         return TemporaryPasswordResponse.from(temporaryPassword);
     }

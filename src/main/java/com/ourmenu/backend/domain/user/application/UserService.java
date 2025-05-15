@@ -72,10 +72,9 @@ public class UserService {
      * 로그인 로직 및 로그인 성공시 RefreshToken 갱신 후 JWT 정보 반환한다
      *
      * @param request    User의 Email, Password, SignInType Request
-     * @param response           HTTP Response
      * @return Token 정보
      */
-    public TokenDto signIn(SignInRequest request, HttpServletResponse response) {
+    public TokenDto signIn(SignInRequest request) {
         Optional<User> optionalUser = userRepository.findByEmail(request.getEmail());
         if (optionalUser.isEmpty() || !optionalUser.get().getSignInType().name().equals(request.getSignInType())) {
             throw new NotFoundUserException();
