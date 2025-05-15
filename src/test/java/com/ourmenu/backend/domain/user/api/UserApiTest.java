@@ -19,13 +19,10 @@ import com.ourmenu.backend.global.config.GlobalDataConfig;
 import com.ourmenu.backend.global.data.GlobalUserTestData;
 import com.ourmenu.backend.global.response.ApiResponse;
 import com.ourmenu.backend.global.util.JwtTokenProvider;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
@@ -84,10 +81,9 @@ public class UserApiTest {
                 "password1!",
                 "EMAIL"
         );
-        HttpServletResponse response = Mockito.mock(HttpServletResponse.class);
 
         //when
-        ApiResponse<TokenDto> signInResponse = userController.signIn(request, response);
+        ApiResponse<TokenDto> signInResponse = userController.signIn(request);
 
         //then
         Assertions.assertThat(signInResponse.isSuccess()).isEqualTo(true);
@@ -147,9 +143,8 @@ public class UserApiTest {
                 "password1!",
                 "EMAIL"
         );
-        HttpServletResponse httpServletResponse = Mockito.mock(HttpServletResponse.class);
         MockHttpServletRequest httpServletRequest = new MockHttpServletRequest();
-        ApiResponse<TokenDto> signInResponse = userController.signIn(request, httpServletResponse);
+        ApiResponse<TokenDto> signInResponse = userController.signIn(request);
         httpServletRequest.addHeader("Authorization",
                 "Bearer " + signInResponse.getResponse().getRefreshToken());
 

@@ -47,8 +47,8 @@ public class UserController {
 
     @Operation(summary = "로그인", description = "로그인한다.")
     @PostMapping("/sign-in")
-    public ApiResponse<TokenDto> signIn(@Valid @RequestBody SignInRequest request, HttpServletResponse response) {
-        TokenDto tokenDto = userService.signIn(request, response);
+    public ApiResponse<TokenDto> signIn(@Valid @RequestBody SignInRequest request) {
+        TokenDto tokenDto = userService.signIn(request);
         return ApiUtil.success(tokenDto);
     }
 
