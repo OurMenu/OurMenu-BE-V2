@@ -33,6 +33,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.List;
 
 @SpringBootTest
 @Import({GlobalDataConfig.class, TestConfig.class})
@@ -199,9 +200,7 @@ public class UserApiTest {
     @Test
     public void 토큰을_재발급_받을_수_있다() {
         //given
-        ArrayList<Integer> mealTime = new ArrayList<>();
-        mealTime.add(12);
-        mealTime.add(16);
+        List<Integer> mealTime = List.of(12, 16);
         SignUpRequest signUpRequest = new SignUpRequest("test123@gmail.com",
                 "password123",
                 mealTime,
