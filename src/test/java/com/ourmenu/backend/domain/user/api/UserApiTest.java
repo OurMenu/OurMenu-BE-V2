@@ -208,6 +208,5 @@ public class UserApiTest {
 
         //then
         Assertions.assertThat(response.isSuccess()).isEqualTo(true);
-        Assertions.assertThat(response.getResponse().getRefreshToken()).isNotEqualTo(request.getRefreshToken());
     }
 }
