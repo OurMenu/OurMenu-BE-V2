@@ -22,7 +22,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.Base64;
 import java.util.Date;
 import java.util.Optional;
-import java.util.UUID;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -126,7 +125,6 @@ public class JwtTokenProvider {
                 .setClaims(claims)
                 .setExpiration(new Date(date.getTime() + time))
                 .setIssuedAt(date)
-                .setId(UUID.randomUUID().toString())
                 .signWith(key, signatureAlgorithm)
                 .compact();
     }
