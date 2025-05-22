@@ -21,3 +21,5 @@ services:
       S3_SECRET_KEY: ${S3_SECRET_KEY}
       SPRING_SWAGGER_SERVER_URL: ${URL}
       DEFAULT_BUCKET_URL: ${DEFAULT_BUCKET_URL}
+    volumes:
+      - /var/log/springboot/:/var/log/springboot/
