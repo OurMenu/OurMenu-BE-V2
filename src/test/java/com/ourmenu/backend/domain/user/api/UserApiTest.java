@@ -174,7 +174,7 @@ public class UserApiTest {
         Assertions.assertThat(response.isSuccess()).isEqualTo(true);
         Assertions.assertThat(response.getResponse().getEmail()).isEqualTo("testEmailUser@naver.com");
         Assertions.assertThat(response.getResponse().getSignInType()).isEqualTo("EMAIL");
-        Assertions.assertThat(response.getResponse().getMealTime()).contains(mealTime.getMealTime());
+        Assertions.assertThat(response.getResponse().getMealTimeList().get(0).getMealTime()).isEqualTo(1200);
     }
 
     @Test
