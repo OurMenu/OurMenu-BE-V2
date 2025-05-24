@@ -75,4 +75,15 @@ public class TimeUtil {
 
         return todayDuration.toMinutes() + tomorrowDuration.toMinutes();
     }
+
+    /**
+     * LocalTime(HH:mm:ss) 을 Integer(HHmm) 형식으로 변경한다.
+     *
+     * @param time
+     * @return
+     */
+    public static int toInteger(LocalTime time) {
+        String timeStr = String.format("%02d%02d", time.getHour(), time.getMinute());
+        return Integer.parseInt(timeStr);
+    }
 }

@@ -2,9 +2,10 @@ package com.ourmenu.backend.domain.user.dto.response;
 
 import com.ourmenu.backend.domain.user.domain.MealTime;
 import com.ourmenu.backend.domain.user.domain.User;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import com.ourmenu.backend.domain.user.util.TimeUtil;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -14,15 +15,13 @@ public class UserDto {
 
     private String email;
     private String signInType;
-    private List<LocalTime> mealTime;
+    private List<MealTimeDto> mealTimeList;
 
-    public static UserDto of(User user, List<MealTime> mealTimes) {
+    public static UserDto of(User user, List<MealTimeDto> mealTimes) {
         return UserDto.builder()
                 .email(user.getEmail())
                 .signInType(user.getSignInType().name())
-                .mealTime(mealTimes.stream()
-                        .map(MealTime::getMealTime)
-                        .collect(Collectors.toList()))
+                .mealTimeList(mealTimes)
                 .build();
     }
 }

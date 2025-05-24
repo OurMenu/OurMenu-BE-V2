@@ -12,6 +12,7 @@ import com.ourmenu.backend.domain.user.dto.request.SignInRequest;
 import com.ourmenu.backend.domain.user.dto.request.SignUpRequest;
 import com.ourmenu.backend.domain.user.dto.request.UpdatePasswordRequest;
 import com.ourmenu.backend.domain.user.dto.response.KakaoExistenceResponse;
+import com.ourmenu.backend.domain.user.dto.response.MealTimeDto;
 import com.ourmenu.backend.domain.user.dto.response.ReissueRequest;
 import com.ourmenu.backend.domain.user.dto.response.TokenDto;
 import com.ourmenu.backend.domain.user.dto.response.UserDto;
@@ -23,10 +24,14 @@ import com.ourmenu.backend.domain.user.exception.NotMatchPasswordException;
 import com.ourmenu.backend.domain.user.exception.NotMatchTokenException;
 import com.ourmenu.backend.domain.user.exception.TokenExpiredExcpetion;
 import com.ourmenu.backend.domain.user.exception.UnsupportedSignInTypeException;
+import com.ourmenu.backend.domain.user.util.TimeUtil;
 import com.ourmenu.backend.global.util.JwtTokenProvider;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
+
+import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -132,8 +137,15 @@ public class UserService {
                 .orElseThrow(NotFoundUserException::new);
 
         List<MealTime> mealTimes = mealTimeService.findAllByUserId(userDetails.getId());
+        List<MealTimeDto> mealTimeDtoList = new ArrayList<>();
 
-        return UserDto.of(user, mealTimes);
+        for (MealTime mealTime : mealTimes) {
+            boolean isAfter = LocalTime.now().isAfter(mealTime.getMealTime());
+            MealTimeDto mealTimeDto = MealTimeDto.of(mealTime, isAfter);
+            mealTimeDtoList.add(mealTimeDto);
+        }
+
+        return UserDto.of(user, mealTimeDtoList);
     }
 
     /**
