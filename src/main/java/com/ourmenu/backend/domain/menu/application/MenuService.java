@@ -1,5 +1,6 @@
 package com.ourmenu.backend.domain.menu.application;
 
+import com.ourmenu.backend.domain.cache.util.UrlConverter;
 import com.ourmenu.backend.domain.home.dto.GetRecommendMenuResponse;
 import com.ourmenu.backend.domain.menu.dao.MenuRepository;
 import com.ourmenu.backend.domain.menu.domain.Menu;
@@ -40,6 +41,7 @@ public class MenuService {
     private final MenuImgService menuImgService;
     private final MenuFolderService menuFolderService;
     private final DefaultImgConverter defaultImgConverter;
+    private final UrlConverter urlConverter;
 
     /**
      * 메뉴 저장(메뉴 사진, 메뉴판, 태그 의존 엔티티 생성
