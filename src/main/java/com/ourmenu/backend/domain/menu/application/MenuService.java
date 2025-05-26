@@ -78,7 +78,8 @@ public class MenuService {
 
         //s3 업로드및 이미지 연관관계 생성
         List<MenuImg> menuImgs = menuImgService.saveMenuImgs(saveMenu.getId(), menuDto.getMenuImgs());
-        return SaveMenuResponse.of(saveMenu, store, store.getMap(), menuImgs, saveMenuMenuFolders, saveTag);
+        return SaveMenuResponse.of(saveMenu, store, store.getMap(), menuImgs, saveMenuMenuFolders, saveTag,
+                urlConverter);
     }
 
     /**
@@ -127,7 +128,7 @@ public class MenuService {
         MenuFolder menuFolder = menuFolderService.findOne(userId, menuFolderId);
 
         return GetMenuFolderMenuResponse.of(menuFolder, defaultImgConverter.getDefaultMenuFolderImgUrl(),
-                menuResponses);
+                menuResponses, urlConverter);
     }
 
     /**
