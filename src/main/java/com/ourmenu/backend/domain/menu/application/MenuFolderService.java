@@ -95,7 +95,7 @@ public class MenuFolderService {
         menuFolder.update(menuFolderDto);
         List<MenuMenuFolder> menuMenuFolders = menuMenuFolderService.findAllByMenuFolderId(menuFolderId);
         return UpdateMenuFolderResponse.of(menuFolder, menuMenuFolders,
-                defaultImgConvertor.getDefaultMenuFolderImgUrl());
+                defaultImgConvertor.getDefaultMenuFolderImgUrl(), urlConverter);
     }
 
     /**
@@ -126,7 +126,7 @@ public class MenuFolderService {
         findMenuFolder.updateIndex(index);
         List<MenuMenuFolder> menuMenuFolders = menuMenuFolderService.findAllByMenuFolderId(menuFolderId);
         return UpdateMenuFolderResponse.of(findMenuFolder, menuMenuFolders,
-                defaultImgConvertor.getDefaultMenuFolderImgUrl());
+                defaultImgConvertor.getDefaultMenuFolderImgUrl(), urlConverter);
     }
 
 
