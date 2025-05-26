@@ -14,7 +14,7 @@ public class UrlConverter {
     private String url;
 
     public String getMenuPinMapUrl(MenuPin pin) {
-        return url + "/menu-pins/" + pin.getImgUrl() + "_map.svg";
+        return url + "/menu-pins/" + pin.getImgUrl() + "_map.png";
     }
 
     public String getMenuPinAddUrl(MenuPin pin) {
