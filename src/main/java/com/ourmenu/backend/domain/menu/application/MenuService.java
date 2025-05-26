@@ -218,7 +218,7 @@ public class MenuService {
         List<String> imgUrls = menuImgService.findImgUrls(menuId);
         List<Tag> tags = menuTagService.findTagNames(menuId);
         List<MenuFolder> menuFolders = menuFolderService.findAllByMenuId(menuId);
-        return GetMenuResponse.of(menu, imgUrls, tags, menuFolders);
+        return GetMenuResponse.of(menu, imgUrls, tags, menuFolders, urlConverter);
     }
 
 
