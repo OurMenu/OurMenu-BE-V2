@@ -22,6 +22,7 @@ import com.ourmenu.backend.domain.cache.domain.HomeImg;
 import com.ourmenu.backend.domain.tag.domain.Tag;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 import lombok.Getter;
 
 @Getter
@@ -38,6 +39,7 @@ public enum Answer {
     SUMMER("여름", Tag.COOL, SUMMER1, SUMMER2, SUMMER3),
     WINTER("겨울", Tag.HOT, WINTER1, WINTER2);
 
+    private static final Random RANDOM = new Random();
     private String answer;
     private Tag tag;
     private List<HomeImg> homeImgs;
@@ -47,4 +49,9 @@ public enum Answer {
         this.tag = tag;
         this.homeImgs = Arrays.asList(homeImgs);
     }
+
+    public HomeImg getRandomHomeImg() {
+        return homeImgs.get(RANDOM.nextInt(homeImgs.size()));
+    }
+
 }

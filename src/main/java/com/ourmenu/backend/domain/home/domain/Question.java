@@ -5,6 +5,7 @@ import static com.ourmenu.backend.domain.home.domain.Answer.LIKE;
 import static com.ourmenu.backend.domain.home.domain.Answer.MOUNTAIN;
 import static com.ourmenu.backend.domain.home.domain.Answer.RAINY;
 import static com.ourmenu.backend.domain.home.domain.Answer.SEA;
+import static com.ourmenu.backend.domain.home.domain.Answer.SPICY;
 import static com.ourmenu.backend.domain.home.domain.Answer.SUMMER;
 import static com.ourmenu.backend.domain.home.domain.Answer.SUNNY;
 import static com.ourmenu.backend.domain.home.domain.Answer.SWEET;
@@ -19,7 +20,7 @@ public enum Question {
 
     FEEL("오늘 기분은 어떠신가요?", LIKE, DISLIKE),
     WEATHER("오늘 날씨는 어떤가요?", SUNNY, RAINY),
-    STRESS("스트레스 받을 때는 어떤 음식을 드시나요?", SWEET, RAINY),
+    STRESS("스트레스 받을 때는 어떤 음식을 드시나요?", SWEET, SPICY),
     TRIP("어디로 떠나고 싶은가요?", SEA, MOUNTAIN),
     SEASON("어느 계절을 더 좋아하세요?", SUMMER, WINTER);
 

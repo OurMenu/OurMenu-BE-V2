@@ -1,5 +1,6 @@
 package com.ourmenu.backend.domain.home.application;
 
+import com.ourmenu.backend.domain.cache.util.UrlConverter;
 import com.ourmenu.backend.domain.home.dao.HomeQuestionAnswerRepository;
 import com.ourmenu.backend.domain.home.domain.Answer;
 import com.ourmenu.backend.domain.home.domain.HomeQuestionAnswer;
@@ -29,6 +30,7 @@ public class HomeService {
     private final RecommendMenuCacheService recommendMenuCacheService;
     private final MenuService menuService;
     private final MealTimeService mealTimeService;
+    private final UrlConverter urlConverter;
 
     /**
      * 홈 질문 응답 값을 저장 및 추천 메뉴를 캐싱한다. 질문에 관련 없는 응답이면 에러를 반환한다.
@@ -68,12 +70,12 @@ public class HomeService {
                     .userId(userId)
                     .build();
             HomeQuestionAnswer saveHomeQuestionAnswer = homeQuestionAnswerRepository.save(homeQuestionAnswer);
-            return SaveAndGetQuestionRequest.from(saveHomeQuestionAnswer);
+            return SaveAndGetQuestionRequest.from(saveHomeQuestionAnswer, urlConverter);
         }
 
         HomeQuestionAnswer homeQuestionAnswer = optionalHomeQuestionAnswer.get();
         homeQuestionAnswer.update(randomQuestion);
-        return SaveAndGetQuestionRequest.from(homeQuestionAnswer);
+        return SaveAndGetQuestionRequest.from(homeQuestionAnswer, urlConverter);
     }
 
     /**
@@ -91,7 +93,7 @@ public class HomeService {
         List<GetRecommendMenuResponse> randomRecommendMenus = getRandomRecommendMenu();
 
         return GetHomeRecommendResponse.of(answer, questionRecommendMenus, tagRandomRecommendDto.getTag(),
-                tagRandomRecommendDto.getGetRecommendMenuResponses(), randomRecommendMenus);
+                tagRandomRecommendDto.getGetRecommendMenuResponses(), randomRecommendMenus, urlConverter);
     }
 
     /**
