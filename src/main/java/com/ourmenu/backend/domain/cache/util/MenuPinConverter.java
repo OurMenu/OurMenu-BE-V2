@@ -5,6 +5,10 @@ import java.util.List;
 
 public class MenuPinConverter {
 
+    private MenuPinConverter() {
+
+    }
+
     public static MenuPin of(List<MenuPin> menuPins) {
         if (menuPins.size() == 1) {
             return menuPins.get(0);
