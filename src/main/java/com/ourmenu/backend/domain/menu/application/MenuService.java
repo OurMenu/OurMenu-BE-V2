@@ -55,7 +55,7 @@ public class MenuService {
         Store store = storeService.saveStoreAndMap(menuDto.getStoreTitle(), menuDto.getStoreAddress(),
                 menuDto.getMapX(),
                 menuDto.getMapY());
-
+        
         Menu menu = Menu.builder()
                 .title(menuDto.getMenuTitle())
                 .price(menuDto.getMenuPrice())

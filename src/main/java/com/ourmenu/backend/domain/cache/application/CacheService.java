@@ -44,7 +44,7 @@ public class CacheService {
                 .map(menuPin -> {
                     String menuPinMapUrl = urlConvertor.getMenuPinMapUrl(menuPin);
                     String menuPinAddUrl = urlConvertor.getMenuPinAddUrl(menuPin);
-                    String menuPinMapAddDiable = urlConvertor.getMenuPinMapAddDiable(menuPin);
+                    String menuPinMapAddDiable = urlConvertor.getMenuPinMapAddDisable(menuPin);
                     return SimpleMenuPinResponse.of(menuPin, menuPinMapUrl, menuPinAddUrl,
                             menuPinMapAddDiable);
                 })

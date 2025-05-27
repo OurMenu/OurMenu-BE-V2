@@ -24,7 +24,7 @@ public class UrlConverter {
         return url + "/menu-pins/" + pin.getImgUrl() + "_add.svg";
     }
 
-    public String getMenuPinMapAddDiable(MenuPin pin) {
+    public String getMenuPinMapAddDisable(MenuPin pin) {
         if (isETCMenuPin(pin)) {
             return null;
         }

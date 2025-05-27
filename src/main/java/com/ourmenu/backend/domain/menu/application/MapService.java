@@ -1,11 +1,12 @@
 package com.ourmenu.backend.domain.menu.application;
 
+import com.ourmenu.backend.domain.cache.util.UrlConverter;
 import com.ourmenu.backend.domain.menu.dao.MenuFolderRepository;
 import com.ourmenu.backend.domain.menu.dao.MenuImgRepository;
-import com.ourmenu.backend.domain.menu.domain.MenuFolder;
-import com.ourmenu.backend.domain.menu.domain.MenuImg;
 import com.ourmenu.backend.domain.menu.dao.MenuRepository;
 import com.ourmenu.backend.domain.menu.domain.Menu;
+import com.ourmenu.backend.domain.menu.domain.MenuFolder;
+import com.ourmenu.backend.domain.menu.domain.MenuImg;
 import com.ourmenu.backend.domain.menu.dto.MapSearchDto;
 import com.ourmenu.backend.domain.menu.dto.MapSearchHistoryDto;
 import com.ourmenu.backend.domain.menu.dto.MenuFolderInfoOnMapDto;
@@ -22,6 +23,9 @@ import com.ourmenu.backend.domain.tag.domain.MenuTag;
 import com.ourmenu.backend.domain.user.dao.UserRepository;
 import com.ourmenu.backend.domain.user.domain.User;
 import com.ourmenu.backend.domain.user.exception.NotFoundUserException;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.locationtech.jts.geom.Coordinate;
@@ -35,10 +39,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
-
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -51,6 +51,7 @@ public class MapService {
     private final MenuImgRepository menuImgRepository;
     private final MenuFolderRepository menuFolderRepository;
     private final OwnedMenuSearchRepository ownedMenuSearchRepository;
+    private final UrlConverter urlConverter;
 
     /**
      * 유저가 보유한 메뉴들을 가져와 위치가 같은 메뉴들은 그룹핑하여 조회
@@ -62,18 +63,19 @@ public class MapService {
         User user = userRepository.findById(userId)
                 .orElseThrow(NotFoundUserException::new);
         List<Menu> menus = menuRepository.findMenusByUserId(userId);
-        
+
         java.util.Map<Map, List<Menu>> menuMaps = menus.stream()
                 .filter(menu -> menu.getStore().getMap() != null)
                 .collect(Collectors.groupingBy(menu -> menu.getStore().getMap()));
 
         return menuMaps.entrySet().stream()
-                .map(entry -> MenuOnMapDto.from(entry.getKey(), entry.getValue()))
+                .map(entry -> MenuOnMapDto.from(
+                        entry.getKey(), entry.getValue(), urlConverter))
                 .collect(Collectors.toList());
     }
 
     /**
-     *  지도 화면에서의 같은 위치에 존재하는 메뉴들 조회
+     * 지도 화면에서의 같은 위치에 존재하는 메뉴들 조회
      *
      * @param mapId
      * @param userId
@@ -172,10 +174,10 @@ public class MapService {
         if (!menuFolders.isEmpty()) {
             MenuFolder latestMenuFolder = menuFolders.stream()
                     .max(Comparator.comparing(MenuFolder::getCreatedAt)).get();
-            menuFolderInfo = MenuFolderInfoOnMapDto.of(latestMenuFolder, menuFolders.size());
+            menuFolderInfo = MenuFolderInfoOnMapDto.of(latestMenuFolder, menuFolders.size(), urlConverter);
         }
 
-        return MenuInfoOnMapDto.of(menu, menuTags, menuImgs, menuFolderInfo);
+        return MenuInfoOnMapDto.of(menu, menuTags, menuImgs, menuFolderInfo, urlConverter);
     }
 
     /**
