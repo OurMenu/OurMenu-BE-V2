@@ -1,5 +1,7 @@
 package com.ourmenu.backend.domain.home.api;
 
+import com.ourmenu.backend.domain.cache.domain.HomeImg;
+import com.ourmenu.backend.domain.cache.util.UrlConverter;
 import com.ourmenu.backend.domain.home.config.HomeTestConfig;
 import com.ourmenu.backend.domain.home.data.HomeTestData;
 import com.ourmenu.backend.domain.home.domain.Answer;
@@ -27,6 +29,9 @@ public class HomeApiTest {
 
     @Autowired
     HomeController homeController;
+
+    @Autowired
+    UrlConverter urlConverter;
 
     @Autowired
     HomeTestData homeTestData;
@@ -95,8 +100,13 @@ public class HomeApiTest {
 
         //then
         Assertions.assertThat(response.isSuccess()).isEqualTo(true);
-        Assertions.assertThat(response.getResponse().getAnswer()).isEqualTo(Answer.LIKE);
         Assertions.assertThat(response.getResponse().getAnswerRecommendMenus().size()).isEqualTo(2);
+
+        Assertions.assertThat(response.getResponse().getAnswerImgUrl()).satisfiesAnyOf(
+                answerImgUrl -> Assertions.assertThat(answerImgUrl)
+                        .isEqualTo(urlConverter.getHomeImgUrl(HomeImg.LIKE1)),
+                answerImgUrl -> Assertions.assertThat(answerImgUrl).isEqualTo(urlConverter.getHomeImgUrl(HomeImg.LIKE2))
+        );
     }
 
 }

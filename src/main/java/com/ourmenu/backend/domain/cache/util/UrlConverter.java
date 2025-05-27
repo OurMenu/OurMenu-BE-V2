@@ -32,7 +32,7 @@ public class UrlConverter {
         return url + "/menu-pins/" + pin.getImgUrl() + "_add_disable.svg";
     }
 
-    public String getMenuFolderUrl(MenuFolderIcon icon) {
+    public String getMenuFolderImgUrl(MenuFolderIcon icon) {
         return url + "/menu-folder-icons/" + icon.getImgUrl() + ".svg";
     }
 

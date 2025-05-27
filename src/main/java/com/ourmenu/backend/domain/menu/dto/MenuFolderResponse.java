@@ -28,7 +28,7 @@ public class MenuFolderResponse {
             menuFolderImgUrl = defaultMenuFolderImgUrl;
         }
 
-        String menuFolderIconImgUrl = urlConverter.getMenuFolderUrl(menuFolder.getIcon());
+        String menuFolderIconImgUrl = urlConverter.getMenuFolderImgUrl(menuFolder.getIcon());
 
         List<Long> menuIds = menuFolders.stream()
                 .map(menuMenuFolder -> menuMenuFolder.getMenu().getId())

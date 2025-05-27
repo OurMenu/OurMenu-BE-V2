@@ -1,6 +1,7 @@
 package com.ourmenu.backend.domain.menu.api;
 
 import com.ourmenu.backend.domain.cache.domain.MenuPin;
+import com.ourmenu.backend.domain.cache.util.UrlConverter;
 import com.ourmenu.backend.domain.menu.config.MenuTestConfig;
 import com.ourmenu.backend.domain.menu.data.MenuTestData;
 import com.ourmenu.backend.domain.menu.domain.Menu;
@@ -35,6 +36,9 @@ public class MenuApiTest {
     MenuController menuController;
 
     @Autowired
+    UrlConverter urlConverter;
+
+    @Autowired
     GlobalUserTestData userTestData;
 
     @Autowired
@@ -62,9 +66,11 @@ public class MenuApiTest {
 
         //then
         Assertions.assertThat(response.isSuccess()).isTrue();
-        Assertions.assertThat(response.getResponse().getMenuFolderIcon()).isEqualTo(testMenuFolder.getIcon());
         Assertions.assertThat(response.getResponse().getMenuFolderTitle()).isEqualTo(testMenuFolder.getTitle());
         Assertions.assertThat(response.getResponse().getMenus().size()).isEqualTo(3);
+
+        Assertions.assertThat(response.getResponse().getMenuFolderIconImgUrl())
+                .isEqualTo(urlConverter.getMenuFolderImgUrl(testMenuFolder.getIcon()));
     }
 
     @Test
@@ -80,8 +86,10 @@ public class MenuApiTest {
 
         //then
         Assertions.assertThat(response.isSuccess()).isTrue();
-        Assertions.assertThat(response.getResponse().getMenuPin()).isEqualTo(MenuPin.BBQ);
         Assertions.assertThat(response.getResponse().getMenuMemoTitle()).isEqualTo(menuMemoTitle);
+
+        Assertions.assertThat(response.getResponse().getMenuPinImgUrl())
+                .isEqualTo(urlConverter.getMenuPinAddUrl(MenuPin.BBQ));
     }
 
     @Test

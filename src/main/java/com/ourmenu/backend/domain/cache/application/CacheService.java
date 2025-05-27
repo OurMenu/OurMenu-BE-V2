@@ -33,7 +33,7 @@ public class CacheService {
     private List<SimpleMenuFolderIconResponse> getMenuFolderIconInfo() {
         return Arrays.stream(MenuFolderIcon.values())
                 .map(menuFolderIcon -> {
-                    String menuFolderIconUrl = urlConvertor.getMenuFolderUrl(menuFolderIcon);
+                    String menuFolderIconUrl = urlConvertor.getMenuFolderImgUrl(menuFolderIcon);
                     return SimpleMenuFolderIconResponse.of(menuFolderIcon, menuFolderIconUrl);
                 })
                 .toList();

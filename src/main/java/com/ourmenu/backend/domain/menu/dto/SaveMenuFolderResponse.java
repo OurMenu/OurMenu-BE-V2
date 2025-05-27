@@ -23,7 +23,7 @@ public class SaveMenuFolderResponse {
     public static SaveMenuFolderResponse of(MenuFolder menuFolder, List<Long> menuIds,
                                             String defaultMenuFolderImgUrl, UrlConverter urlConverter) {
         String menuFolderImgUrl = menuFolder.getImgUrl();
-        String menuFolderIconImgUrl = urlConverter.getMenuFolderUrl(menuFolder.getIcon());
+        String menuFolderIconImgUrl = urlConverter.getMenuFolderImgUrl(menuFolder.getIcon());
         if (menuFolderImgUrl == null) {
             menuFolderImgUrl = defaultMenuFolderImgUrl;
         }

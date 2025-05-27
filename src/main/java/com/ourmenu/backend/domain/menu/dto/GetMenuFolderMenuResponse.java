@@ -26,7 +26,7 @@ public class GetMenuFolderMenuResponse {
             menuFolderImgUrl = defaultMenuFolderImgUrl;
         }
 
-        String menuFolderIconImgUrl = urlConverter.getMenuFolderUrl(menuFolder.getIcon());
+        String menuFolderIconImgUrl = urlConverter.getMenuFolderImgUrl(menuFolder.getIcon());
 
         return GetMenuFolderMenuResponse.builder()
                 .menuFolderId(menuFolder.getId())

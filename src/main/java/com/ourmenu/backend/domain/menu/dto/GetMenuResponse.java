@@ -41,7 +41,7 @@ public class GetMenuResponse {
 
         List<SimpleMenuFolder> simpleMenuFolders = menuFolders.stream()
                 .map(menuFolder -> {
-                    String menuFolderIconImgUrl = urlConverter.getMenuFolderUrl(menuFolder.getIcon());
+                    String menuFolderIconImgUrl = urlConverter.getMenuFolderImgUrl(menuFolder.getIcon());
                     return SimpleMenuFolder.builder()
                             .menuFolderId(menuFolder.getId())
                             .menuFolderTitle(menuFolder.getTitle())

@@ -16,7 +16,7 @@ public class UpdateMenuFolderResponse {
 
     private Long menuFolderId;
     private String menuFolderTitle;
-    private String menuFolderUrl;
+    private String menuFolderImgUrl;
     private String menuFolderIconImgUrl;
     private List<Long> menuIds;
     private int index;
@@ -28,7 +28,7 @@ public class UpdateMenuFolderResponse {
             menuFolderImgUrl = defaultMenuFolderImgUrl;
         }
 
-        String menuFolderIconImgUrl = urlConverter.getMenuFolderUrl(menuFolder.getIcon());
+        String menuFolderIconImgUrl = urlConverter.getMenuFolderImgUrl(menuFolder.getIcon());
 
         List<Long> menuId = menuMenuFolders.stream()
                 .map(menuMenuFolder -> menuMenuFolder.getMenu().getId())
@@ -36,7 +36,7 @@ public class UpdateMenuFolderResponse {
         return UpdateMenuFolderResponse.builder()
                 .menuFolderId(menuFolder.getId())
                 .menuFolderTitle(menuFolder.getTitle())
-                .menuFolderUrl(menuFolderImgUrl)
+                .menuFolderImgUrl(menuFolderImgUrl)
                 .menuFolderIconImgUrl(menuFolderIconImgUrl)
                 .menuIds(menuId)
                 .index(menuFolder.getIndex())

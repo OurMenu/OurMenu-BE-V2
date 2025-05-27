@@ -14,7 +14,7 @@ public class MenuFolderInfoOnMapDto {
     private int menuFolderCount;
 
     public static MenuFolderInfoOnMapDto of(MenuFolder menuFolder, int count, UrlConverter urlConverter) {
-        String menuFolderIconImgUrl = urlConverter.getMenuFolderUrl(menuFolder.getIcon());
+        String menuFolderIconImgUrl = urlConverter.getMenuFolderImgUrl(menuFolder.getIcon());
 
         return MenuFolderInfoOnMapDto.builder()
                 .menuFolderTitle(menuFolder.getTitle())
