@@ -15,7 +15,7 @@ import lombok.Getter;
 @Builder(access = AccessLevel.PRIVATE)
 public class SaveAndGetQuestionRequest {
 
-    private Question question;
+    private String question;
     private List<AnswerDto> answers;
 
     public static SaveAndGetQuestionRequest from(HomeQuestionAnswer homeQuestionAnswer, UrlConverter urlConverter) {
@@ -34,7 +34,7 @@ public class SaveAndGetQuestionRequest {
                 .build();
 
         return SaveAndGetQuestionRequest.builder()
-                .question(question)
+                .question(question.getQuestion())
                 .answers(List.of(answerDto1, answerDto2))
                 .build();
     }
