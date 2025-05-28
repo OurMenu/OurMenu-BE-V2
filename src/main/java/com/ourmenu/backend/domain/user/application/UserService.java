@@ -137,15 +137,15 @@ public class UserService {
                 .orElseThrow(NotFoundUserException::new);
 
         List<MealTime> mealTimes = mealTimeService.findAllByUserId(userDetails.getId());
-        List<MealTimeDto> mealTimeDtoList = new ArrayList<>();
+        List<MealTimeDto> mealTimeDtos = new ArrayList<>();
 
         for (MealTime mealTime : mealTimes) {
             boolean isAfter = LocalTime.now().isAfter(mealTime.getMealTime());
             MealTimeDto mealTimeDto = MealTimeDto.of(mealTime, isAfter);
-            mealTimeDtoList.add(mealTimeDto);
+            mealTimeDtos.add(mealTimeDto);
         }
 
-        return UserDto.of(user, mealTimeDtoList);
+        return UserDto.of(user, mealTimeDtos);
     }
 
     /**
