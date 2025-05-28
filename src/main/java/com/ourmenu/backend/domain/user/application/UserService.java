@@ -24,11 +24,8 @@ import com.ourmenu.backend.domain.user.exception.NotMatchPasswordException;
 import com.ourmenu.backend.domain.user.exception.NotMatchTokenException;
 import com.ourmenu.backend.domain.user.exception.TokenExpiredExcpetion;
 import com.ourmenu.backend.domain.user.exception.UnsupportedSignInTypeException;
-import com.ourmenu.backend.domain.user.util.TimeUtil;
 import com.ourmenu.backend.global.util.JwtTokenProvider;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.transaction.Transactional;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -38,6 +35,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -79,6 +77,7 @@ public class UserService {
      * @param request    User의 Email, Password, SignInType Request
      * @return Token 정보
      */
+    @Transactional
     public TokenDto signIn(SignInRequest request) {
         Optional<User> optionalUser = userRepository.findByEmail(request.getEmail());
         if (optionalUser.isEmpty() || !optionalUser.get().getSignInType().name().equals(request.getSignInType())) {
@@ -110,6 +109,7 @@ public class UserService {
      * @param request
      * @param userDetails
      */
+    @Transactional
     public void changePassword(UpdatePasswordRequest request, CustomUserDetails userDetails) {
         String rawPassword = request.getPassword();
         String encodedPassword = userDetails.getPassword();
@@ -132,6 +132,7 @@ public class UserService {
      * @param userDetails
      * @return
      */
+    @Transactional(readOnly = true)
     public UserDto getUserInfo(CustomUserDetails userDetails) {
         User user = userRepository.findById(userDetails.getId())
                 .orElseThrow(NotFoundUserException::new);
@@ -154,6 +155,7 @@ public class UserService {
      * @param reissueRequest
      * @return
      */
+    @Transactional
     public TokenDto reissueToken(ReissueRequest reissueRequest) {
         String refreshToken = reissueRequest.getRefreshToken();
         String email = jwtTokenProvider.getEmailFromToken(refreshToken);
@@ -189,6 +191,7 @@ public class UserService {
      *
      * @param request
      */
+    @Transactional
     public void signOut(HttpServletRequest request) {
         String token = request.getHeader("Authorization");
         if (token.startsWith("Bearer ")) {
@@ -207,6 +210,7 @@ public class UserService {
      * @param request
      * @return
      */
+    @Transactional(readOnly = true)
     public KakaoExistenceResponse validateKakaoUserExists(PostEmailRequest request) {
         String email = request.getEmail();
 
@@ -224,6 +228,7 @@ public class UserService {
      *
      * @param userId
      */
+    @Transactional
     public void removeUser(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(NotFoundUserException::new);
