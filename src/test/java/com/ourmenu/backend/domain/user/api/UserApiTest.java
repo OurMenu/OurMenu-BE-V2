@@ -57,9 +57,9 @@ public class UserApiTest {
     @Test
     public void 회원_가입을_통해_유저를_생성할_수_있다() {
         //given
-        ArrayList<Integer> mealTime = new ArrayList<>();
-        mealTime.add(12);
-        mealTime.add(16);
+        List<LocalTime> mealTime = new ArrayList<>();
+        mealTime.add(LocalTime.of(12, 0));
+        mealTime.add(LocalTime.of(16, 0));
         SignUpRequest signUpRequest = new SignUpRequest("test123@gmail.com",
                 "password123",
                 mealTime,
@@ -106,9 +106,9 @@ public class UserApiTest {
     public void 식사시간_정보를_변경할_수_있다() {
         //given
         CustomUserDetails testEmailUserWithMealTime = userTestData.createTestEmailUserWithMealTime();
-        ArrayList<Integer> changeMealTime = new ArrayList<>();
-        changeMealTime.add(10);
-        changeMealTime.add(16);
+        List<LocalTime> changeMealTime = new ArrayList<>();
+        changeMealTime.add(LocalTime.of(12,0));
+        changeMealTime.add(LocalTime.of(16,0));
         UpdateMealTimeRequest request = new UpdateMealTimeRequest(changeMealTime);
 
         //when
@@ -174,7 +174,7 @@ public class UserApiTest {
         Assertions.assertThat(response.isSuccess()).isEqualTo(true);
         Assertions.assertThat(response.getResponse().getEmail()).isEqualTo("testEmailUser@naver.com");
         Assertions.assertThat(response.getResponse().getSignInType()).isEqualTo("EMAIL");
-        Assertions.assertThat(response.getResponse().getMealTimeList().get(0).getMealTime()).isEqualTo(1200);
+        Assertions.assertThat(response.getResponse().getMealTimeList().get(0).getMealTime()).isEqualTo(LocalTime.NOON);
     }
 
     @Test
@@ -195,7 +195,7 @@ public class UserApiTest {
     @Test
     public void 토큰을_재발급_받을_수_있다() {
         //given
-        List<Integer> mealTime = List.of(12, 16);
+        List<LocalTime> mealTime = List.of(LocalTime.of(12, 0), LocalTime.of(16, 0));
         SignUpRequest signUpRequest = new SignUpRequest("test123@gmail.com",
                 "password123",
                 mealTime,
