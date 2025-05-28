@@ -22,14 +22,11 @@ public class UrlConverter {
         if (isETCMenuPin(pin)) {
             return null;
         }
-        return url + "/menu-pins/" + pin.getImgUrl() + "_add.svg";
+        return url + "/menu-pins/" + pin.getImgUrl() + "_add.png";
     }
 
     public String getMenuPinMapAddDisable(MenuPin pin) {
-        if (isETCMenuPin(pin)) {
-            return null;
-        }
-        return url + "/menu-pins/" + pin.getImgUrl() + "_add_disable.svg";
+        return url + "/menu-pins/" + pin.getImgUrl() + "_add_disable.png";
     }
 
     public String getMenuFolderImgUrl(MenuFolderIcon icon) {
