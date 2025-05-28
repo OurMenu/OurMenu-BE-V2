@@ -53,7 +53,7 @@ public class CacheApiTest {
     }
 
     @Test
-    void 메뉴판_캐시_이미지는_조회할_수_있다() {
+    void 메뉴판_캐시_이미지를_모두_조회할_수_있다() {
         //given
         ApiResponse<GetCacheInfoResponse> response = cacheController.getCacheInfo();
         GetCacheInfoResponse getCacheInfoResponse = response.getResponse();
@@ -71,7 +71,7 @@ public class CacheApiTest {
     }
 
     @Test
-    void 메뉴핀_캐시_이미지는_조회할_수_있다() {
+    void 메뉴핀_캐시_이미지를_모두_조회할_수_있다() {
         //given
         ApiResponse<GetCacheInfoResponse> response = cacheController.getCacheInfo();
         GetCacheInfoResponse getCacheInfoResponse = response.getResponse();
@@ -113,7 +113,7 @@ public class CacheApiTest {
     }
 
     @Test
-    void 홈이미지_캐시_이미지는_조회할_수_있다() {
+    void 홈이미지_캐시_이미지를_모두_조회할_수_있다() {
         //given
         ApiResponse<GetCacheInfoResponse> response = cacheController.getCacheInfo();
         GetCacheInfoResponse getCacheInfoResponse = response.getResponse();
@@ -131,7 +131,7 @@ public class CacheApiTest {
     }
 
     @Test
-    void 태그_캐시_이미지는_조회할_수_있다() {
+    void 태그_캐시_이미지를_모두_조회할_수_있다() {
         //given
         ApiResponse<GetCacheInfoResponse> response = cacheController.getCacheInfo();
         GetCacheInfoResponse getCacheInfoResponse = response.getResponse();
