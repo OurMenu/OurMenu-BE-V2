@@ -132,7 +132,6 @@ public class UserService {
      * @param userDetails
      * @return
      */
-    @Transactional(readOnly = true)
     public UserDto getUserInfo(CustomUserDetails userDetails) {
         User user = userRepository.findById(userDetails.getId())
                 .orElseThrow(NotFoundUserException::new);
@@ -210,7 +209,6 @@ public class UserService {
      * @param request
      * @return
      */
-    @Transactional(readOnly = true)
     public KakaoExistenceResponse validateKakaoUserExists(PostEmailRequest request) {
         String email = request.getEmail();
 
