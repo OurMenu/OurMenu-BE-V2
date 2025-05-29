@@ -1,4 +1,4 @@
-name: CI and request Discord Message to review
+name: CD and request Discord Message to deploy
 
 on:
   push:

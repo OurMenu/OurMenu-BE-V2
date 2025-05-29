@@ -1,6 +1,6 @@
 package com.ourmenu.backend.domain.menu.dto;
 
-import com.ourmenu.backend.domain.cache.domain.MenuPin;
+import com.ourmenu.backend.domain.cache.util.UrlConverter;
 import com.ourmenu.backend.domain.menu.domain.Menu;
 import com.ourmenu.backend.domain.menu.domain.MenuImg;
 import com.ourmenu.backend.domain.menu.domain.MenuMenuFolder;
@@ -23,10 +23,10 @@ public class SaveMenuResponse {
     private int menuPrice;
     private String menuMemoTitle;
     private String menuMemoContent;
-    private MenuPin menuPin;
+    private String menuPinImgUrl;
     private List<Long> menuFolderIds;
     private boolean isCrawled;
-    private List<Tag> tags;
+    private List<String> tagImgUrls;
     private String storeTitle;
     private String storeAddress;
     private Double storeMapX;
@@ -34,19 +34,27 @@ public class SaveMenuResponse {
     private List<String> menuImgUrls;
 
     public static SaveMenuResponse of(Menu menu, Store store, Map map, List<MenuImg> menuImgs,
-                                      List<MenuMenuFolder> menuMenuFolders, List<Tag> tags) {
-        List<String> menuImgUrls = menuImgs.stream().map(MenuImg::getImgUrl).toList();
-        List<Long> menuFolderIds = menuMenuFolders.stream().map(MenuMenuFolder::getFolderId).toList();
+                                      List<MenuMenuFolder> menuMenuFolders, List<Tag> tags, UrlConverter urlConverter) {
+        String menuPinImgUrl = urlConverter.getMenuPinAddUrl(menu.getPin());
+        List<Long> menuFolderIds = menuMenuFolders.stream()
+                .map(MenuMenuFolder::getFolderId)
+                .toList();
+        List<String> tagImgUrls = tags.stream()
+                .map(urlConverter::getOrangeTagImgUrl)
+                .toList();
+        List<String> menuImgUrls = menuImgs.stream()
+                .map(MenuImg::getImgUrl)
+                .toList();
         return SaveMenuResponse.builder()
                 .menuId(menu.getId())
                 .menuTitle(menu.getTitle())
                 .menuPrice(menu.getPrice())
                 .menuMemoTitle(menu.getMemoTitle())
                 .menuMemoContent(menu.getMemoContent())
-                .menuPin(menu.getPin())
+                .menuPinImgUrl(menuPinImgUrl)
                 .menuFolderIds(menuFolderIds)
                 .isCrawled(menu.getIsCrawled())
-                .tags(tags)
+                .tagImgUrls(tagImgUrls)
                 .storeTitle(store.getTitle())
                 .storeAddress(store.getAddress())
                 .storeMapX(map.getLocation().getX())

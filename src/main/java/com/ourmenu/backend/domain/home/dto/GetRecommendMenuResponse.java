@@ -3,6 +3,7 @@ package com.ourmenu.backend.domain.home.dto;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.ourmenu.backend.domain.menu.domain.Menu;
 import com.ourmenu.backend.domain.menu.dto.MenuSimpleDto;
+import com.ourmenu.backend.domain.store.domain.Store;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,14 +19,15 @@ public class GetRecommendMenuResponse {
 
     private Long menuId;
     private String menuTitle;
-    private int menuPrice;
+    private String storeName;
     private String menuImgUrl;
 
     public static GetRecommendMenuResponse of(Menu menu, String imgUrl) {
+        Store store = menu.getStore();
         return GetRecommendMenuResponse.builder()
                 .menuId(menu.getId())
                 .menuTitle(menu.getTitle())
-                .menuPrice(menu.getPrice())
+                .storeName(store.getTitle())
                 .menuImgUrl(imgUrl)
                 .build();
     }
@@ -34,7 +36,7 @@ public class GetRecommendMenuResponse {
         return GetRecommendMenuResponse.builder()
                 .menuId(menuSimpleDto.getMenuId())
                 .menuTitle(menuSimpleDto.getMenuTitle())
-                .menuPrice(menuSimpleDto.getMenuPrice())
+                .storeName(menuSimpleDto.getStoreTitle())
                 .menuImgUrl(imgUrl)
                 .build();
     }

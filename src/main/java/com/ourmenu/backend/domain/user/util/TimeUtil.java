@@ -11,21 +11,6 @@ public class TimeUtil {
     }
 
     /**
-     * 시간을 LocalTime으로 변환한다.
-     *
-     * @param time
-     * @return
-     */
-    public static LocalTime of(int time) {
-        String timeStr = String.format("%04d", time);
-
-        int hour = Integer.parseInt(timeStr.substring(0, 2));
-        int minute = Integer.parseInt(timeStr.substring(2, 4));
-
-        return LocalTime.of(hour, minute);
-    }
-
-    /**
      * 파라미터 값이 현재 시간을 경과 했는지 검증한다
      *
      * @param time
@@ -75,4 +60,5 @@ public class TimeUtil {
 
         return todayDuration.toMinutes() + tomorrowDuration.toMinutes();
     }
+
 }

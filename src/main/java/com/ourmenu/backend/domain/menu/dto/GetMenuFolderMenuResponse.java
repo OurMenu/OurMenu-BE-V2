@@ -1,33 +1,40 @@
 package com.ourmenu.backend.domain.menu.dto;
 
-import java.time.LocalDateTime;
+import com.ourmenu.backend.domain.cache.util.UrlConverter;
+import com.ourmenu.backend.domain.menu.domain.MenuFolder;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder
 @Getter
-@Builder(access = AccessLevel.PRIVATE)
 public class GetMenuFolderMenuResponse {
 
-    private Long menuId;
-    private String menuTitle;
-    private String storeTitle;
-    private String storeAddress;
-    private int menuPrice;
-    private String menuImgUrl;
-    private LocalDateTime createdAt;
+    private Long menuFolderId;
+    private String menuFolderTitle;
+    private String menuFolderImgUrl;
+    private String menuFolderIconImgUrl;
+    private List<MenuFolderMenuResponse> menus;
 
-    public static GetMenuFolderMenuResponse of(MenuSimpleDto menuSimpleDto, String menuImgUrl) {
+    public static GetMenuFolderMenuResponse of(MenuFolder menuFolder, String defaultMenuFolderImgUrl,
+                                               List<MenuFolderMenuResponse> menus, UrlConverter urlConverter) {
+        String menuFolderImgUrl = menuFolder.getImgUrl();
+        if (menuFolderImgUrl == null) {
+            menuFolderImgUrl = defaultMenuFolderImgUrl;
+        }
+
+        String menuFolderIconImgUrl = urlConverter.getMenuFolderImgUrl(menuFolder.getIcon());
+
         return GetMenuFolderMenuResponse.builder()
-                .menuId(menuSimpleDto.getMenuId())
-                .menuTitle(menuSimpleDto.getMenuTitle())
-                .storeTitle(menuSimpleDto.getStoreTitle())
-                .storeAddress(menuSimpleDto.getStoreAddress())
-                .menuPrice(menuSimpleDto.getMenuPrice())
-                .menuImgUrl(menuImgUrl)
-                .createdAt(menuSimpleDto.getCreatedAt())
+                .menuFolderId(menuFolder.getId())
+                .menuFolderTitle(menuFolder.getTitle())
+                .menuFolderImgUrl(menuFolderImgUrl)
+                .menuFolderIconImgUrl(menuFolderIconImgUrl)
+                .menus(menus)
                 .build();
     }
+
 }

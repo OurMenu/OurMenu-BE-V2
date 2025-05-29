@@ -1,6 +1,6 @@
 package com.ourmenu.backend.domain.menu.dto;
 
-import com.ourmenu.backend.domain.cache.domain.MenuFolderIcon;
+import com.ourmenu.backend.domain.cache.util.UrlConverter;
 import com.ourmenu.backend.domain.menu.domain.MenuFolder;
 import lombok.Builder;
 import lombok.Getter;
@@ -10,13 +10,15 @@ import lombok.Getter;
 public class MenuFolderInfoOnMapDto {
 
     private String menuFolderTitle;
-    private MenuFolderIcon menuFolderIcon;
+    private String menuFolderIconImgUrl;
     private int menuFolderCount;
 
-    public static MenuFolderInfoOnMapDto of(MenuFolder menuFolder, int count) {
+    public static MenuFolderInfoOnMapDto of(MenuFolder menuFolder, int count, UrlConverter urlConverter) {
+        String menuFolderIconImgUrl = urlConverter.getMenuFolderImgUrl(menuFolder.getIcon());
+
         return MenuFolderInfoOnMapDto.builder()
                 .menuFolderTitle(menuFolder.getTitle())
-                .menuFolderIcon(menuFolder.getIcon())
+                .menuFolderIconImgUrl(menuFolderIconImgUrl)
                 .menuFolderCount(count)
                 .build();
     }
@@ -24,7 +26,7 @@ public class MenuFolderInfoOnMapDto {
     public static MenuFolderInfoOnMapDto empty() {
         return MenuFolderInfoOnMapDto.builder()
                 .menuFolderTitle("")
-                .menuFolderIcon(null)
+                .menuFolderIconImgUrl(null)
                 .menuFolderCount(0)
                 .build();
     }

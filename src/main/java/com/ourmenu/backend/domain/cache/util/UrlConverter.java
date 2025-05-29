@@ -3,6 +3,7 @@ package com.ourmenu.backend.domain.cache.util;
 import com.ourmenu.backend.domain.cache.domain.HomeImg;
 import com.ourmenu.backend.domain.cache.domain.MenuFolderIcon;
 import com.ourmenu.backend.domain.cache.domain.MenuPin;
+import com.ourmenu.backend.domain.home.domain.Answer;
 import com.ourmenu.backend.domain.tag.domain.Tag;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -14,24 +15,21 @@ public class UrlConverter {
     private String url;
 
     public String getMenuPinMapUrl(MenuPin pin) {
-        return url + "/menu-pins/" + pin.getImgUrl() + "_map.svg";
+        return url + "/menu-pins/" + pin.getImgUrl() + "_map.png";
     }
 
     public String getMenuPinAddUrl(MenuPin pin) {
         if (isETCMenuPin(pin)) {
             return null;
         }
-        return url + "/menu-pins/" + pin.getImgUrl() + "_add.svg";
+        return url + "/menu-pins/" + pin.getImgUrl() + "_add.png";
     }
 
-    public String getMenuPinMapAddDiable(MenuPin pin) {
-        if (isETCMenuPin(pin)) {
-            return null;
-        }
-        return url + "/menu-pins/" + pin.getImgUrl() + "_add_disable.svg";
+    public String getMenuPinMapAddDisable(MenuPin pin) {
+        return url + "/menu-pins/" + pin.getImgUrl() + "_add_disable.png";
     }
 
-    public String getMenuFolderUrl(MenuFolderIcon icon) {
+    public String getMenuFolderImgUrl(MenuFolderIcon icon) {
         return url + "/menu-folder-icons/" + icon.getImgUrl() + ".svg";
     }
 
@@ -45,6 +43,14 @@ public class UrlConverter {
 
     public String getWhiteTagImgUrl(Tag tag) {
         return url + "/tags/" + tag.getImgUrl() + "_white.svg";
+    }
+
+    public String getAnswerImgUrl(Answer answer) {
+        return url + "/answers/" + answer.toString() + ".svg";
+    }
+
+    public String getHomeRecommendTagImgUrl(Tag tag) {
+        return url + "/home_tags/" + tag.getTagEnum() + ".svg";
     }
 
     private boolean isETCMenuPin(MenuPin pin) {

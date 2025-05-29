@@ -1,5 +1,6 @@
 package com.ourmenu.backend.domain.menu.application;
 
+import com.ourmenu.backend.domain.cache.util.UrlConverter;
 import com.ourmenu.backend.domain.home.dto.GetRecommendMenuResponse;
 import com.ourmenu.backend.domain.menu.dao.MenuRepository;
 import com.ourmenu.backend.domain.menu.domain.Menu;
@@ -12,10 +13,12 @@ import com.ourmenu.backend.domain.menu.dto.GetMenuResponse;
 import com.ourmenu.backend.domain.menu.dto.GetSimpleMenuResponse;
 import com.ourmenu.backend.domain.menu.dto.MenuDto;
 import com.ourmenu.backend.domain.menu.dto.MenuFilterDto;
+import com.ourmenu.backend.domain.menu.dto.MenuFolderMenuResponse;
 import com.ourmenu.backend.domain.menu.dto.MenuSimpleDto;
 import com.ourmenu.backend.domain.menu.dto.SaveMenuResponse;
 import com.ourmenu.backend.domain.menu.exception.ForbiddenMenuException;
 import com.ourmenu.backend.domain.menu.exception.NotFoundMenuException;
+import com.ourmenu.backend.domain.menu.util.DefaultImgConverter;
 import com.ourmenu.backend.domain.store.application.StoreService;
 import com.ourmenu.backend.domain.store.domain.Store;
 import com.ourmenu.backend.domain.tag.application.MenuTagService;
@@ -37,6 +40,8 @@ public class MenuService {
     private final StoreService storeService;
     private final MenuImgService menuImgService;
     private final MenuFolderService menuFolderService;
+    private final DefaultImgConverter defaultImgConverter;
+    private final UrlConverter urlConverter;
 
     /**
      * 메뉴 저장(메뉴 사진, 메뉴판, 태그 의존 엔티티 생성
@@ -50,7 +55,7 @@ public class MenuService {
         Store store = storeService.saveStoreAndMap(menuDto.getStoreTitle(), menuDto.getStoreAddress(),
                 menuDto.getMapX(),
                 menuDto.getMapY());
-
+        
         Menu menu = Menu.builder()
                 .title(menuDto.getMenuTitle())
                 .price(menuDto.getMenuPrice())
@@ -73,7 +78,8 @@ public class MenuService {
 
         //s3 업로드및 이미지 연관관계 생성
         List<MenuImg> menuImgs = menuImgService.saveMenuImgs(saveMenu.getId(), menuDto.getMenuImgs());
-        return SaveMenuResponse.of(saveMenu, store, store.getMap(), menuImgs, saveMenuMenuFolders, saveTag);
+        return SaveMenuResponse.of(saveMenu, store, store.getMap(), menuImgs, saveMenuMenuFolders, saveTag,
+                urlConverter);
     }
 
     /**
@@ -100,8 +106,8 @@ public class MenuService {
      * @return
      */
     @Transactional
-    public List<GetMenuFolderMenuResponse> findMenusByMenuFolder(Long userId, Long menuFolderId,
-                                                                 MenuFilterDto menuFilterDto) {
+    public GetMenuFolderMenuResponse findMenusByMenuFolder(Long userId, Long menuFolderId,
+                                                           MenuFilterDto menuFilterDto) {
         List<MenuSimpleDto> findMenuSimpleDto = new ArrayList<>();
         SortOrder sortOrder = menuFilterDto.getSortOrder();
         if (sortOrder.equals(SortOrder.TITLE_ASC)) {
@@ -113,12 +119,16 @@ public class MenuService {
         if (sortOrder.equals(SortOrder.PRICE_ASC)) {
             findMenuSimpleDto.addAll(menuRepository.findByMenuFolderIdOrderByPriceAsc(userId, menuFolderId));
         }
-        return findMenuSimpleDto.stream()
+        List<MenuFolderMenuResponse> menuResponses = findMenuSimpleDto.stream()
                 .map(menuSimpleDto -> {
                     String imgUrl = menuImgService.findUniqueImg(menuSimpleDto.getMenuId());
-                    return GetMenuFolderMenuResponse.of(menuSimpleDto, imgUrl);
+                    return MenuFolderMenuResponse.of(menuSimpleDto, imgUrl);
                 })
                 .toList();
+        MenuFolder menuFolder = menuFolderService.findOne(userId, menuFolderId);
+
+        return GetMenuFolderMenuResponse.of(menuFolder, defaultImgConverter.getDefaultMenuFolderImgUrl(),
+                menuResponses, urlConverter);
     }
 
     /**
@@ -208,7 +218,7 @@ public class MenuService {
         List<String> imgUrls = menuImgService.findImgUrls(menuId);
         List<Tag> tags = menuTagService.findTagNames(menuId);
         List<MenuFolder> menuFolders = menuFolderService.findAllByMenuId(menuId);
-        return GetMenuResponse.of(menu, imgUrls, tags, menuFolders);
+        return GetMenuResponse.of(menu, imgUrls, tags, menuFolders, urlConverter);
     }
 
 

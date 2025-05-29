@@ -1,5 +1,6 @@
 package com.ourmenu.backend.domain.menu.application;
 
+import com.ourmenu.backend.domain.cache.util.UrlConverter;
 import com.ourmenu.backend.domain.menu.dao.MenuFolderRepository;
 import com.ourmenu.backend.domain.menu.dao.MenuRepository;
 import com.ourmenu.backend.domain.menu.domain.MenuFolder;
@@ -28,6 +29,7 @@ public class MenuFolderService {
     private final MenuMenuFolderService menuMenuFolderService;
     private final DefaultImgConverter defaultImgConvertor;
     private final MenuRepository menuRepository;
+    private final UrlConverter urlConverter;
 
     /**
      * 메뉴 폴더 저장
@@ -43,7 +45,7 @@ public class MenuFolderService {
 
         MenuFolder menuFolder = saveMenuFolder(menuFolderDto, menuFolderImgUrl);
         return SaveMenuFolderResponse.of(menuFolder, menuFolderDto.getMenuIds(),
-                defaultImgConvertor.getDefaultMenuFolderImgUrl());
+                defaultImgConvertor.getDefaultMenuFolderImgUrl(), urlConverter);
     }
 
     /**
@@ -93,7 +95,7 @@ public class MenuFolderService {
         menuFolder.update(menuFolderDto);
         List<MenuMenuFolder> menuMenuFolders = menuMenuFolderService.findAllByMenuFolderId(menuFolderId);
         return UpdateMenuFolderResponse.of(menuFolder, menuMenuFolders,
-                defaultImgConvertor.getDefaultMenuFolderImgUrl());
+                defaultImgConvertor.getDefaultMenuFolderImgUrl(), urlConverter);
     }
 
     /**
@@ -124,7 +126,7 @@ public class MenuFolderService {
         findMenuFolder.updateIndex(index);
         List<MenuMenuFolder> menuMenuFolders = menuMenuFolderService.findAllByMenuFolderId(menuFolderId);
         return UpdateMenuFolderResponse.of(findMenuFolder, menuMenuFolders,
-                defaultImgConvertor.getDefaultMenuFolderImgUrl());
+                defaultImgConvertor.getDefaultMenuFolderImgUrl(), urlConverter);
     }
 
 
@@ -134,7 +136,6 @@ public class MenuFolderService {
      * @param userId
      * @return index 기준 내림 차순 메뉴판 리스트
      */
-    @Transactional
     public GetMenuFolderResponse findAllMenuFolder(Long userId) {
         List<MenuFolder> menuFolders = menuFolderRepository.findAllByUserIdOrderByIndexDesc(userId);
 
@@ -143,15 +144,24 @@ public class MenuFolderService {
                     List<MenuMenuFolder> menuMenuFolders = menuMenuFolderService.findAllByMenuFolderId(
                             menuFolder.getId());
                     return MenuFolderResponse.of(menuFolder, menuMenuFolders,
-                            defaultImgConvertor.getDefaultMenuFolderImgUrl());
+                            defaultImgConvertor.getDefaultMenuFolderImgUrl(), urlConverter);
                 }).toList();
         int menuCount = menuRepository.countByUserId(userId);
         return GetMenuFolderResponse.of(menuCount, menuFolderResponses);
     }
 
-    @Transactional
     public List<MenuFolder> findAllByMenuId(Long menuId) {
         return menuFolderRepository.findMenuFoldersByMenuId(menuId);
+    }
+
+    public MenuFolder findOne(Long userId, Long menuFolderId) {
+        MenuFolder menuFolder = menuFolderRepository.findById(menuFolderId)
+                .orElseThrow(NotFoundMenuFolderException::new);
+        Long findUserId = menuFolder.getUserId();
+        if (!userId.equals(findUserId)) {
+            throw new ForbiddenMenuFolderException();
+        }
+        return menuFolder;
     }
 
     /**
@@ -172,15 +182,5 @@ public class MenuFolderService {
         MenuFolder saveMenuFolder = menuFolderRepository.save(menuFolder);
         menuMenuFolderService.saveMenuMenuFolders(menuFolderDto.getMenuIds(), menuFolder.getUserId(), saveMenuFolder);
         return saveMenuFolder;
-    }
-
-    private MenuFolder findOne(Long userId, Long menuFolderId) {
-        MenuFolder menuFolder = menuFolderRepository.findById(menuFolderId)
-                .orElseThrow(NotFoundMenuFolderException::new);
-        Long findUserId = menuFolder.getUserId();
-        if (!userId.equals(findUserId)) {
-            throw new ForbiddenMenuFolderException();
-        }
-        return menuFolder;
     }
 }
