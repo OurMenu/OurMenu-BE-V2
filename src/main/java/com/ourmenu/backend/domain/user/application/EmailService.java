@@ -57,7 +57,7 @@ public class EmailService {
     }
 
     public String generateRandomCode(int length) {
-        String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        String characters = "0123456789";
         StringBuilder confirmCode = new StringBuilder();
         ThreadLocalRandom random = ThreadLocalRandom.current();
 
