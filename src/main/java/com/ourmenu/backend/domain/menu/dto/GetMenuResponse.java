@@ -1,7 +1,6 @@
 package com.ourmenu.backend.domain.menu.dto;
 
-import com.ourmenu.backend.domain.cache.domain.MenuFolderIcon;
-import com.ourmenu.backend.domain.cache.domain.MenuPin;
+import com.ourmenu.backend.domain.cache.util.UrlConverter;
 import com.ourmenu.backend.domain.menu.domain.Menu;
 import com.ourmenu.backend.domain.menu.domain.MenuFolder;
 import com.ourmenu.backend.domain.tag.domain.Tag;
@@ -19,10 +18,10 @@ public class GetMenuResponse {
     private Long menuId;
     private String menuTitle;
     private int menuPrice;
-    private MenuPin menuPin;
+    private String menuPinImgUrl;
     private String storeTitle;
     private String storeAddress;
-    private List<Tag> tags;
+    private List<String> tagImgUrls;
     private List<String> menuImgUrls;
 
     private List<SimpleMenuFolder> menuFolders;
@@ -33,26 +32,35 @@ public class GetMenuResponse {
     private static class SimpleMenuFolder {
         private Long menuFolderId;
         private String menuFolderTitle;
-        private MenuFolderIcon menuFolderIcon;
+        private String menuFolderIconImgUrl;
     }
 
     public static GetMenuResponse of(Menu menu, List<String> imgUrls, List<Tag> tags,
-                                     List<MenuFolder> menuFolders) {
+                                     List<MenuFolder> menuFolders, UrlConverter urlConverter) {
+        String menuPinImgUrl = urlConverter.getMenuPinMapUrl(menu.getPin());
+
         List<SimpleMenuFolder> simpleMenuFolders = menuFolders.stream()
-                .map(menuFolder -> SimpleMenuFolder.builder()
-                        .menuFolderId(menuFolder.getId())
-                        .menuFolderTitle(menuFolder.getTitle())
-                        .menuFolderIcon(menuFolder.getIcon())
-                        .build())
+                .map(menuFolder -> {
+                    String menuFolderIconImgUrl = urlConverter.getMenuFolderImgUrl(menuFolder.getIcon());
+                    return SimpleMenuFolder.builder()
+                            .menuFolderId(menuFolder.getId())
+                            .menuFolderTitle(menuFolder.getTitle())
+                            .menuFolderIconImgUrl(menuFolderIconImgUrl)
+                            .build();
+                })
                 .toList();
+        List<String> tagImgUrls = tags.stream()
+                .map(urlConverter::getOrangeTagImgUrl)
+                .toList();
+
         return GetMenuResponse.builder().
                 menuId(menu.getId())
                 .menuTitle(menu.getTitle())
                 .menuPrice(menu.getPrice())
-                .menuPin(menu.getPin())
+                .menuPinImgUrl(menuPinImgUrl)
                 .storeAddress(menu.getStore().getAddress())
                 .storeTitle(menu.getStore().getTitle())
-                .tags(tags)
+                .tagImgUrls(tagImgUrls)
                 .menuImgUrls(imgUrls)
                 .menuFolders(simpleMenuFolders)
                 .build();

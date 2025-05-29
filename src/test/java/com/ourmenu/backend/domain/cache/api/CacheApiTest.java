@@ -7,15 +7,12 @@ import com.ourmenu.backend.domain.cache.dto.SimpleMenuFolderIconResponse;
 import com.ourmenu.backend.domain.cache.dto.SimpleMenuPinResponse;
 import com.ourmenu.backend.domain.cache.dto.SimpleTagImgResponse;
 import com.ourmenu.backend.domain.cache.util.UrlConverter;
-import com.ourmenu.backend.domain.user.domain.CustomUserDetails;
-import com.ourmenu.backend.global.DatabaseCleaner;
 import com.ourmenu.backend.global.TestConfig;
 import com.ourmenu.backend.global.config.GlobalDataConfig;
 import com.ourmenu.backend.global.data.GlobalUserTestData;
 import com.ourmenu.backend.global.response.ApiResponse;
 import java.util.List;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,18 +36,7 @@ public class CacheApiTest {
     @Autowired
     UrlConverter urlConvertor;
 
-    @Autowired
-    DatabaseCleaner databaseCleaner;
-
-    CustomUserDetails testCustomUserDetails;
-
     RestTemplate restTemplate = new RestTemplate();
-
-    @BeforeEach
-    void setUp() {
-        databaseCleaner.clear();
-        testCustomUserDetails = userTestData.createTestEmailUserWithMealTime();
-    }
 
     @Test
     void 확인할_수_없는_이미지는_조회할_수_없다() {
@@ -67,7 +53,7 @@ public class CacheApiTest {
     }
 
     @Test
-    void 메뉴판_캐시_이미지는_조회할_수_있다() {
+    void 메뉴판_캐시_이미지를_모두_조회할_수_있다() {
         //given
         ApiResponse<GetCacheInfoResponse> response = cacheController.getCacheInfo();
         GetCacheInfoResponse getCacheInfoResponse = response.getResponse();
@@ -85,7 +71,7 @@ public class CacheApiTest {
     }
 
     @Test
-    void 메뉴핀_캐시_이미지는_조회할_수_있다() {
+    void 메뉴핀_캐시_이미지를_모두_조회할_수_있다() {
         //given
         ApiResponse<GetCacheInfoResponse> response = cacheController.getCacheInfo();
         GetCacheInfoResponse getCacheInfoResponse = response.getResponse();
@@ -127,7 +113,7 @@ public class CacheApiTest {
     }
 
     @Test
-    void 홈이미지_캐시_이미지는_조회할_수_있다() {
+    void 홈이미지_캐시_이미지를_모두_조회할_수_있다() {
         //given
         ApiResponse<GetCacheInfoResponse> response = cacheController.getCacheInfo();
         GetCacheInfoResponse getCacheInfoResponse = response.getResponse();
@@ -145,7 +131,7 @@ public class CacheApiTest {
     }
 
     @Test
-    void 태그_캐시_이미지는_조회할_수_있다() {
+    void 태그_캐시_이미지를_모두_조회할_수_있다() {
         //given
         ApiResponse<GetCacheInfoResponse> response = cacheController.getCacheInfo();
         GetCacheInfoResponse getCacheInfoResponse = response.getResponse();
