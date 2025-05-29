@@ -48,7 +48,7 @@ public class MealTimeService {
      * @return
      */
     @Transactional
-    public List<MealTime> saveMealTimes(List<Integer> mealTimes, Long userId) {
+    public List<MealTime> saveMealTimes(List<LocalTime> mealTimes, Long userId) {
         return mealTimes.stream()
                 .map(mealTime -> saveMealTime(mealTime, userId))
                 .toList();
@@ -90,12 +90,11 @@ public class MealTimeService {
     /**
      * 식시시간을 시간 타입을 변환하여 저장한다.
      *
-     * @param timeInteger
+     * @param time
      * @param userId
      * @return
      */
-    private MealTime saveMealTime(int timeInteger, Long userId) {
-        LocalTime time = TimeUtil.of(timeInteger);
+    private MealTime saveMealTime(LocalTime time, Long userId) {
         MealTime mealTime = MealTime.builder()
                 .userId(userId)
                 .mealTime(time)

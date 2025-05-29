@@ -12,6 +12,7 @@ import com.ourmenu.backend.domain.user.dto.request.SignInRequest;
 import com.ourmenu.backend.domain.user.dto.request.SignUpRequest;
 import com.ourmenu.backend.domain.user.dto.request.UpdatePasswordRequest;
 import com.ourmenu.backend.domain.user.dto.response.KakaoExistenceResponse;
+import com.ourmenu.backend.domain.user.dto.response.MealTimeDto;
 import com.ourmenu.backend.domain.user.dto.response.ReissueRequest;
 import com.ourmenu.backend.domain.user.dto.response.TokenDto;
 import com.ourmenu.backend.domain.user.dto.response.UserDto;
@@ -25,14 +26,16 @@ import com.ourmenu.backend.domain.user.exception.TokenExpiredExcpetion;
 import com.ourmenu.backend.domain.user.exception.UnsupportedSignInTypeException;
 import com.ourmenu.backend.global.util.JwtTokenProvider;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.transaction.Transactional;
+
+import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -74,6 +77,7 @@ public class UserService {
      * @param request    User의 Email, Password, SignInType Request
      * @return Token 정보
      */
+    @Transactional
     public TokenDto signIn(SignInRequest request) {
         Optional<User> optionalUser = userRepository.findByEmail(request.getEmail());
         if (optionalUser.isEmpty() || !optionalUser.get().getSignInType().name().equals(request.getSignInType())) {
@@ -105,6 +109,7 @@ public class UserService {
      * @param request
      * @param userDetails
      */
+    @Transactional
     public void changePassword(UpdatePasswordRequest request, CustomUserDetails userDetails) {
         String rawPassword = request.getPassword();
         String encodedPassword = userDetails.getPassword();
@@ -132,8 +137,15 @@ public class UserService {
                 .orElseThrow(NotFoundUserException::new);
 
         List<MealTime> mealTimes = mealTimeService.findAllByUserId(userDetails.getId());
+        List<MealTimeDto> mealTimeDtos = new ArrayList<>();
 
-        return UserDto.of(user, mealTimes);
+        for (MealTime mealTime : mealTimes) {
+            boolean isAfter = LocalTime.now().isAfter(mealTime.getMealTime());
+            MealTimeDto mealTimeDto = MealTimeDto.of(mealTime, isAfter);
+            mealTimeDtos.add(mealTimeDto);
+        }
+
+        return UserDto.of(user, mealTimeDtos);
     }
 
     /**
@@ -142,6 +154,7 @@ public class UserService {
      * @param reissueRequest
      * @return
      */
+    @Transactional
     public TokenDto reissueToken(ReissueRequest reissueRequest) {
         String refreshToken = reissueRequest.getRefreshToken();
         String email = jwtTokenProvider.getEmailFromToken(refreshToken);
@@ -177,6 +190,7 @@ public class UserService {
      *
      * @param request
      */
+    @Transactional
     public void signOut(HttpServletRequest request) {
         String token = request.getHeader("Authorization");
         if (token.startsWith("Bearer ")) {
@@ -212,6 +226,7 @@ public class UserService {
      *
      * @param userId
      */
+    @Transactional
     public void removeUser(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(NotFoundUserException::new);
