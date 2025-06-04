@@ -19,6 +19,8 @@ public class GetMenuResponse {
     private String menuTitle;
     private int menuPrice;
     private String menuPinImgUrl;
+    private String menuMemoTitle;
+    private String menuMemoContent;
     private String storeTitle;
     private String storeAddress;
     private List<String> tagImgUrls;
@@ -58,6 +60,8 @@ public class GetMenuResponse {
                 .menuTitle(menu.getTitle())
                 .menuPrice(menu.getPrice())
                 .menuPinImgUrl(menuPinImgUrl)
+                .menuMemoTitle(menu.getMemoTitle())
+                .menuMemoContent(menu.getMemoContent())
                 .storeAddress(menu.getStore().getAddress())
                 .storeTitle(menu.getStore().getTitle())
                 .tagImgUrls(tagImgUrls)
