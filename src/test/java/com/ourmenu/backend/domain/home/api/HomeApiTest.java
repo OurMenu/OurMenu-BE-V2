@@ -1,7 +1,7 @@
 package com.ourmenu.backend.domain.home.api;
 
 import com.ourmenu.backend.domain.cache.domain.HomeImg;
-import com.ourmenu.backend.domain.cache.util.UrlConverter;
+import com.ourmenu.backend.domain.cache.application.UrlConverterService;
 import com.ourmenu.backend.domain.home.config.HomeTestConfig;
 import com.ourmenu.backend.domain.home.data.HomeTestData;
 import com.ourmenu.backend.domain.home.domain.Answer;
@@ -31,7 +31,7 @@ public class HomeApiTest {
     HomeController homeController;
 
     @Autowired
-    UrlConverter urlConverter;
+    UrlConverterService urlConverterService;
 
     @Autowired
     HomeTestData homeTestData;
@@ -104,8 +104,9 @@ public class HomeApiTest {
 
         Assertions.assertThat(response.getResponse().getAnswerImgUrl()).satisfiesAnyOf(
                 answerImgUrl -> Assertions.assertThat(answerImgUrl)
-                        .isEqualTo(urlConverter.getHomeImgUrl(HomeImg.LIKE1)),
-                answerImgUrl -> Assertions.assertThat(answerImgUrl).isEqualTo(urlConverter.getHomeImgUrl(HomeImg.LIKE2))
+                        .isEqualTo(urlConverterService.getHomeImgUrl(HomeImg.LIKE1)),
+                answerImgUrl -> Assertions.assertThat(answerImgUrl)
+                        .isEqualTo(urlConverterService.getHomeImgUrl(HomeImg.LIKE2))
         );
     }
 

@@ -1,8 +1,8 @@
 package com.ourmenu.backend.domain.menu.application;
 
+import com.ourmenu.backend.domain.menu.application.converter.DefaultImgConverterService;
 import com.ourmenu.backend.domain.menu.dao.MenuImgRepository;
 import com.ourmenu.backend.domain.menu.domain.MenuImg;
-import com.ourmenu.backend.domain.menu.util.DefaultImgConverter;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,7 +15,7 @@ public class MenuImgService {
 
     private final MenuImgRepository menuImgRepository;
     private final AwsS3Service awsS3Service;
-    private final DefaultImgConverter defaultImgConverter;
+    private final DefaultImgConverterService defaultImgConverterService;
 
     @Transactional
     public List<MenuImg> saveMenuImgs(Long menuId, List<MultipartFile> multipartFiles) {
@@ -52,7 +52,7 @@ public class MenuImgService {
         return menuImgRepository.findAllByMenuId(menuId).stream()
                 .map(MenuImg::getImgUrl)
                 .findFirst()
-                .orElse(defaultImgConverter.getDefaultMenuImgUrl());
+                .orElse(defaultImgConverterService.getDefaultMenuImgUrl());
     }
 
     /**
@@ -88,7 +88,7 @@ public class MenuImgService {
     private MenuImg createDefaultMenuImg() {
         return MenuImg.builder()
                 .menuId(null)
-                .imgUrl(defaultImgConverter.getDefaultMenuImgUrl())
+                .imgUrl(defaultImgConverterService.getDefaultMenuImgUrl())
                 .build();
     }
 }

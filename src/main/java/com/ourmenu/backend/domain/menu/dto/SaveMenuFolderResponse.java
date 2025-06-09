@@ -1,6 +1,6 @@
 package com.ourmenu.backend.domain.menu.dto;
 
-import com.ourmenu.backend.domain.cache.util.UrlConverter;
+import com.ourmenu.backend.domain.cache.application.UrlConverterService;
 import com.ourmenu.backend.domain.menu.domain.MenuFolder;
 import java.util.List;
 import lombok.AccessLevel;
@@ -21,9 +21,9 @@ public class SaveMenuFolderResponse {
     private int index;
 
     public static SaveMenuFolderResponse of(MenuFolder menuFolder, List<Long> menuIds,
-                                            String defaultMenuFolderImgUrl, UrlConverter urlConverter) {
+                                            String defaultMenuFolderImgUrl, UrlConverterService urlConverterService) {
         String menuFolderImgUrl = menuFolder.getImgUrl();
-        String menuFolderIconImgUrl = urlConverter.getMenuFolderImgUrl(menuFolder.getIcon());
+        String menuFolderIconImgUrl = urlConverterService.getMenuFolderImgUrl(menuFolder.getIcon());
         if (menuFolderImgUrl == null) {
             menuFolderImgUrl = defaultMenuFolderImgUrl;
         }

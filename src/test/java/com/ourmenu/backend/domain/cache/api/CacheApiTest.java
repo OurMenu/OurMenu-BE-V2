@@ -6,7 +6,7 @@ import com.ourmenu.backend.domain.cache.dto.SimpleHomeImgResponse;
 import com.ourmenu.backend.domain.cache.dto.SimpleMenuFolderIconResponse;
 import com.ourmenu.backend.domain.cache.dto.SimpleMenuPinResponse;
 import com.ourmenu.backend.domain.cache.dto.SimpleTagImgResponse;
-import com.ourmenu.backend.domain.cache.util.UrlConverter;
+import com.ourmenu.backend.domain.cache.application.UrlConverterService;
 import com.ourmenu.backend.global.TestConfig;
 import com.ourmenu.backend.global.config.GlobalDataConfig;
 import com.ourmenu.backend.global.data.GlobalUserTestData;
@@ -34,7 +34,7 @@ public class CacheApiTest {
     GlobalUserTestData userTestData;
 
     @Autowired
-    UrlConverter urlConvertor;
+    UrlConverterService urlConvertor;
 
     RestTemplate restTemplate = new RestTemplate();
 
