@@ -1,7 +1,7 @@
 package com.ourmenu.backend.domain.home.dto;
 
 import com.ourmenu.backend.domain.cache.domain.HomeImg;
-import com.ourmenu.backend.domain.cache.util.UrlConverter;
+import com.ourmenu.backend.domain.cache.application.UrlConverterService;
 import com.ourmenu.backend.domain.home.domain.Answer;
 import com.ourmenu.backend.domain.tag.domain.Tag;
 import java.util.List;
@@ -27,10 +27,10 @@ public class GetHomeRecommendResponse {
                                               Tag tag,
                                               List<GetRecommendMenuResponse> tagRecommendMenus,
                                               List<GetRecommendMenuResponse> otherRecommendMenus,
-                                              UrlConverter urlConverter) {
+                                              UrlConverterService urlConverterService) {
         HomeImg homeImg = answer.getRandomHomeImg();
-        String HomeImgUrl = urlConverter.getHomeImgUrl(homeImg);
-        String tagRecommendImgUrl = urlConverter.getHomeRecommendTagImgUrl(tag);
+        String HomeImgUrl = urlConverterService.getHomeImgUrl(homeImg);
+        String tagRecommendImgUrl = urlConverterService.getHomeRecommendTagImgUrl(tag);
         String otherRecommendImgUrl = tagRecommendImgUrl;
 
         return GetHomeRecommendResponse.builder()

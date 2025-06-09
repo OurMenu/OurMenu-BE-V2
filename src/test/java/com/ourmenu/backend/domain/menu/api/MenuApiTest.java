@@ -1,7 +1,7 @@
 package com.ourmenu.backend.domain.menu.api;
 
 import com.ourmenu.backend.domain.cache.domain.MenuPin;
-import com.ourmenu.backend.domain.cache.util.UrlConverter;
+import com.ourmenu.backend.domain.cache.application.UrlConverterService;
 import com.ourmenu.backend.domain.menu.config.MenuTestConfig;
 import com.ourmenu.backend.domain.menu.data.MenuTestData;
 import com.ourmenu.backend.domain.menu.domain.Menu;
@@ -36,7 +36,7 @@ public class MenuApiTest {
     MenuController menuController;
 
     @Autowired
-    UrlConverter urlConverter;
+    UrlConverterService urlConverterService;
 
     @Autowired
     GlobalUserTestData userTestData;
@@ -70,7 +70,7 @@ public class MenuApiTest {
         Assertions.assertThat(response.getResponse().getMenus().size()).isEqualTo(3);
 
         Assertions.assertThat(response.getResponse().getMenuFolderIconImgUrl())
-                .isEqualTo(urlConverter.getMenuFolderImgUrl(testMenuFolder.getIcon()));
+                .isEqualTo(urlConverterService.getMenuFolderImgUrl(testMenuFolder.getIcon()));
     }
 
     @Test
@@ -89,7 +89,7 @@ public class MenuApiTest {
         Assertions.assertThat(response.getResponse().getMenuMemoTitle()).isEqualTo(menuMemoTitle);
 
         Assertions.assertThat(response.getResponse().getMenuPinImgUrl())
-                .isEqualTo(urlConverter.getMenuPinAddUrl(MenuPin.BBQ));
+                .isEqualTo(urlConverterService.getMenuPinAddUrl(MenuPin.BBQ));
     }
 
     @Test

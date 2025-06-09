@@ -1,6 +1,6 @@
 package com.ourmenu.backend.domain.menu.dto;
 
-import com.ourmenu.backend.domain.cache.util.UrlConverter;
+import com.ourmenu.backend.domain.cache.application.UrlConverterService;
 import com.ourmenu.backend.domain.menu.domain.MenuFolder;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,8 +13,8 @@ public class MenuFolderInfoOnMapDto {
     private String menuFolderIconImgUrl;
     private int menuFolderCount;
 
-    public static MenuFolderInfoOnMapDto of(MenuFolder menuFolder, int count, UrlConverter urlConverter) {
-        String menuFolderIconImgUrl = urlConverter.getMenuFolderImgUrl(menuFolder.getIcon());
+    public static MenuFolderInfoOnMapDto of(MenuFolder menuFolder, int count, UrlConverterService urlConverterService) {
+        String menuFolderIconImgUrl = urlConverterService.getMenuFolderImgUrl(menuFolder.getIcon());
 
         return MenuFolderInfoOnMapDto.builder()
                 .menuFolderTitle(menuFolder.getTitle())

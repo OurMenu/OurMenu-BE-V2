@@ -1,6 +1,6 @@
 package com.ourmenu.backend.domain.menu.dto;
 
-import com.ourmenu.backend.domain.cache.util.UrlConverter;
+import com.ourmenu.backend.domain.cache.application.UrlConverterService;
 import com.ourmenu.backend.domain.menu.domain.Menu;
 import com.ourmenu.backend.domain.menu.domain.MenuImg;
 import com.ourmenu.backend.domain.menu.domain.MenuMenuFolder;
@@ -34,13 +34,14 @@ public class SaveMenuResponse {
     private List<String> menuImgUrls;
 
     public static SaveMenuResponse of(Menu menu, Store store, Map map, List<MenuImg> menuImgs,
-                                      List<MenuMenuFolder> menuMenuFolders, List<Tag> tags, UrlConverter urlConverter) {
-        String menuPinImgUrl = urlConverter.getMenuPinAddUrl(menu.getPin());
+                                      List<MenuMenuFolder> menuMenuFolders, List<Tag> tags,
+                                      UrlConverterService urlConverterService) {
+        String menuPinImgUrl = urlConverterService.getMenuPinAddUrl(menu.getPin());
         List<Long> menuFolderIds = menuMenuFolders.stream()
                 .map(MenuMenuFolder::getFolderId)
                 .toList();
         List<String> tagImgUrls = tags.stream()
-                .map(urlConverter::getOrangeTagImgUrl)
+                .map(urlConverterService::getOrangeTagImgUrl)
                 .toList();
         List<String> menuImgUrls = menuImgs.stream()
                 .map(MenuImg::getImgUrl)

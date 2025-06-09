@@ -1,7 +1,8 @@
 package com.ourmenu.backend.domain.menu.application;
 
-import com.ourmenu.backend.domain.cache.util.UrlConverter;
+import com.ourmenu.backend.domain.cache.application.UrlConverterService;
 import com.ourmenu.backend.domain.home.dto.GetRecommendMenuResponse;
+import com.ourmenu.backend.domain.menu.application.converter.DefaultImgConverterService;
 import com.ourmenu.backend.domain.menu.dao.MenuRepository;
 import com.ourmenu.backend.domain.menu.domain.Menu;
 import com.ourmenu.backend.domain.menu.domain.MenuFolder;
@@ -18,7 +19,6 @@ import com.ourmenu.backend.domain.menu.dto.MenuSimpleDto;
 import com.ourmenu.backend.domain.menu.dto.SaveMenuResponse;
 import com.ourmenu.backend.domain.menu.exception.ForbiddenMenuException;
 import com.ourmenu.backend.domain.menu.exception.NotFoundMenuException;
-import com.ourmenu.backend.domain.menu.util.DefaultImgConverter;
 import com.ourmenu.backend.domain.store.application.StoreService;
 import com.ourmenu.backend.domain.store.domain.Store;
 import com.ourmenu.backend.domain.tag.application.MenuTagService;
@@ -40,8 +40,8 @@ public class MenuService {
     private final StoreService storeService;
     private final MenuImgService menuImgService;
     private final MenuFolderService menuFolderService;
-    private final DefaultImgConverter defaultImgConverter;
-    private final UrlConverter urlConverter;
+    private final DefaultImgConverterService defaultImgConverterService;
+    private final UrlConverterService urlConverterService;
 
     /**
      * 메뉴 저장(메뉴 사진, 메뉴판, 태그 의존 엔티티 생성
@@ -55,7 +55,7 @@ public class MenuService {
         Store store = storeService.saveStoreAndMap(menuDto.getStoreTitle(), menuDto.getStoreAddress(),
                 menuDto.getMapX(),
                 menuDto.getMapY());
-        
+
         Menu menu = Menu.builder()
                 .title(menuDto.getMenuTitle())
                 .price(menuDto.getMenuPrice())
@@ -79,7 +79,7 @@ public class MenuService {
         //s3 업로드및 이미지 연관관계 생성
         List<MenuImg> menuImgs = menuImgService.saveMenuImgs(saveMenu.getId(), menuDto.getMenuImgs());
         return SaveMenuResponse.of(saveMenu, store, store.getMap(), menuImgs, saveMenuMenuFolders, saveTag,
-                urlConverter);
+                urlConverterService);
     }
 
     /**
@@ -127,8 +127,8 @@ public class MenuService {
                 .toList();
         MenuFolder menuFolder = menuFolderService.findOne(userId, menuFolderId);
 
-        return GetMenuFolderMenuResponse.of(menuFolder, defaultImgConverter.getDefaultMenuFolderImgUrl(),
-                menuResponses, urlConverter);
+        return GetMenuFolderMenuResponse.of(menuFolder, defaultImgConverterService.getDefaultMenuFolderImgUrl(),
+                menuResponses, urlConverterService);
     }
 
     /**
@@ -218,7 +218,7 @@ public class MenuService {
         List<String> imgUrls = menuImgService.findImgUrls(menuId);
         List<Tag> tags = menuTagService.findTagNames(menuId);
         List<MenuFolder> menuFolders = menuFolderService.findAllByMenuId(menuId);
-        return GetMenuResponse.of(menu, imgUrls, tags, menuFolders, urlConverter);
+        return GetMenuResponse.of(menu, imgUrls, tags, menuFolders, urlConverterService);
     }
 
 

@@ -8,7 +8,6 @@ import com.ourmenu.backend.domain.cache.dto.SimpleHomeImgResponse;
 import com.ourmenu.backend.domain.cache.dto.SimpleMenuFolderIconResponse;
 import com.ourmenu.backend.domain.cache.dto.SimpleMenuPinResponse;
 import com.ourmenu.backend.domain.cache.dto.SimpleTagImgResponse;
-import com.ourmenu.backend.domain.cache.util.UrlConverter;
 import com.ourmenu.backend.domain.tag.domain.Tag;
 import java.util.Arrays;
 import java.util.List;
@@ -19,7 +18,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CacheService {
 
-    private final UrlConverter urlConvertor;
+    private final UrlConverterService urlConvertor;
 
     public GetCacheInfoResponse getCacheInfo() {
         List<SimpleMenuFolderIconResponse> menuFolderIconInfo = getMenuFolderIconInfo();

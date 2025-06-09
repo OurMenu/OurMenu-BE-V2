@@ -1,10 +1,10 @@
-package com.ourmenu.backend.domain.menu.util;
+package com.ourmenu.backend.domain.menu.application.converter;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-@Component
-public class DefaultImgConverter {
+@Service
+public class DefaultImgConverterService {
 
     @Value("${spring.cloud.aws.credentials.default.bucket.url}")
     private String url;

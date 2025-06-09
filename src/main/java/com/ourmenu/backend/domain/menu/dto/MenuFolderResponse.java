@@ -1,6 +1,6 @@
 package com.ourmenu.backend.domain.menu.dto;
 
-import com.ourmenu.backend.domain.cache.util.UrlConverter;
+import com.ourmenu.backend.domain.cache.application.UrlConverterService;
 import com.ourmenu.backend.domain.menu.domain.MenuFolder;
 import com.ourmenu.backend.domain.menu.domain.MenuMenuFolder;
 import java.util.List;
@@ -22,13 +22,13 @@ public class MenuFolderResponse {
     private int index;
 
     public static MenuFolderResponse of(MenuFolder menuFolder, List<MenuMenuFolder> menuFolders,
-                                        String defaultMenuFolderImgUrl, UrlConverter urlConverter) {
+                                        String defaultMenuFolderImgUrl, UrlConverterService urlConverterService) {
         String menuFolderImgUrl = menuFolder.getImgUrl();
         if (menuFolderImgUrl == null) {
             menuFolderImgUrl = defaultMenuFolderImgUrl;
         }
 
-        String menuFolderIconImgUrl = urlConverter.getMenuFolderImgUrl(menuFolder.getIcon());
+        String menuFolderIconImgUrl = urlConverterService.getMenuFolderImgUrl(menuFolder.getIcon());
 
         List<Long> menuIds = menuFolders.stream()
                 .map(menuMenuFolder -> menuMenuFolder.getMenu().getId())
