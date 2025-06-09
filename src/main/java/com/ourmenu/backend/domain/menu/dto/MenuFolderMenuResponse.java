@@ -1,6 +1,5 @@
 package com.ourmenu.backend.domain.menu.dto;
 
-import com.ourmenu.backend.domain.store.util.AddressParser;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -21,13 +20,11 @@ public class MenuFolderMenuResponse {
     private LocalDateTime createdAt;
 
     public static MenuFolderMenuResponse of(MenuSimpleDto menuSimpleDto, String menuImgUrl) {
-        String storeAddress = AddressParser.parseAddressToCityDistrict(menuSimpleDto.getStoreAddress());
-
         return MenuFolderMenuResponse.builder()
                 .menuId(menuSimpleDto.getMenuId())
                 .menuTitle(menuSimpleDto.getMenuTitle())
                 .storeTitle(menuSimpleDto.getStoreTitle())
-                .storeAddress(storeAddress)
+                .storeAddress(menuSimpleDto.getStoreAddress())
                 .menuPrice(menuSimpleDto.getMenuPrice())
                 .menuImgUrl(menuImgUrl)
                 .createdAt(menuSimpleDto.getCreatedAt())
