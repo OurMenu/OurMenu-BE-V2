@@ -1,7 +1,7 @@
 package com.ourmenu.backend.domain.menu.api;
 
 import com.ourmenu.backend.domain.cache.domain.MenuFolderIcon;
-import com.ourmenu.backend.domain.cache.util.UrlConverter;
+import com.ourmenu.backend.domain.cache.application.UrlConverterService;
 import com.ourmenu.backend.domain.menu.config.MenuTestConfig;
 import com.ourmenu.backend.domain.menu.data.MenuTestData;
 import com.ourmenu.backend.domain.menu.domain.MenuFolder;
@@ -34,7 +34,7 @@ public class MenuFolderApiTest {
     MenuFolderController menuFolderController;
 
     @Autowired
-    UrlConverter urlConverter;
+    UrlConverterService urlConverterService;
 
     @Autowired
     GlobalUserTestData userTestData;
@@ -157,7 +157,7 @@ public class MenuFolderApiTest {
                 .isEqualTo(modifiedMenuFolderName);
 
         Assertions.assertThat(updateMenuFolderResponseApiResponse.getResponse().getMenuFolderIconImgUrl())
-                .isEqualTo(urlConverter.getMenuFolderImgUrl(testMenuFolder.getIcon()));
+                .isEqualTo(urlConverterService.getMenuFolderImgUrl(testMenuFolder.getIcon()));
     }
 
     @Test

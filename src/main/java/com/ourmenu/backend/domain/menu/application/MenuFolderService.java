@@ -1,6 +1,7 @@
 package com.ourmenu.backend.domain.menu.application;
 
-import com.ourmenu.backend.domain.cache.util.UrlConverter;
+import com.ourmenu.backend.domain.cache.application.UrlConverterService;
+import com.ourmenu.backend.domain.menu.application.converter.DefaultImgConverterService;
 import com.ourmenu.backend.domain.menu.dao.MenuFolderRepository;
 import com.ourmenu.backend.domain.menu.dao.MenuRepository;
 import com.ourmenu.backend.domain.menu.domain.MenuFolder;
@@ -13,7 +14,6 @@ import com.ourmenu.backend.domain.menu.dto.UpdateMenuFolderResponse;
 import com.ourmenu.backend.domain.menu.exception.ForbiddenMenuFolderException;
 import com.ourmenu.backend.domain.menu.exception.NotFoundMenuFolderException;
 import com.ourmenu.backend.domain.menu.exception.OutOfBoundCustomIndexException;
-import com.ourmenu.backend.domain.menu.util.DefaultImgConverter;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -27,9 +27,9 @@ public class MenuFolderService {
     private final AwsS3Service awsS3Service;
     private final MenuFolderRepository menuFolderRepository;
     private final MenuMenuFolderService menuMenuFolderService;
-    private final DefaultImgConverter defaultImgConvertor;
+    private final DefaultImgConverterService defaultImgConvertor;
     private final MenuRepository menuRepository;
-    private final UrlConverter urlConverter;
+    private final UrlConverterService urlConverterService;
 
     /**
      * 메뉴 폴더 저장
@@ -45,7 +45,7 @@ public class MenuFolderService {
 
         MenuFolder menuFolder = saveMenuFolder(menuFolderDto, menuFolderImgUrl);
         return SaveMenuFolderResponse.of(menuFolder, menuFolderDto.getMenuIds(),
-                defaultImgConvertor.getDefaultMenuFolderImgUrl(), urlConverter);
+                defaultImgConvertor.getDefaultMenuFolderImgUrl(), urlConverterService);
     }
 
     /**
@@ -95,7 +95,7 @@ public class MenuFolderService {
         menuFolder.update(menuFolderDto);
         List<MenuMenuFolder> menuMenuFolders = menuMenuFolderService.findAllByMenuFolderId(menuFolderId);
         return UpdateMenuFolderResponse.of(menuFolder, menuMenuFolders,
-                defaultImgConvertor.getDefaultMenuFolderImgUrl(), urlConverter);
+                defaultImgConvertor.getDefaultMenuFolderImgUrl(), urlConverterService);
     }
 
     /**
@@ -126,7 +126,7 @@ public class MenuFolderService {
         findMenuFolder.updateIndex(index);
         List<MenuMenuFolder> menuMenuFolders = menuMenuFolderService.findAllByMenuFolderId(menuFolderId);
         return UpdateMenuFolderResponse.of(findMenuFolder, menuMenuFolders,
-                defaultImgConvertor.getDefaultMenuFolderImgUrl(), urlConverter);
+                defaultImgConvertor.getDefaultMenuFolderImgUrl(), urlConverterService);
     }
 
 
@@ -144,7 +144,7 @@ public class MenuFolderService {
                     List<MenuMenuFolder> menuMenuFolders = menuMenuFolderService.findAllByMenuFolderId(
                             menuFolder.getId());
                     return MenuFolderResponse.of(menuFolder, menuMenuFolders,
-                            defaultImgConvertor.getDefaultMenuFolderImgUrl(), urlConverter);
+                            defaultImgConvertor.getDefaultMenuFolderImgUrl(), urlConverterService);
                 }).toList();
         int menuCount = menuRepository.countByUserId(userId);
         return GetMenuFolderResponse.of(menuCount, menuFolderResponses);
