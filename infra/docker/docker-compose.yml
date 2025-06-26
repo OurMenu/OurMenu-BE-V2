@@ -10,6 +10,7 @@ services:
     ports:
       - "8080:8080"
     environment:
+      TZ: Asia/Seoul
       KAKAO_API_KEY: ${KAKAO_API_KEY}
       MONGO_URL: ${MONGO_URL}
       MYSQL_HOST: ${MYSQL_HOST}
@@ -23,3 +24,4 @@ services:
       DEFAULT_BUCKET_URL: ${DEFAULT_BUCKET_URL}
     volumes:
       - /var/log/springboot/:/var/log/springboot/
+      - /etc/localtime:/etc/localtime:ro
