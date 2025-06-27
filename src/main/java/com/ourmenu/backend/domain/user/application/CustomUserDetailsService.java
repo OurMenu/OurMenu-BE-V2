@@ -1,6 +1,7 @@
 package com.ourmenu.backend.domain.user.application;
 
 import com.ourmenu.backend.domain.user.dao.UserRepository;
+import com.ourmenu.backend.domain.user.domain.SignInType;
 import com.ourmenu.backend.domain.user.domain.User;
 import com.ourmenu.backend.domain.user.domain.CustomUserDetails;
 import com.ourmenu.backend.domain.user.exception.NotFoundUserException;
@@ -21,7 +22,18 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 
-        User user= userRepository.findByEmail(email).
+        User user= userRepository.findByEmailAndSignInType(email, SignInType.EMAIL).
+                orElseThrow(NotFoundUserException::new);
+
+        return new CustomUserDetails(
+                user.getId(),
+                user.getEmail(),
+                user.getPassword()
+        );
+    }
+
+    public UserDetails loadUserByEmailAndSignInType(String email, SignInType signInType) throws UsernameNotFoundException {
+        User user= userRepository.findByEmailAndSignInType(email, signInType).
                 orElseThrow(NotFoundUserException::new);
 
         return new CustomUserDetails(

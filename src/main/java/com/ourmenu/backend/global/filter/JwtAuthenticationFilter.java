@@ -28,7 +28,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String refreshToken = jwtTokenProvider.getHeaderToken(request, "Refresh_token");
 
         if(accessToken != null && jwtTokenProvider.validateToken(accessToken)) {
-            setAuthentication(jwtTokenProvider.getEmailFromToken(accessToken));
+            setAuthentication(
+                    jwtTokenProvider.getEmailFromToken(accessToken),
+                    jwtTokenProvider.getSignInTypeFromToken(accessToken)
+            );
             filterChain.doFilter(request,response);
             return;
         }
@@ -38,7 +41,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             SignInType signInType = jwtTokenProvider.getSignInTypeFromToken(refreshToken);
             String newAccessToken = jwtTokenProvider.createToken(email, signInType, "Access");
             jwtTokenProvider.setHeaderAccessToken(response, newAccessToken);
-            setAuthentication(jwtTokenProvider.getEmailFromToken(newAccessToken));
+            setAuthentication(jwtTokenProvider.getEmailFromToken(newAccessToken), signInType);
             filterChain.doFilter(request,response);
             return;
         }
@@ -46,8 +49,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request,response);
     }
 
-    public void setAuthentication(String email) {
-        Authentication authentication = jwtTokenProvider.createAuthentication(email);
+    public void setAuthentication(String email, SignInType signInType) {
+        Authentication authentication = jwtTokenProvider.createAuthentication(email, signInType);
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 

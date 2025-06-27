@@ -83,7 +83,9 @@ public class UserService {
      */
     @Transactional
     public TokenDto signIn(SignInRequest request) {
-        Optional<User> optionalUser = userRepository.findByEmail(request.getEmail());
+        Optional<User> optionalUser = userRepository
+                .findByEmailAndSignInType(request.getEmail(), SignInType.convert(request.getSignInType()));
+
         if (optionalUser.isEmpty() || !optionalUser.get().getSignInType().name().equals(request.getSignInType())) {
             throw new NotFoundUserException();
         }
@@ -223,7 +225,7 @@ public class UserService {
     public KakaoExistenceResponse validateKakaoUserExists(PostEmailRequest request) {
         String email = request.getEmail();
 
-        Optional<User> optionalUser = userRepository.findByEmail(email);
+        Optional<User> optionalUser = userRepository.findByEmailAndSignInType(email, SignInType.KAKAO);
 
         if (optionalUser.isPresent() && optionalUser.get().getSignInType() == SignInType.KAKAO) {
             return KakaoExistenceResponse.from(true);
@@ -274,7 +276,7 @@ public class UserService {
      * @return
      */
     private User signUpByKakao(SignUpRequest request) {
-        Optional<User> optionalUser = userRepository.findByEmail(request.getEmail());
+        Optional<User> optionalUser = userRepository.findByEmailAndSignInType(request.getEmail(), SignInType.KAKAO);
         if (optionalUser.isPresent() && optionalUser.get().getSignInType() == SignInType.KAKAO) {
             throw new DuplicateEmailException();
         }
@@ -294,7 +296,7 @@ public class UserService {
      * @return
      */
     private User signUpByEmail(SignUpRequest request) {
-        Optional<User> optionalUser = userRepository.findByEmail(request.getEmail());
+        Optional<User> optionalUser = userRepository.findByEmailAndSignInType(request.getEmail(), SignInType.EMAIL);
         if (optionalUser.isPresent() && optionalUser.get().getSignInType() == SignInType.EMAIL) {
             throw new DuplicateEmailException();
         }
