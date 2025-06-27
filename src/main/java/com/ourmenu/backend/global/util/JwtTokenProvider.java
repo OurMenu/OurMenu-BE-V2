@@ -90,7 +90,7 @@ public class JwtTokenProvider {
      * @param email User의 Email
      * @return JWT 정보를 DTO로 반환
      */
-    public TokenDto createAllToken(String email, String signInType) {
+    public TokenDto createAllToken(String email, SignInType signInType) {
         Date now = new Date();
 
         String accessToken = createToken(email, signInType, "Access");
@@ -109,7 +109,7 @@ public class JwtTokenProvider {
      * @param type  Token의 종류
      * @return 생성한 Token값
      */
-    public String createToken(String email, String signInType, String type) {
+    public String createToken(String email, SignInType signInType, String type) {
 
         Date date = new Date();
 
@@ -159,7 +159,7 @@ public class JwtTokenProvider {
             return false;
         }
 
-        Optional<RefreshToken> refreshToken = refreshTokenRepository.findRefreshTokenByEmail(getEmailFromToken(token));
+        Optional<RefreshToken> refreshToken = refreshTokenRepository.findRefreshTokenByEmailAndSignInType(getEmailFromToken(token), getSignInTypeFromToken(token));
         return refreshToken.isPresent() && token.equals(refreshToken.get().getRefreshToken());
     }
 
@@ -186,10 +186,10 @@ public class JwtTokenProvider {
                 .get("email", String.class);
     }
 
-    public String getSignInTypeFromToken(String token) {
+    public SignInType getSignInTypeFromToken(String token) {
         return Jwts.parserBuilder().setSigningKey(key).build()
                 .parseClaimsJws(token).getBody()
-                .get("signInType", String.class);
+                .get("signInType", SignInType.class);
     }
 
     /**

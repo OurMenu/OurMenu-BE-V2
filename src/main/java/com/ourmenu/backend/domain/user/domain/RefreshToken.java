@@ -19,9 +19,13 @@ public class RefreshToken {
     @Indexed
     private String email;
 
-    public RefreshToken(String token, String email) {
+    @Indexed
+    private SignInType signInType;
+
+    public RefreshToken(String token, String email, SignInType signInType) {
         this.refreshToken = token;
         this.email = email;
+        this.signInType = signInType;
     }
 
     public RefreshToken updateToken(String token) {
