@@ -114,7 +114,7 @@ public class JwtTokenProvider {
         Date date = new Date();
 
         Claims claims = Jwts.claims();
-        claims.put("signInType", signInType);
+        claims.put("signInType", signInType.name());
         claims.put("email", email);
 
         long time = ACCESS_TIME;
@@ -169,8 +169,8 @@ public class JwtTokenProvider {
      * @param email User의 Email
      * @return 인증 객체(Authentication)
      */
-    public Authentication createAuthentication(String email) {
-        UserDetails userDetails = customUserDetailsService.loadUserByUsername(email);
+    public Authentication createAuthentication(String email, SignInType signInType) {
+        UserDetails userDetails = customUserDetailsService.loadUserByEmailAndSignInType(email, signInType);
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 
@@ -187,9 +187,11 @@ public class JwtTokenProvider {
     }
 
     public SignInType getSignInTypeFromToken(String token) {
-        return Jwts.parserBuilder().setSigningKey(key).build()
+        String signInType =  Jwts.parserBuilder().setSigningKey(key).build()
                 .parseClaimsJws(token).getBody()
-                .get("signInType", SignInType.class);
+                .get("signInType", String.class);
+
+        return SignInType.convert(signInType);
     }
 
     /**
