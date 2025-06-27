@@ -1,6 +1,7 @@
 package com.ourmenu.backend.global.filter;
 
 
+import com.ourmenu.backend.domain.user.domain.SignInType;
 import com.ourmenu.backend.global.util.JwtTokenProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -34,7 +35,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         if (refreshToken != null && jwtTokenProvider.refreshTokenValidation(refreshToken)) {
             String email = jwtTokenProvider.getEmailFromToken(refreshToken);
-            String newAccessToken = jwtTokenProvider.createToken(email, "Access");
+            SignInType signInType = jwtTokenProvider.getSignInTypeFromToken(refreshToken);
+            String newAccessToken = jwtTokenProvider.createToken(email, signInType, "Access");
             jwtTokenProvider.setHeaderAccessToken(response, newAccessToken);
             setAuthentication(jwtTokenProvider.getEmailFromToken(newAccessToken));
             filterChain.doFilter(request,response);

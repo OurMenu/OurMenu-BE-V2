@@ -65,8 +65,12 @@ public class UserService {
             throw new InvalidMealTimeCountException();
         }
 
-        TokenDto tokenDto = jwtTokenProvider.createAllToken(request.getEmail(), request.getSignInType());
-        RefreshToken refreshToken = new RefreshToken(tokenDto.getRefreshToken(), request.getEmail());
+        TokenDto tokenDto = jwtTokenProvider.createAllToken(request.getEmail(), SignInType.convert(request.getSignInType()));
+        RefreshToken refreshToken = new RefreshToken(
+                tokenDto.getRefreshToken(),
+                request.getEmail(),
+                SignInType.convert(request.getSignInType())
+        );
         refreshTokenRepository.save(refreshToken);
         return tokenDto;
     }
@@ -90,13 +94,18 @@ public class UserService {
             throw new NotMatchPasswordException();
         }
 
-        TokenDto tokenDto = jwtTokenProvider.createAllToken(request.getEmail(), request.getSignInType());
-        Optional<RefreshToken> refreshToken = refreshTokenRepository.findRefreshTokenByEmail(request.getEmail());
+        TokenDto tokenDto = jwtTokenProvider.createAllToken(request.getEmail(), SignInType.convert(request.getSignInType()));
+        Optional<RefreshToken> refreshToken = refreshTokenRepository
+                .findRefreshTokenByEmailAndSignInType(request.getEmail(), SignInType.convert(request.getSignInType()));
 
         if (refreshToken.isPresent()) {
             refreshTokenRepository.save(refreshToken.get().updateToken(tokenDto.getRefreshToken()));
         } else {
-            RefreshToken newToken = new RefreshToken(tokenDto.getRefreshToken(), request.getEmail());
+            RefreshToken newToken = new RefreshToken(
+                    tokenDto.getRefreshToken(),
+                    request.getEmail(),
+                    SignInType.convert(request.getSignInType())
+            );
             refreshTokenRepository.save(newToken);
         }
 
@@ -158,7 +167,7 @@ public class UserService {
     public TokenDto reissueToken(ReissueRequest reissueRequest) {
         String refreshToken = reissueRequest.getRefreshToken();
         String email = jwtTokenProvider.getEmailFromToken(refreshToken);
-        String signInType = jwtTokenProvider.getSignInTypeFromToken(refreshToken);
+        SignInType signInType = jwtTokenProvider.getSignInTypeFromToken(refreshToken);
 
         if (email.isEmpty()) {
             throw new InvalidTokenException();
@@ -168,7 +177,7 @@ public class UserService {
             throw new TokenExpiredExcpetion();
         }
 
-        RefreshToken storedToken = refreshTokenRepository.findRefreshTokenByEmail(email)
+        RefreshToken storedToken = refreshTokenRepository.findRefreshTokenByEmailAndSignInType(email, signInType)
                 .orElseThrow(NotMatchTokenException::new);
 
         String newAccessToken = jwtTokenProvider.createToken(email, signInType, "Access");
@@ -199,8 +208,9 @@ public class UserService {
         }
 
         String email = jwtTokenProvider.getEmailFromToken(token);
+        SignInType signInType = jwtTokenProvider.getSignInTypeFromToken(token);
 
-        refreshTokenRepository.findRefreshTokenByEmail(email)
+        refreshTokenRepository.findRefreshTokenByEmailAndSignInType(email, signInType)
                 .ifPresent(refreshTokenRepository::delete);
     }
 
@@ -232,7 +242,7 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(NotFoundUserException::new);
 
-        refreshTokenRepository.findRefreshTokenByEmail(user.getEmail())
+        refreshTokenRepository.findRefreshTokenByEmailAndSignInType(user.getEmail(), user.getSignInType())
                 .ifPresent(refreshTokenRepository::delete);
 
         userRepository.delete(user);
