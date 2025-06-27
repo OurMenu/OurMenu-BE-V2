@@ -65,7 +65,7 @@ public class UserService {
             throw new InvalidMealTimeCountException();
         }
 
-        TokenDto tokenDto = jwtTokenProvider.createAllToken(request.getEmail());
+        TokenDto tokenDto = jwtTokenProvider.createAllToken(request.getEmail(), request.getSignInType());
         RefreshToken refreshToken = new RefreshToken(tokenDto.getRefreshToken(), request.getEmail());
         refreshTokenRepository.save(refreshToken);
         return tokenDto;
@@ -90,7 +90,7 @@ public class UserService {
             throw new NotMatchPasswordException();
         }
 
-        TokenDto tokenDto = jwtTokenProvider.createAllToken(request.getEmail());
+        TokenDto tokenDto = jwtTokenProvider.createAllToken(request.getEmail(), request.getSignInType());
         Optional<RefreshToken> refreshToken = refreshTokenRepository.findRefreshTokenByEmail(request.getEmail());
 
         if (refreshToken.isPresent()) {
@@ -158,6 +158,7 @@ public class UserService {
     public TokenDto reissueToken(ReissueRequest reissueRequest) {
         String refreshToken = reissueRequest.getRefreshToken();
         String email = jwtTokenProvider.getEmailFromToken(refreshToken);
+        String signInType = jwtTokenProvider.getSignInTypeFromToken(refreshToken);
 
         if (email.isEmpty()) {
             throw new InvalidTokenException();
@@ -170,11 +171,11 @@ public class UserService {
         RefreshToken storedToken = refreshTokenRepository.findRefreshTokenByEmail(email)
                 .orElseThrow(NotMatchTokenException::new);
 
-        String newAccessToken = jwtTokenProvider.createToken(email, "Access");
+        String newAccessToken = jwtTokenProvider.createToken(email, signInType, "Access");
         String newRefreshToken = reissueRequest.getRefreshToken();
 
         if (jwtTokenProvider.validateToken(refreshToken)) {
-            newRefreshToken = jwtTokenProvider.createToken(email, "Refresh");
+            newRefreshToken = jwtTokenProvider.createToken(email, signInType, "Refresh");
             storedToken.updateToken(newRefreshToken);
             refreshTokenRepository.save(storedToken);
         }
