@@ -209,4 +209,25 @@ public class UserApiTest {
         //then
         Assertions.assertThat(response.isSuccess()).isEqualTo(true);
     }
+    
+    @Test
+    public void 하나의_이메일을_다른_방식으로_회원가입할_수_있다() throws Exception{
+        //given
+        userTestData.createTestEmailUser();
+
+        List<LocalTime> mealTime = new ArrayList<>();
+        mealTime.add(LocalTime.of(12, 0));
+        mealTime.add(LocalTime.of(16, 0));
+        SignUpRequest signUpRequest = new SignUpRequest("test123@gmail.com",
+                "password123",
+                mealTime,
+                "KAKAO"
+        );
+
+        //when
+        ApiResponse<TokenDto> response = userController.signUp(signUpRequest);
+
+        //then
+        Assertions.assertThat(response.isSuccess()).isEqualTo(true);
+    }
 }
