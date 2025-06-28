@@ -55,8 +55,15 @@ public class UserService {
      */
     @Transactional
     public TokenDto signUp(SignUpRequest request) {
+        SignInType signInType = SignInType.convert(request.getSignInType());
+        String email = request.getEmail();
+        User savedUser;
 
-        User savedUser = saveUser(request);
+        if (signInType.equals(SignInType.KAKAO)) {
+            savedUser = signUpByKakao(email);
+        } else {
+            savedUser = signUpByEmail(email, request.getPassword());
+        }
 
         List<MealTime> mealTimes = mealTimeService.saveMealTimes(request.getMealTime(), savedUser.getId());
 
@@ -65,11 +72,11 @@ public class UserService {
             throw new InvalidMealTimeCountException();
         }
 
-        TokenDto tokenDto = jwtTokenProvider.createAllToken(request.getEmail(), SignInType.convert(request.getSignInType()));
+        TokenDto tokenDto = jwtTokenProvider.createAllToken(email, signInType);
         RefreshToken refreshToken = new RefreshToken(
                 tokenDto.getRefreshToken(),
-                request.getEmail(),
-                SignInType.convert(request.getSignInType())
+                email,
+                signInType
         );
         refreshTokenRepository.save(refreshToken);
         return tokenDto;
@@ -83,30 +90,33 @@ public class UserService {
      */
     @Transactional
     public TokenDto signIn(SignInRequest request) {
-        Optional<User> optionalUser = userRepository
-                .findByEmailAndSignInType(request.getEmail(), SignInType.convert(request.getSignInType()));
+        String email = request.getEmail();
+        SignInType signInType = SignInType.convert(request.getSignInType());
 
-        if (optionalUser.isEmpty() || !optionalUser.get().getSignInType().name().equals(request.getSignInType())) {
+        Optional<User> optionalUser = userRepository
+                .findByEmailAndSignInType(email, signInType);
+
+        if (optionalUser.isEmpty() || !optionalUser.get().getSignInType().equals(signInType)) {
             throw new NotFoundUserException();
         }
 
         User user = optionalUser.get();
 
-        if (request.getSignInType().equals("EMAIL") && !passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+        if (signInType.equals(SignInType.EMAIL) && !passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new NotMatchPasswordException();
         }
 
-        TokenDto tokenDto = jwtTokenProvider.createAllToken(request.getEmail(), SignInType.convert(request.getSignInType()));
+        TokenDto tokenDto = jwtTokenProvider.createAllToken(email, signInType);
         Optional<RefreshToken> refreshToken = refreshTokenRepository
-                .findRefreshTokenByEmailAndSignInType(request.getEmail(), SignInType.convert(request.getSignInType()));
+                .findRefreshTokenByEmailAndSignInType(email, signInType);
 
         if (refreshToken.isPresent()) {
             refreshTokenRepository.save(refreshToken.get().updateToken(tokenDto.getRefreshToken()));
         } else {
             RefreshToken newToken = new RefreshToken(
                     tokenDto.getRefreshToken(),
-                    request.getEmail(),
-                    SignInType.convert(request.getSignInType())
+                    email,
+                    signInType
             );
             refreshTokenRepository.save(newToken);
         }
@@ -227,7 +237,7 @@ public class UserService {
 
         Optional<User> optionalUser = userRepository.findByEmailAndSignInType(email, SignInType.KAKAO);
 
-        if (optionalUser.isPresent() && optionalUser.get().getSignInType() == SignInType.KAKAO) {
+        if (optionalUser.isPresent() && optionalUser.get().getSignInType().equals(SignInType.KAKAO)) {
             return KakaoExistenceResponse.from(true);
         }
 
@@ -251,38 +261,19 @@ public class UserService {
     }
 
     /**
-     * 유저 정보를 저장한다.
-     *
-     * @param request
-     * @return
-     * @throws UnsupportedSignInTypeException 지원하지 않는 SignInType을 요청한 경우
-     */
-    private User saveUser(SignUpRequest request) {
-        if (request.getSignInType().equals("EMAIL")) {
-            return signUpByEmail(request);
-        }
-
-        if (request.getSignInType().equals("KAKAO")) {
-            return signUpByKakao(request);
-        }
-
-        throw new UnsupportedSignInTypeException();
-    }
-
-    /**
      * Kakao 유저를 저장한다.
      *
-     * @param request
+     * @param email
      * @return
      */
-    private User signUpByKakao(SignUpRequest request) {
-        Optional<User> optionalUser = userRepository.findByEmailAndSignInType(request.getEmail(), SignInType.KAKAO);
+    private User signUpByKakao(String email) {
+        Optional<User> optionalUser = userRepository.findByEmailAndSignInType(email, SignInType.KAKAO);
         if (optionalUser.isPresent() && optionalUser.get().getSignInType() == SignInType.KAKAO) {
             throw new DuplicateEmailException();
         }
 
         User user = User.builder()
-                .email(request.getEmail())
+                .email(email)
                 .signInType(SignInType.KAKAO)
                 .build();
 
@@ -292,19 +283,20 @@ public class UserService {
     /**
      * Email 유저를 저장한다.
      *
-     * @param request
+     * @param email
+     * @param password
      * @return
      */
-    private User signUpByEmail(SignUpRequest request) {
-        Optional<User> optionalUser = userRepository.findByEmailAndSignInType(request.getEmail(), SignInType.EMAIL);
+    private User signUpByEmail(String email, String password) {
+        Optional<User> optionalUser = userRepository.findByEmailAndSignInType(email, SignInType.EMAIL);
         if (optionalUser.isPresent() && optionalUser.get().getSignInType() == SignInType.EMAIL) {
             throw new DuplicateEmailException();
         }
 
-        String encodedPassword = passwordEncoder.encode(request.getPassword());
+        String encodedPassword = passwordEncoder.encode(password);
 
         User user = User.builder()
-                .email(request.getEmail())
+                .email(email)
                 .password(encodedPassword)
                 .signInType(SignInType.EMAIL)
                 .build();
