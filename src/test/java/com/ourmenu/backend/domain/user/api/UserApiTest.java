@@ -100,6 +100,7 @@ public class UserApiTest {
 
         //then
         Assertions.assertThat(response.isSuccess()).isEqualTo(true);
+        Assertions.assertThat(response.getResponse().isExistUser()).isEqualTo(true);
     }
     
     @Test
