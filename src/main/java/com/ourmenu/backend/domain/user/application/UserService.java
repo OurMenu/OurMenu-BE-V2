@@ -238,7 +238,8 @@ public class UserService {
         Optional<User> optionalUser = userRepository.findByEmailAndSignInType(email, SignInType.KAKAO);
 
         if (optionalUser.isPresent() && optionalUser.get().getSignInType().equals(SignInType.KAKAO)) {
-            return KakaoExistenceResponse.from(true);
+            TokenDto token = jwtTokenProvider.createAllToken(email, SignInType.KAKAO);
+            return KakaoExistenceResponse.from(true, token);
         }
 
         return KakaoExistenceResponse.from(false);
