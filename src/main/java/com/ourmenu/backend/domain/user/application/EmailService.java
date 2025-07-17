@@ -3,6 +3,7 @@ package com.ourmenu.backend.domain.user.application;
 import com.ourmenu.backend.domain.user.dao.ConfirmCodeRepository;
 import com.ourmenu.backend.domain.user.dao.UserRepository;
 import com.ourmenu.backend.domain.user.domain.ConfirmCode;
+import com.ourmenu.backend.domain.user.domain.SignInType;
 import com.ourmenu.backend.domain.user.domain.User;
 import com.ourmenu.backend.domain.user.dto.request.PostEmailRequest;
 import com.ourmenu.backend.domain.user.dto.response.EmailResponse;
@@ -84,7 +85,7 @@ public class EmailService {
     public TemporaryPasswordResponse sendTemporaryPassword(PostEmailRequest request) {
         String email = request.getEmail();
         String temporaryPassword = generateRandomCode(8);
-        User user = userRepository.findByEmail(email)
+        User user = userRepository.findByEmailAndSignInType(email, SignInType.EMAIL)
                 .orElseThrow(NotFoundUserException::new);
 
         user.changePassword(passwordEncoder.encode(temporaryPassword));

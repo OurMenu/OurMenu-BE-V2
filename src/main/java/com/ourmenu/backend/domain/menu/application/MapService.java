@@ -1,6 +1,6 @@
 package com.ourmenu.backend.domain.menu.application;
 
-import com.ourmenu.backend.domain.cache.util.UrlConverter;
+import com.ourmenu.backend.domain.cache.application.UrlConverterService;
 import com.ourmenu.backend.domain.menu.dao.MenuFolderRepository;
 import com.ourmenu.backend.domain.menu.dao.MenuImgRepository;
 import com.ourmenu.backend.domain.menu.dao.MenuRepository;
@@ -51,7 +51,7 @@ public class MapService {
     private final MenuImgRepository menuImgRepository;
     private final MenuFolderRepository menuFolderRepository;
     private final OwnedMenuSearchRepository ownedMenuSearchRepository;
-    private final UrlConverter urlConverter;
+    private final UrlConverterService urlConverterService;
 
     /**
      * 유저가 보유한 메뉴들을 가져와 위치가 같은 메뉴들은 그룹핑하여 조회
@@ -70,7 +70,7 @@ public class MapService {
 
         return menuMaps.entrySet().stream()
                 .map(entry -> MenuOnMapDto.from(
-                        entry.getKey(), entry.getValue(), urlConverter))
+                        entry.getKey(), entry.getValue(), urlConverterService))
                 .collect(Collectors.toList());
     }
 
@@ -174,10 +174,10 @@ public class MapService {
         if (!menuFolders.isEmpty()) {
             MenuFolder latestMenuFolder = menuFolders.stream()
                     .max(Comparator.comparing(MenuFolder::getCreatedAt)).get();
-            menuFolderInfo = MenuFolderInfoOnMapDto.of(latestMenuFolder, menuFolders.size(), urlConverter);
+            menuFolderInfo = MenuFolderInfoOnMapDto.of(latestMenuFolder, menuFolders.size(), urlConverterService);
         }
 
-        return MenuInfoOnMapDto.of(menu, menuTags, menuImgs, menuFolderInfo, urlConverter);
+        return MenuInfoOnMapDto.of(menu, menuTags, menuImgs, menuFolderInfo, urlConverterService);
     }
 
     /**

@@ -1,6 +1,6 @@
 package com.ourmenu.backend.domain.menu.dto;
 
-import com.ourmenu.backend.domain.cache.util.UrlConverter;
+import com.ourmenu.backend.domain.cache.application.UrlConverterService;
 import com.ourmenu.backend.domain.menu.domain.Menu;
 import com.ourmenu.backend.domain.menu.domain.MenuFolder;
 import com.ourmenu.backend.domain.tag.domain.Tag;
@@ -19,6 +19,8 @@ public class GetMenuResponse {
     private String menuTitle;
     private int menuPrice;
     private String menuPinImgUrl;
+    private String menuMemoTitle;
+    private String menuMemoContent;
     private String storeTitle;
     private String storeAddress;
     private List<String> tagImgUrls;
@@ -36,12 +38,12 @@ public class GetMenuResponse {
     }
 
     public static GetMenuResponse of(Menu menu, List<String> imgUrls, List<Tag> tags,
-                                     List<MenuFolder> menuFolders, UrlConverter urlConverter) {
-        String menuPinImgUrl = urlConverter.getMenuPinMapUrl(menu.getPin());
+                                     List<MenuFolder> menuFolders, UrlConverterService urlConverterService) {
+        String menuPinImgUrl = urlConverterService.getMenuPinMapUrl(menu.getPin());
 
         List<SimpleMenuFolder> simpleMenuFolders = menuFolders.stream()
                 .map(menuFolder -> {
-                    String menuFolderIconImgUrl = urlConverter.getMenuFolderImgUrl(menuFolder.getIcon());
+                    String menuFolderIconImgUrl = urlConverterService.getMenuFolderImgUrl(menuFolder.getIcon());
                     return SimpleMenuFolder.builder()
                             .menuFolderId(menuFolder.getId())
                             .menuFolderTitle(menuFolder.getTitle())
@@ -50,7 +52,7 @@ public class GetMenuResponse {
                 })
                 .toList();
         List<String> tagImgUrls = tags.stream()
-                .map(urlConverter::getOrangeTagImgUrl)
+                .map(urlConverterService::getOrangeTagImgUrl)
                 .toList();
 
         return GetMenuResponse.builder().
@@ -58,6 +60,8 @@ public class GetMenuResponse {
                 .menuTitle(menu.getTitle())
                 .menuPrice(menu.getPrice())
                 .menuPinImgUrl(menuPinImgUrl)
+                .menuMemoTitle(menu.getMemoTitle())
+                .menuMemoContent(menu.getMemoContent())
                 .storeAddress(menu.getStore().getAddress())
                 .storeTitle(menu.getStore().getTitle())
                 .tagImgUrls(tagImgUrls)

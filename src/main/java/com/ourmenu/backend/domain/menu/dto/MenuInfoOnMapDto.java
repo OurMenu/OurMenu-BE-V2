@@ -1,6 +1,6 @@
 package com.ourmenu.backend.domain.menu.dto;
 
-import com.ourmenu.backend.domain.cache.util.UrlConverter;
+import com.ourmenu.backend.domain.cache.application.UrlConverterService;
 import com.ourmenu.backend.domain.menu.domain.Menu;
 import com.ourmenu.backend.domain.menu.domain.MenuImg;
 import com.ourmenu.backend.domain.tag.domain.MenuTag;
@@ -25,11 +25,11 @@ public class MenuInfoOnMapDto {
     private Double mapY;
 
     public static MenuInfoOnMapDto of(Menu menu, List<MenuTag> menuTags, List<MenuImg> menuImgs,
-                                      MenuFolderInfoOnMapDto menuFolderInfo, UrlConverter urlConverter) {
-        String menuPinImgUrl = urlConverter.getMenuPinMapUrl(menu.getPin());
+                                      MenuFolderInfoOnMapDto menuFolderInfo, UrlConverterService urlConverterService) {
+        String menuPinImgUrl = urlConverterService.getMenuPinMapUrl(menu.getPin());
         List<String> menuTagImgUrls = menuTags.stream()
                 .map(MenuTag::getTag)
-                .map(urlConverter::getOrangeTagImgUrl)
+                .map(urlConverterService::getOrangeTagImgUrl)
                 .toList();
 
         return MenuInfoOnMapDto.builder()

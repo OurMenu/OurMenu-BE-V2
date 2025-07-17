@@ -1,4 +1,4 @@
-package com.ourmenu.backend.domain.cache.util;
+package com.ourmenu.backend.domain.cache.application;
 
 import com.ourmenu.backend.domain.cache.domain.HomeImg;
 import com.ourmenu.backend.domain.cache.domain.MenuFolderIcon;
@@ -6,10 +6,10 @@ import com.ourmenu.backend.domain.cache.domain.MenuPin;
 import com.ourmenu.backend.domain.home.domain.Answer;
 import com.ourmenu.backend.domain.tag.domain.Tag;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
-@Component
-public class UrlConverter {
+@Service
+public class UrlConverterService {
 
     @Value("${spring.cloud.aws.credentials.default.bucket.url}")
     private String url;

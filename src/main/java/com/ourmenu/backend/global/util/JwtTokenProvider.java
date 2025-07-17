@@ -3,6 +3,7 @@ package com.ourmenu.backend.global.util;
 import com.ourmenu.backend.domain.user.application.CustomUserDetailsService;
 import com.ourmenu.backend.domain.user.dao.RefreshTokenRepository;
 import com.ourmenu.backend.domain.user.domain.RefreshToken;
+import com.ourmenu.backend.domain.user.domain.SignInType;
 import com.ourmenu.backend.domain.user.dto.response.TokenDto;
 import com.ourmenu.backend.domain.user.exception.InvalidTokenException;
 import com.ourmenu.backend.domain.user.exception.TokenExpiredExcpetion;
@@ -44,7 +45,7 @@ public class JwtTokenProvider {
     private Key key;
     private final SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
 
-    private static final long ACCESS_TIME = 60 * 60 * 1000L;   // 1시간
+    private static final long ACCESS_TIME = 30 * 24 * 60 * 60 * 1000L;   // 1시간 -> 30일로 임시 변경
     private static final long REFRESH_TIME = 30 * 24 * 60 * 60 * 1000L;    // 30일
     public static final String ACCESS_TOKEN = "Authorization";
     public static final String REFRESH_TOKEN = "Refresh-Token";
@@ -89,12 +90,12 @@ public class JwtTokenProvider {
      * @param email User의 Email
      * @return JWT 정보를 DTO로 반환
      */
-    public TokenDto createAllToken(String email) {
+    public TokenDto createAllToken(String email, SignInType signInType) {
         Date now = new Date();
 
-        String accessToken = createToken(email, "Access");
+        String accessToken = createToken(email, signInType, "Access");
 
-        String refreshToken = createToken(email, "Refresh");
+        String refreshToken = createToken(email, signInType,"Refresh");
 
         Instant refreshTokenExpiredAt = Instant.now().plus(30, ChronoUnit.DAYS);
 
@@ -108,11 +109,12 @@ public class JwtTokenProvider {
      * @param type  Token의 종류
      * @return 생성한 Token값
      */
-    public String createToken(String email, String type) {
+    public String createToken(String email, SignInType signInType, String type) {
 
         Date date = new Date();
 
         Claims claims = Jwts.claims();
+        claims.put("signInType", signInType.name());
         claims.put("email", email);
 
         long time = ACCESS_TIME;
@@ -157,7 +159,7 @@ public class JwtTokenProvider {
             return false;
         }
 
-        Optional<RefreshToken> refreshToken = refreshTokenRepository.findRefreshTokenByEmail(getEmailFromToken(token));
+        Optional<RefreshToken> refreshToken = refreshTokenRepository.findRefreshTokenByEmailAndSignInType(getEmailFromToken(token), getSignInTypeFromToken(token));
         return refreshToken.isPresent() && token.equals(refreshToken.get().getRefreshToken());
     }
 
@@ -167,8 +169,8 @@ public class JwtTokenProvider {
      * @param email User의 Email
      * @return 인증 객체(Authentication)
      */
-    public Authentication createAuthentication(String email) {
-        UserDetails userDetails = customUserDetailsService.loadUserByUsername(email);
+    public Authentication createAuthentication(String email, SignInType signInType) {
+        UserDetails userDetails = customUserDetailsService.loadUserByEmailAndSignInType(email, signInType);
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 
@@ -182,6 +184,14 @@ public class JwtTokenProvider {
         return Jwts.parserBuilder().setSigningKey(key).build()
                 .parseClaimsJws(token).getBody()
                 .get("email", String.class);
+    }
+
+    public SignInType getSignInTypeFromToken(String token) {
+        String signInType =  Jwts.parserBuilder().setSigningKey(key).build()
+                .parseClaimsJws(token).getBody()
+                .get("signInType", String.class);
+
+        return SignInType.convert(signInType);
     }
 
     /**

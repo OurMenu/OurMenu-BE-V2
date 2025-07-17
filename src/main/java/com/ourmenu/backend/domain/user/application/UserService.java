@@ -55,8 +55,15 @@ public class UserService {
      */
     @Transactional
     public TokenDto signUp(SignUpRequest request) {
+        SignInType signInType = SignInType.convert(request.getSignInType());
+        String email = request.getEmail();
+        User savedUser;
 
-        User savedUser = saveUser(request);
+        if (signInType.equals(SignInType.KAKAO)) {
+            savedUser = signUpByKakao(email);
+        } else {
+            savedUser = signUpByEmail(email, request.getPassword());
+        }
 
         List<MealTime> mealTimes = mealTimeService.saveMealTimes(request.getMealTime(), savedUser.getId());
 
@@ -65,8 +72,12 @@ public class UserService {
             throw new InvalidMealTimeCountException();
         }
 
-        TokenDto tokenDto = jwtTokenProvider.createAllToken(request.getEmail());
-        RefreshToken refreshToken = new RefreshToken(tokenDto.getRefreshToken(), request.getEmail());
+        TokenDto tokenDto = jwtTokenProvider.createAllToken(email, signInType);
+        RefreshToken refreshToken = new RefreshToken(
+                tokenDto.getRefreshToken(),
+                email,
+                signInType
+        );
         refreshTokenRepository.save(refreshToken);
         return tokenDto;
     }
@@ -79,24 +90,34 @@ public class UserService {
      */
     @Transactional
     public TokenDto signIn(SignInRequest request) {
-        Optional<User> optionalUser = userRepository.findByEmail(request.getEmail());
-        if (optionalUser.isEmpty() || !optionalUser.get().getSignInType().name().equals(request.getSignInType())) {
+        String email = request.getEmail();
+        SignInType signInType = SignInType.convert(request.getSignInType());
+
+        Optional<User> optionalUser = userRepository
+                .findByEmailAndSignInType(email, signInType);
+
+        if (optionalUser.isEmpty() || !optionalUser.get().getSignInType().equals(signInType)) {
             throw new NotFoundUserException();
         }
 
         User user = optionalUser.get();
 
-        if (request.getSignInType().equals("EMAIL") && !passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+        if (signInType.equals(SignInType.EMAIL) && !passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new NotMatchPasswordException();
         }
 
-        TokenDto tokenDto = jwtTokenProvider.createAllToken(request.getEmail());
-        Optional<RefreshToken> refreshToken = refreshTokenRepository.findRefreshTokenByEmail(request.getEmail());
+        TokenDto tokenDto = jwtTokenProvider.createAllToken(email, signInType);
+        Optional<RefreshToken> refreshToken = refreshTokenRepository
+                .findRefreshTokenByEmailAndSignInType(email, signInType);
 
         if (refreshToken.isPresent()) {
             refreshTokenRepository.save(refreshToken.get().updateToken(tokenDto.getRefreshToken()));
         } else {
-            RefreshToken newToken = new RefreshToken(tokenDto.getRefreshToken(), request.getEmail());
+            RefreshToken newToken = new RefreshToken(
+                    tokenDto.getRefreshToken(),
+                    email,
+                    signInType
+            );
             refreshTokenRepository.save(newToken);
         }
 
@@ -158,6 +179,7 @@ public class UserService {
     public TokenDto reissueToken(ReissueRequest reissueRequest) {
         String refreshToken = reissueRequest.getRefreshToken();
         String email = jwtTokenProvider.getEmailFromToken(refreshToken);
+        SignInType signInType = jwtTokenProvider.getSignInTypeFromToken(refreshToken);
 
         if (email.isEmpty()) {
             throw new InvalidTokenException();
@@ -167,14 +189,14 @@ public class UserService {
             throw new TokenExpiredExcpetion();
         }
 
-        RefreshToken storedToken = refreshTokenRepository.findRefreshTokenByEmail(email)
+        RefreshToken storedToken = refreshTokenRepository.findRefreshTokenByEmailAndSignInType(email, signInType)
                 .orElseThrow(NotMatchTokenException::new);
 
-        String newAccessToken = jwtTokenProvider.createToken(email, "Access");
+        String newAccessToken = jwtTokenProvider.createToken(email, signInType, "Access");
         String newRefreshToken = reissueRequest.getRefreshToken();
 
         if (jwtTokenProvider.validateToken(refreshToken)) {
-            newRefreshToken = jwtTokenProvider.createToken(email, "Refresh");
+            newRefreshToken = jwtTokenProvider.createToken(email, signInType, "Refresh");
             storedToken.updateToken(newRefreshToken);
             refreshTokenRepository.save(storedToken);
         }
@@ -198,8 +220,9 @@ public class UserService {
         }
 
         String email = jwtTokenProvider.getEmailFromToken(token);
+        SignInType signInType = jwtTokenProvider.getSignInTypeFromToken(token);
 
-        refreshTokenRepository.findRefreshTokenByEmail(email)
+        refreshTokenRepository.findRefreshTokenByEmailAndSignInType(email, signInType)
                 .ifPresent(refreshTokenRepository::delete);
     }
 
@@ -212,10 +235,11 @@ public class UserService {
     public KakaoExistenceResponse validateKakaoUserExists(PostEmailRequest request) {
         String email = request.getEmail();
 
-        Optional<User> optionalUser = userRepository.findByEmail(email);
+        Optional<User> optionalUser = userRepository.findByEmailAndSignInType(email, SignInType.KAKAO);
 
-        if (optionalUser.isPresent() && optionalUser.get().getSignInType() == SignInType.KAKAO) {
-            return KakaoExistenceResponse.from(true);
+        if (optionalUser.isPresent() && optionalUser.get().getSignInType().equals(SignInType.KAKAO)) {
+            TokenDto token = jwtTokenProvider.createAllToken(email, SignInType.KAKAO);
+            return KakaoExistenceResponse.from(true, token);
         }
 
         return KakaoExistenceResponse.from(false);
@@ -231,45 +255,26 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(NotFoundUserException::new);
 
-        refreshTokenRepository.findRefreshTokenByEmail(user.getEmail())
+        refreshTokenRepository.findRefreshTokenByEmailAndSignInType(user.getEmail(), user.getSignInType())
                 .ifPresent(refreshTokenRepository::delete);
 
         userRepository.delete(user);
     }
 
     /**
-     * 유저 정보를 저장한다.
-     *
-     * @param request
-     * @return
-     * @throws UnsupportedSignInTypeException 지원하지 않는 SignInType을 요청한 경우
-     */
-    private User saveUser(SignUpRequest request) {
-        if (request.getSignInType().equals("EMAIL")) {
-            return signUpByEmail(request);
-        }
-
-        if (request.getSignInType().equals("KAKAO")) {
-            return signUpByKakao(request);
-        }
-
-        throw new UnsupportedSignInTypeException();
-    }
-
-    /**
      * Kakao 유저를 저장한다.
      *
-     * @param request
+     * @param email
      * @return
      */
-    private User signUpByKakao(SignUpRequest request) {
-        Optional<User> optionalUser = userRepository.findByEmail(request.getEmail());
+    private User signUpByKakao(String email) {
+        Optional<User> optionalUser = userRepository.findByEmailAndSignInType(email, SignInType.KAKAO);
         if (optionalUser.isPresent() && optionalUser.get().getSignInType() == SignInType.KAKAO) {
             throw new DuplicateEmailException();
         }
 
         User user = User.builder()
-                .email(request.getEmail())
+                .email(email)
                 .signInType(SignInType.KAKAO)
                 .build();
 
@@ -279,19 +284,20 @@ public class UserService {
     /**
      * Email 유저를 저장한다.
      *
-     * @param request
+     * @param email
+     * @param password
      * @return
      */
-    private User signUpByEmail(SignUpRequest request) {
-        Optional<User> optionalUser = userRepository.findByEmail(request.getEmail());
+    private User signUpByEmail(String email, String password) {
+        Optional<User> optionalUser = userRepository.findByEmailAndSignInType(email, SignInType.EMAIL);
         if (optionalUser.isPresent() && optionalUser.get().getSignInType() == SignInType.EMAIL) {
             throw new DuplicateEmailException();
         }
 
-        String encodedPassword = passwordEncoder.encode(request.getPassword());
+        String encodedPassword = passwordEncoder.encode(password);
 
         User user = User.builder()
-                .email(request.getEmail())
+                .email(email)
                 .password(encodedPassword)
                 .signInType(SignInType.EMAIL)
                 .build();
