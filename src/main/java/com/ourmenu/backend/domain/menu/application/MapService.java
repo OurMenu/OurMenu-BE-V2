@@ -22,6 +22,7 @@ import com.ourmenu.backend.domain.tag.dao.MenuTagRepository;
 import com.ourmenu.backend.domain.tag.domain.MenuTag;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -169,6 +170,13 @@ public class MapService {
      * @param menu
      */
     private void saveOwnedMenuSearchHistory(Long userId, Menu menu) {
+        Optional<OwnedMenuSearch> searchHistory = ownedMenuSearchRepository.findByUserIdAndMenuId(userId, menu.getId());
+
+        if (searchHistory.isPresent()) {
+            searchHistory.get().updateModifiedAt();
+            return;
+        }
+
         OwnedMenuSearch ownedMenuSearch = OwnedMenuSearch.builder()
                 .menuId(menu.getId())
                 .menuTitle(menu.getTitle())
