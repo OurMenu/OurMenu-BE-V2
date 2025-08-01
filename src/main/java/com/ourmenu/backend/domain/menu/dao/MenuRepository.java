@@ -19,7 +19,14 @@ public interface MenuRepository extends JpaRepository<Menu, Long> {
 
     boolean existsByStore(Store store);
 
-    List<Menu> findMenusByUserId(Long userId);
+    @Query("""
+        SELECT m
+        FROM Menu m
+            JOIN FETCH m.store s
+            JOIN FETCH s.map map
+        WHERE m.userId = :userId 
+    """)
+    List<Menu> findMenusByUserId(@Param("userId") Long userId);
 
     List<Menu> findMenusByStoreIdAndUserId(Long storeId, Long userId);
 
