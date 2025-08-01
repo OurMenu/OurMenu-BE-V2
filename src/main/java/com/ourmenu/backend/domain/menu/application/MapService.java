@@ -20,9 +20,6 @@ import com.ourmenu.backend.domain.store.dao.MapRepository;
 import com.ourmenu.backend.domain.store.domain.Map;
 import com.ourmenu.backend.domain.tag.dao.MenuTagRepository;
 import com.ourmenu.backend.domain.tag.domain.MenuTag;
-import com.ourmenu.backend.domain.user.dao.UserRepository;
-import com.ourmenu.backend.domain.user.domain.User;
-import com.ourmenu.backend.domain.user.exception.NotFoundUserException;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,7 +29,6 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.PrecisionModel;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -45,7 +41,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class MapService {
 
     private final MenuRepository menuRepository;
-    private final UserRepository userRepository;
     private final MapRepository mapRepository;
     private final MenuTagRepository menuTagRepository;
     private final MenuImgRepository menuImgRepository;
