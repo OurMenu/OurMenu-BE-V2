@@ -16,6 +16,7 @@ public class MenuInfoOnMapDto {
     private Long menuId;
     private String menuTitle;
     private Integer menuPrice;
+    private String storeTitle;
     private String menuPinImgUrl;
     private List<String> menuTagImgUrls;
     private List<String> menuImgUrls;
@@ -36,11 +37,13 @@ public class MenuInfoOnMapDto {
                 .menuId(menu.getId())
                 .menuTitle(menu.getTitle())
                 .menuPrice(menu.getPrice())
+                .storeTitle(menu.getStore().getTitle())
                 .menuPinImgUrl(menuPinImgUrl)
                 .menuTagImgUrls(menuTagImgUrls)
-                .menuImgUrls(menuImgs.stream().map(
-                        menuImg -> menuImg.getImgUrl()
-                ).collect(Collectors.toList()))
+                .menuImgUrls(menuImgs.stream()
+                        .map(MenuImg::getImgUrl)
+                        .collect(Collectors.toList())
+                )
                 .menuFolderInfo(menuFolderInfo)
                 .mapId(menu.getStore().getMap().getId())
                 .mapX(menu.getStore().getMap().getLocation().getX())
