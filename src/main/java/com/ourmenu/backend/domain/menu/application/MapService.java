@@ -102,7 +102,7 @@ public class MapService {
 
         PageRequest pageRequest = PageRequest.of(0, 10);
 
-        Page<Menu> menusByUserIdOrderByDistance =
+        List<Menu> menusByUserIdOrderByDistance =
                 menuRepository.findByUserIdTitleContainingOrderByDistance(userId, title, userLocation, pageRequest);
 
         return menusByUserIdOrderByDistance.stream()
@@ -118,12 +118,10 @@ public class MapService {
      */
     public List<MapSearchHistoryDto> findSearchHistoryOnMap(Long userId) {
         Pageable pageable = PageRequest.of(
-                0,
-                10,
-                Sort.by(Sort.Direction.DESC, "modifiedAt")
+                0, 10, Sort.by(Sort.Direction.DESC, "modifiedAt")
         );
 
-        Page<OwnedMenuSearch> searchHistoryPage = ownedMenuSearchRepository
+        List<OwnedMenuSearch> searchHistoryPage = ownedMenuSearchRepository
                 .findByUserId(userId, pageable);
 
         return searchHistoryPage.stream()
