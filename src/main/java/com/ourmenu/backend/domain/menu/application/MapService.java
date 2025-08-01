@@ -60,8 +60,6 @@ public class MapService {
      * @return
      */
     public List<MenuOnMapDto> findMenusOnMap(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(NotFoundUserException::new);
         List<Menu> menus = menuRepository.findMenusByUserId(userId);
 
         java.util.Map<Map, List<Menu>> menuMaps = menus.stream()
@@ -99,9 +97,6 @@ public class MapService {
      * @return
      */
     public List<MapSearchDto> findSearchResultOnMap(String title, double mapX, double mapY, Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(NotFoundUserException::new);
-
         GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
         Point userLocation = geometryFactory.createPoint(new Coordinate(mapX, mapY));
 
@@ -122,9 +117,6 @@ public class MapService {
      * @return
      */
     public List<MapSearchHistoryDto> findSearchHistoryOnMap(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(NotFoundUserException::new);
-
         Pageable pageable = PageRequest.of(
                 0,
                 10,
@@ -148,9 +140,6 @@ public class MapService {
      */
     @Transactional
     public MenuInfoOnMapDto findMenuByMenuIdOnMap(Long menuId, Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(NotFoundUserException::new);
-
         Menu menu = menuRepository.findByIdAndUserId(menuId, userId)
                 .orElseThrow(NotFoundMenuException::new);
 
