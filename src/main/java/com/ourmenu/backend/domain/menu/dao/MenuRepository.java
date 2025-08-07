@@ -269,15 +269,15 @@ public interface MenuRepository extends JpaRepository<Menu, Long> {
                                            @Param("tag") String tag,
                                            Pageable pageable);
 
-    @Query("""
-        SELECT m 
-        FROM Menu m
-            JOIN FETCH m.store s
-            JOIN FETCH s.map map
-        WHERE m.userId = :userId
-            AND LOWER(m.title) LIKE CONCAT('%', LOWER(:title), '%')  
-            ORDER BY ST_Distance_Sphere(map.location, :userLocation) ASC
-    """)
+    @Query(value = """
+        SELECT m.*
+        FROM menu m
+            JOIN store s ON m.store_id = s.id
+            JOIN map ON s.map_id = map.id
+        WHERE m.user_id = :userId
+            AND LOWER(m.title) LIKE CONCAT('%', LOWER(:title), '%')
+        ORDER BY ST_Distance_Sphere(map.location, :userLocation) ASC
+        """, nativeQuery = true)
     List<Menu> findByUserIdTitleContainingOrderByDistance(
             @Param("userId") Long userId,
             @Param("title") String title,
