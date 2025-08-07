@@ -14,10 +14,10 @@ public interface MapRepository extends JpaRepository<Map, Long> {
     Optional<Map> findByLocation(Point location);
 
     @Query("""
-        SELECT mp
-        FROM Map mp
-         JOIN FETCH mp.stores st
-        WHERE mp.id = :mapId
+        SELECT m
+        FROM Map m
+            JOIN FETCH m.stores s
+        WHERE m.id = :mapId
     """)
     Optional<Map> findMapById(Long mapId);
 }
