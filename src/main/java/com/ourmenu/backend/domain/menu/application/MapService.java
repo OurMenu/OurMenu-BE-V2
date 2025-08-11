@@ -20,9 +20,6 @@ import com.ourmenu.backend.domain.store.dao.MapRepository;
 import com.ourmenu.backend.domain.store.domain.Map;
 import com.ourmenu.backend.domain.tag.dao.MenuTagRepository;
 import com.ourmenu.backend.domain.tag.domain.MenuTag;
-import com.ourmenu.backend.domain.user.dao.UserRepository;
-import com.ourmenu.backend.domain.user.domain.User;
-import com.ourmenu.backend.domain.user.exception.NotFoundUserException;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -33,7 +30,6 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.PrecisionModel;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -46,7 +42,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class MapService {
 
     private final MenuRepository menuRepository;
-    private final UserRepository userRepository;
     private final MapRepository mapRepository;
     private final MenuTagRepository menuTagRepository;
     private final MenuImgRepository menuImgRepository;
@@ -61,8 +56,6 @@ public class MapService {
      * @return
      */
     public List<MenuOnMapDto> findMenusOnMap(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(NotFoundUserException::new);
         List<Menu> menus = menuRepository.findMenusByUserId(userId);
 
         java.util.Map<Map, List<Menu>> menuMaps = menus.stream()
@@ -100,15 +93,12 @@ public class MapService {
      * @return
      */
     public List<MapSearchDto> findSearchResultOnMap(String title, double mapX, double mapY, Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(NotFoundUserException::new);
-
         GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
         Point userLocation = geometryFactory.createPoint(new Coordinate(mapX, mapY));
 
         PageRequest pageRequest = PageRequest.of(0, 10);
 
-        Page<Menu> menusByUserIdOrderByDistance =
+        List<Menu> menusByUserIdOrderByDistance =
                 menuRepository.findByUserIdTitleContainingOrderByDistance(userId, title, userLocation, pageRequest);
 
         return menusByUserIdOrderByDistance.stream()
@@ -123,16 +113,11 @@ public class MapService {
      * @return
      */
     public List<MapSearchHistoryDto> findSearchHistoryOnMap(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(NotFoundUserException::new);
-
         Pageable pageable = PageRequest.of(
-                0,
-                10,
-                Sort.by(Sort.Direction.DESC, "modifiedAt")
+                0, 10, Sort.by(Sort.Direction.DESC, "modifiedAt")
         );
 
-        Page<OwnedMenuSearch> searchHistoryPage = ownedMenuSearchRepository
+        List<OwnedMenuSearch> searchHistoryPage = ownedMenuSearchRepository
                 .findByUserId(userId, pageable);
 
         return searchHistoryPage.stream()
@@ -149,9 +134,6 @@ public class MapService {
      */
     @Transactional
     public MenuInfoOnMapDto findMenuByMenuIdOnMap(Long menuId, Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(NotFoundUserException::new);
-
         Menu menu = menuRepository.findByIdAndUserId(menuId, userId)
                 .orElseThrow(NotFoundMenuException::new);
 

@@ -23,7 +23,6 @@ import com.ourmenu.backend.domain.user.exception.NotFoundUserException;
 import com.ourmenu.backend.domain.user.exception.NotMatchPasswordException;
 import com.ourmenu.backend.domain.user.exception.NotMatchTokenException;
 import com.ourmenu.backend.domain.user.exception.TokenExpiredExcpetion;
-import com.ourmenu.backend.domain.user.exception.UnsupportedSignInTypeException;
 import com.ourmenu.backend.global.util.JwtTokenProvider;
 import jakarta.servlet.http.HttpServletRequest;
 
