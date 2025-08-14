@@ -40,4 +40,6 @@ public class OwnedMenuSearch extends BaseEntity {
 
     @NotNull
     private Long userId;
+
+    private Long mapId;
 }
