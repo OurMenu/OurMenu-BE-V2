@@ -8,7 +8,6 @@ import com.ourmenu.backend.domain.menu.domain.Menu;
 import com.ourmenu.backend.domain.menu.domain.MenuFolder;
 import com.ourmenu.backend.domain.menu.domain.MenuImg;
 import com.ourmenu.backend.domain.menu.dto.MapSearchDto;
-import com.ourmenu.backend.domain.menu.dto.MapSearchHistoryDto;
 import com.ourmenu.backend.domain.menu.dto.MenuFolderInfoOnMapDto;
 import com.ourmenu.backend.domain.menu.dto.MenuInfoOnMapDto;
 import com.ourmenu.backend.domain.menu.dto.MenuOnMapDto;
@@ -112,7 +111,7 @@ public class MapService {
      * @param userId
      * @return
      */
-    public List<MapSearchHistoryDto> findSearchHistoryOnMap(Long userId) {
+    public List<MapSearchDto> findSearchHistoryOnMap(Long userId) {
         Pageable pageable = PageRequest.of(
                 0, 10, Sort.by(Sort.Direction.DESC, "modifiedAt")
         );
@@ -121,7 +120,7 @@ public class MapService {
                 .findByUserId(userId, pageable);
 
         return searchHistoryPage.stream()
-                .map(MapSearchHistoryDto::from)
+                .map(MapSearchDto::from)
                 .collect(Collectors.toList());
     }
 
@@ -178,6 +177,7 @@ public class MapService {
         }
 
         OwnedMenuSearch ownedMenuSearch = OwnedMenuSearch.builder()
+                .mapId(menu.getStore().getMap().getId())
                 .menuId(menu.getId())
                 .menuTitle(menu.getTitle())
                 .storeTitle(menu.getStore().getTitle())

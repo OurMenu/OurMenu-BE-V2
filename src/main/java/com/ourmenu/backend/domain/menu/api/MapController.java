@@ -2,7 +2,6 @@ package com.ourmenu.backend.domain.menu.api;
 
 import com.ourmenu.backend.domain.menu.application.MapService;
 import com.ourmenu.backend.domain.menu.dto.MapSearchDto;
-import com.ourmenu.backend.domain.menu.dto.MapSearchHistoryDto;
 import com.ourmenu.backend.domain.menu.dto.MenuInfoOnMapDto;
 import com.ourmenu.backend.domain.menu.dto.MenuOnMapDto;
 import com.ourmenu.backend.domain.user.domain.CustomUserDetails;
@@ -62,9 +61,9 @@ public class MapController {
 
     @Operation(summary = "지도 검색 기록 조회", description = "지도에서 식당 검색 기록을 조회한다.")
     @GetMapping("/maps/search-history")
-    public ApiResponse<List<MapSearchHistoryDto>> findSearchHistoryOnMap(
+    public ApiResponse<List<MapSearchDto>> findSearchHistoryOnMap(
             @AuthenticationPrincipal CustomUserDetails userDetails) {
-        List<MapSearchHistoryDto> response = mapService.findSearchHistoryOnMap(userDetails.getId());
+        List<MapSearchDto> response = mapService.findSearchHistoryOnMap(userDetails.getId());
         return ApiUtil.success(response);
     }
 }

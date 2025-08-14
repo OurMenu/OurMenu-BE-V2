@@ -12,12 +12,16 @@ import lombok.Getter;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class MapSearchDto {
 
+    private Long mapId;
+    private Long menuId;
     private String menuTitle;
     private String storeTitle;
     private String storeAddress;
 
     public static MapSearchDto from(Menu menu){
         return MapSearchDto.builder()
+                .mapId(menu.getStore().getMap().getId())
+                .menuId(menu.getId())
                 .menuTitle(menu.getTitle())
                 .storeTitle(menu.getStore().getTitle())
                 .storeAddress(menu.getStore().getAddress())
@@ -26,6 +30,8 @@ public class MapSearchDto {
 
     public static MapSearchDto from(OwnedMenuSearch ownedMenuSearch){
         return MapSearchDto.builder()
+                .mapId(ownedMenuSearch.getMapId())
+                .menuId(ownedMenuSearch.getMenuId())
                 .menuTitle(ownedMenuSearch.getMenuTitle())
                 .storeTitle(ownedMenuSearch.getStoreTitle())
                 .storeAddress(ownedMenuSearch.getStoreAddress())
