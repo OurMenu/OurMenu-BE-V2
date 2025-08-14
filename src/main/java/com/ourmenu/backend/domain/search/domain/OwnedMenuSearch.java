@@ -6,8 +6,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotNull;
-import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,19 +24,14 @@ public class OwnedMenuSearch extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull
     private Long menuId;
 
-    @NotNull
     private String menuTitle;
 
-    @NotNull
     private String storeTitle;
 
-    @NotNull
     private String storeAddress;
 
-    @NotNull
     private Long userId;
 
     private Long mapId;
