@@ -4,6 +4,7 @@ import com.ourmenu.backend.domain.cache.application.CacheService;
 import com.ourmenu.backend.domain.cache.dto.GetCacheInfoResponse;
 import com.ourmenu.backend.domain.cache.dto.GetMenuFolderIconResponse;
 import com.ourmenu.backend.domain.cache.dto.GetMenuPinResponse;
+import com.ourmenu.backend.domain.cache.dto.GetTagResponse;
 import com.ourmenu.backend.global.response.ApiResponse;
 import com.ourmenu.backend.global.response.util.ApiUtil;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -26,16 +27,23 @@ public class CacheController {
         return ApiUtil.success(response);
     }
 
-    @GetMapping("api/cache-data/menuFolderIcons")
+    @GetMapping("api/cache-data/menu-folder-icons")
     public ApiResponse<List<GetMenuFolderIconResponse>> getMenuFolderIconsResponse() {
         List<GetMenuFolderIconResponse> response = cacheService.getMenuFolderIcons();
 
         return ApiUtil.success(response);
     }
 
-    @GetMapping("api/cache-data/menuPins")
+    @GetMapping("api/cache-data/menu-pins")
     public ApiResponse<List<GetMenuPinResponse>> getMenuPinResponse() {
         List<GetMenuPinResponse> response = cacheService.getMenuPins();
+
+        return ApiUtil.success(response);
+    }
+
+    @GetMapping("api/cache-data/tags")
+    public ApiResponse<List<GetTagResponse>> getTagResponse() {
+        List<GetTagResponse> response = cacheService.getTags();
 
         return ApiUtil.success(response);
     }
