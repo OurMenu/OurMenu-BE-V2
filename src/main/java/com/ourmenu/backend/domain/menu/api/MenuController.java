@@ -45,7 +45,7 @@ public class MenuController {
                                                   @AuthenticationPrincipal CustomUserDetails userDetails) {
         request.initList();
         SimpleSearchDto simpleSearchDto = searchService.getSearchDto(request.getIsCrawled(), request.getStoreId());
-        MenuDto menuDto = MenuDto.of(request, request.getMenuFolderImgs(), userDetails, simpleSearchDto);
+        MenuDto menuDto = MenuDto.of(request, request.getMenuImgs(), userDetails, simpleSearchDto);
         SaveMenuResponse response = menuService.saveMenu(menuDto);
         return ApiUtil.success(response);
     }
