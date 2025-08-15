@@ -4,6 +4,7 @@ import com.ourmenu.backend.domain.cache.domain.HomeImg;
 import com.ourmenu.backend.domain.cache.domain.MenuFolderIcon;
 import com.ourmenu.backend.domain.cache.domain.MenuPin;
 import com.ourmenu.backend.domain.cache.dto.GetCacheInfoResponse;
+import com.ourmenu.backend.domain.cache.dto.GetMenuFolderIconResponse;
 import com.ourmenu.backend.domain.cache.dto.SimpleHomeImgResponse;
 import com.ourmenu.backend.domain.cache.dto.SimpleMenuFolderIconResponse;
 import com.ourmenu.backend.domain.cache.dto.SimpleMenuPinResponse;
@@ -27,6 +28,15 @@ public class CacheService {
         List<SimpleTagImgResponse> tagInfo = getTagImgInfo();
 
         return GetCacheInfoResponse.of(menuFolderIconInfo, menuPinInfo, homeImgInfo, tagInfo);
+    }
+
+
+    public List<GetMenuFolderIconResponse> getMenuFolderIcon() {
+        List<SimpleMenuFolderIconResponse> menuFolderIconInfo = getMenuFolderIconInfo();
+
+        return menuFolderIconInfo.stream()
+                .map(GetMenuFolderIconResponse::from)
+                .toList();
     }
 
     private List<SimpleMenuFolderIconResponse> getMenuFolderIconInfo() {
