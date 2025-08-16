@@ -12,7 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Getter
 public class SaveMenuRequest {
 
-    List<MultipartFile> menuFolderImgs;
+    List<MultipartFile> menuImgs;
     private String menuTitle;
     private int menuPrice;
     private MenuPin menuPin;
@@ -27,8 +27,8 @@ public class SaveMenuRequest {
      * request 에 null 들어오는 경우에 대해서 request 초기화 swagger 를 위한 메서드
      */
     public void initList() {
-        if (menuFolderImgs == null) {
-            menuFolderImgs = new ArrayList<>();
+        if (menuImgs == null) {
+            menuImgs = new ArrayList<>();
         }
         if (menuFolderIds == null) {
             menuFolderIds = new ArrayList<>();

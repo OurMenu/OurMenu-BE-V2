@@ -4,6 +4,9 @@ import com.ourmenu.backend.domain.cache.domain.HomeImg;
 import com.ourmenu.backend.domain.cache.domain.MenuFolderIcon;
 import com.ourmenu.backend.domain.cache.domain.MenuPin;
 import com.ourmenu.backend.domain.cache.dto.GetCacheInfoResponse;
+import com.ourmenu.backend.domain.cache.dto.GetMenuFolderIconResponse;
+import com.ourmenu.backend.domain.cache.dto.GetMenuPinResponse;
+import com.ourmenu.backend.domain.cache.dto.GetTagResponse;
 import com.ourmenu.backend.domain.cache.dto.SimpleHomeImgResponse;
 import com.ourmenu.backend.domain.cache.dto.SimpleMenuFolderIconResponse;
 import com.ourmenu.backend.domain.cache.dto.SimpleMenuPinResponse;
@@ -27,6 +30,31 @@ public class CacheService {
         List<SimpleTagImgResponse> tagInfo = getTagImgInfo();
 
         return GetCacheInfoResponse.of(menuFolderIconInfo, menuPinInfo, homeImgInfo, tagInfo);
+    }
+
+
+    public List<GetMenuFolderIconResponse> getMenuFolderIcons() {
+        List<SimpleMenuFolderIconResponse> menuFolderIconsInfo = getMenuFolderIconInfo();
+
+        return menuFolderIconsInfo.stream()
+                .map(GetMenuFolderIconResponse::from)
+                .toList();
+    }
+
+    public List<GetMenuPinResponse> getMenuPins() {
+        List<SimpleMenuPinResponse> menuPinsInfo = getMenuPinInfo();
+
+        return menuPinsInfo.stream()
+                .map(GetMenuPinResponse::from)
+                .toList();
+    }
+
+    public List<GetTagResponse> getTags() {
+        List<SimpleTagImgResponse> tagsImgInfo = getTagImgInfo();
+
+        return tagsImgInfo.stream()
+                .map(GetTagResponse::from)
+                .toList();
     }
 
     private List<SimpleMenuFolderIconResponse> getMenuFolderIconInfo() {

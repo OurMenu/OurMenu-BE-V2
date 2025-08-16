@@ -38,7 +38,8 @@ public class SecurityConfig {
                         sessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .logout(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/api/users/sign-up", "/api/users/sign-in", "/api/users/auth/kakao", "/api/users/reissue-token")
+                        .requestMatchers("/api/users/sign-up", "/api/users/sign-in", "/api/users/auth/kakao",
+                                "/api/users/reissue-token")
                         .permitAll()
                         .requestMatchers("/api/emails/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/swagger-resources/**", "/v3/api-docs/**").permitAll()
@@ -68,6 +69,7 @@ public class SecurityConfig {
                 "/api/users/sign-in",
                 "/api/users/reissue-token",
                 "/api/cache-data",
+                "/api/cache-data/**",
                 "/api/emails/**",
                 "/swagger-ui/**",
                 "/swagger-resources/**",
