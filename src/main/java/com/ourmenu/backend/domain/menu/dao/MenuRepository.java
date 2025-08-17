@@ -19,6 +19,13 @@ public interface MenuRepository extends JpaRepository<Menu, Long> {
 
     boolean existsByStore(Store store);
 
+    @Query("""
+        SELECT m
+        FROM Menu m
+            JOIN FETCH m.store s
+            JOIN FETCH s.map map
+        WHERE m.userId = :userId
+    """)
     List<Menu> findMenusByUserId(Long userId);
 
     List<Menu> findMenusByStoreIdAndUserId(Long storeId, Long userId);
@@ -26,8 +33,6 @@ public interface MenuRepository extends JpaRepository<Menu, Long> {
     boolean existsByUserIdAndId(Long userId, Long id);
 
     Optional<Menu> findByIdAndUserId(Long menuId, Long userId);
-
-    List<Menu> findByUserIdAndStoreId(Long userId, Long storeId);
 
     int countByUserId(Long userId);
 
@@ -264,23 +269,20 @@ public interface MenuRepository extends JpaRepository<Menu, Long> {
                                            @Param("tag") String tag,
                                            Pageable pageable);
 
-    @Query(
-            value = "SELECT m.* FROM menu m " +
-                    "JOIN store s ON m.store_id = s.id " +
-                    "JOIN map ON s.map_id = map.id " +
-                    "WHERE m.user_id = :userId " +
-                    "AND LOWER(m.title) LIKE CONCAT('%', LOWER(:title), '%') " +
-                    "ORDER BY ST_Distance_Sphere(map.location, :userLocation) ASC",
-            countQuery = "SELECT COUNT(*) FROM menu m " +
-                    "JOIN store s ON m.store_id = s.id " +
-                    "JOIN map ON s.map_id = map.id " +
-                    "WHERE m.user_id = :userId " +
-                    "AND LOWER(m.title) LIKE CONCAT('%', LOWER(:title), '%')",
-            nativeQuery = true
-    )
-    Page<Menu> findByUserIdTitleContainingOrderByDistance(@Param("userId") Long userId,
-                                                          @Param("title") String title,
-                                                          @Param("userLocation") Point userLocation,
-                                                          Pageable pageable);
+    @Query(value = """
+        SELECT m.*
+        FROM menu m
+            JOIN store s ON m.store_id = s.id
+            JOIN map ON s.map_id = map.id
+        WHERE m.user_id = :userId
+            AND LOWER(m.title) LIKE CONCAT('%', LOWER(:title), '%')
+        ORDER BY ST_Distance_Sphere(map.location, :userLocation) ASC
+        """, nativeQuery = true)
+    List<Menu> findByUserIdTitleContainingOrderByDistance(
+            @Param("userId") Long userId,
+            @Param("title") String title,
+            @Param("userLocation") Point userLocation,
+            Pageable pageable
+    );
 }
 

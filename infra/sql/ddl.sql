@@ -107,6 +107,7 @@ create table owned_menu_search (
                                    menu_id bigint not null,
                                    modified_at datetime(6),
                                    user_id bigint not null,
+                                   map_id bigint not null,
                                    menu_title varchar(255) not null,
                                    store_address varchar(255) not null,
                                    store_title varchar(255) not null,
