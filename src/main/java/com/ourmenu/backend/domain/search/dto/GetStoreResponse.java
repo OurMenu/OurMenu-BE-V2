@@ -21,6 +21,7 @@ public class GetStoreResponse {
     private List<GetStoreMenuResponse> menus;
     private Double storeMapX;
     private Double storeMapY;
+    private boolean isCrawled;
 
     public static GetStoreResponse from(SearchableStore searchableStore) {
         List<GetStoreMenuResponse> getStoreMenuResponses = searchableStore.getStoreMenus().stream()
@@ -40,6 +41,7 @@ public class GetStoreResponse {
                 .menus(getStoreMenuResponses)
                 .storeMapX(mapX)
                 .storeMapY(mapY)
+                .isCrawled(true)
                 .build();
     }
 
@@ -50,6 +52,7 @@ public class GetStoreResponse {
                 .storeAddress(notFoundStore.getAddress())
                 .storeMapX(notFoundStore.getMapX())
                 .storeMapY(notFoundStore.getMapY())
+                .isCrawled(false)
                 .build();
     }
 }

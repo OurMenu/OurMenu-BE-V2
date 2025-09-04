@@ -7,7 +7,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
-import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,6 +30,12 @@ public class NotOwnedMenuSearch extends BaseEntity {
 
     @NotNull
     private String address;
+
+    @NotNull
+    private String storeId;
+
+    @NotNull
+    private boolean isCrawled;
 
     @NotNull
     private Long userId;
