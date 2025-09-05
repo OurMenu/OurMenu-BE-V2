@@ -26,7 +26,7 @@ public class GetSearchHistoryResponse {
         return GetSearchHistoryResponse.builder()
                 .menuTitle(notOwnedMenuSearch.getTitle())
                 .storeAddress(notOwnedMenuSearch.getAddress())
-                .storeId(notOwnedMenuSearch.getId().toString())
+                .storeId(notOwnedMenuSearch.getStoreId())
                 .isCrawled(false)
                 .modifiedAt(notOwnedMenuSearch.getModifiedAt())
                 .build();
