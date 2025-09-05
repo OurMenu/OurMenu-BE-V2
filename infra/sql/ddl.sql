@@ -86,6 +86,8 @@ create table not_owned_search_history (
                                           user_id bigint not null,
                                           address varchar(255) not null,
                                           title varchar(255) not null,
+                                          store_id varchar(255) not null,
+                                          is_crawled bit,
                                           primary key (id)
 ) engine=InnoDB;
 
@@ -96,7 +98,7 @@ create table not_found_store (
                                  id bigint not null auto_increment,
                                  modified_at datetime(6),
                                  address varchar(255) not null,
-                                 store_id varchar(255),
+                                 store_id varchar(255) not null,
                                  title varchar(255) not null,
                                  primary key (id)
 ) engine=InnoDB;
