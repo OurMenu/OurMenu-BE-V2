@@ -24,7 +24,8 @@ public enum MenuPin {
     TWO("2", "two"),
     THREE("3", "three"),
     FOUR("4", "four"),
-    FIVE("5", "five");
+    FIVE("5", "five"),
+    ETC("기타(십자)", "ETC");
 
     private String name;
     private String imgUrl;
