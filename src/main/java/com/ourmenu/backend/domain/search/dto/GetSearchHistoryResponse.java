@@ -16,12 +16,18 @@ public class GetSearchHistoryResponse {
 
     private String storeAddress;
 
+    private String storeId;
+
+    private boolean isCrawled;
+
     private LocalDateTime modifiedAt;
 
-    public static GetSearchHistoryResponse from(NotOwnedMenuSearch notOwnedMenuSearch){
+    public static GetSearchHistoryResponse from(NotOwnedMenuSearch notOwnedMenuSearch) {
         return GetSearchHistoryResponse.builder()
                 .menuTitle(notOwnedMenuSearch.getTitle())
                 .storeAddress(notOwnedMenuSearch.getAddress())
+                .storeId(notOwnedMenuSearch.getId().toString())
+                .isCrawled(false)
                 .modifiedAt(notOwnedMenuSearch.getModifiedAt())
                 .build();
     }

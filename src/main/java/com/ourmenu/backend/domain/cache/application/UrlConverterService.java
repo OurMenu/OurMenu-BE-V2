@@ -55,6 +55,6 @@ public class UrlConverterService {
 
     private boolean isETCMenuPin(MenuPin pin) {
         return pin.equals(MenuPin.TWO) || pin.equals(MenuPin.THREE) || pin.equals(MenuPin.FOUR) || pin.equals(
-                MenuPin.FIVE);
+                MenuPin.FIVE) || pin.equals(MenuPin.ETC);
     }
 }
