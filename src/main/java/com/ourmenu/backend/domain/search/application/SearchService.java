@@ -213,6 +213,8 @@ public class SearchService {
         NotOwnedMenuSearch notOwnedMenuSearch = NotOwnedMenuSearch.builder()
                 .title(getStoreResponse.getStoreTitle())
                 .address(getStoreResponse.getStoreAddress())
+                .storeId(getStoreResponse.getStoreId())
+                .isCrawled(getStoreResponse.isCrawled())
                 .userId(userId)
                 .build();
         notOwnedMenuSearchRepository.save(notOwnedMenuSearch);
